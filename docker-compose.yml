@@ -18,9 +18,9 @@ services:
       - app
 
   server:
-    image: ghcr.io/qnfthslr/3-2back-cicd:latest
+    image: ghcr.io/qnfthslr/personal-project-backend:latest
     build: .
-    container_name: backend-deploy-test-server
+    container_name: backend-deployserver
     volumes:
       - appdata:/app
     depends_on:
