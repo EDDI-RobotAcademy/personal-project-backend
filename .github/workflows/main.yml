@@ -82,7 +82,7 @@ jobs:
             
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
             
-            docker pull ghcr.io/qnfthslr/health-back:latest
+            docker pull ghcr.io/qnfthslr/personal-project-backend:latest
             
             docker image prune -f
             docker logout

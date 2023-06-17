@@ -20,7 +20,7 @@ services:
   server:
     image: ghcr.io/qnfthslr/personal-project-backend:latest
     build: .
-    container_name: backend-deployserver
+    container_name: health-deploy-server
     volumes:
       - appdata:/app
     depends_on:
