@@ -12,7 +12,7 @@ public class AccountLoginRequestForm {
     final private String email;
     final private String password;
 
-    public Account toAccount(){
-        return new Account(email, password);
-    }
+//    public Account toAccount(){
+//        return new Account(email, password);
+//    }
 }

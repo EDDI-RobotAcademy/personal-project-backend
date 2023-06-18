@@ -23,11 +23,23 @@ public class Account {
     @Setter
     private String password;
     @Setter
+    private String accountName;
+    @Setter
+    private String accountBirth;
+    @Setter
+    private String accountPhone;
+    @Setter
+    private String accountAddress;
+    @Setter
     private String userToken;
 
-    public Account(String email, String password) {
+    public Account(String email, String password, String accountName, String accountBirth, String accountPhone, String accountAddress) {
         this.email = email;
         this.password = password;
+        this.accountName = accountName;
+        this.accountBirth = accountBirth;
+        this.accountPhone = accountPhone;
+        this.accountAddress = accountAddress;
     }
 
     public Account(String userToken) {

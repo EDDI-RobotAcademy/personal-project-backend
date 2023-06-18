@@ -26,10 +26,11 @@ public class AccountServiceImpl implements AccountService{
     public Account regist(AccountRegistRequestForm requestForm) {
         Account account = requestForm.toAccount();
 
-        Optional<Account> maybeAccount = accountRepository.findByEmail(account.getEmail());
-        if(maybeAccount.isPresent()) {
-            return null;
-        }
+//        Optional<Account> maybeAccount = accountRepository.findByEmail(account.getEmail());
+//        if(maybeAccount.isPresent()) {
+//            return null;
+//        } // 아이디 중복 확인하면서 확인할 것이기 때문에 구지 안해도 됌
+
         Account savedAccount = accountRepository.save(account);
         System.out.println(savedAccount);
         return savedAccount;
@@ -38,17 +39,17 @@ public class AccountServiceImpl implements AccountService{
     // 로그인 기능
     @Override
     public Account login(AccountLoginRequestForm requestForm) {
-        Account account = requestForm.toAccount();
-        Optional<Account> maybeAccount = accountRepository.findByEmail(account.getEmail());
-
-        if(maybeAccount.isEmpty()){
-            return null;
-        }
-        Account savedAccount = maybeAccount.get();
-        if (savedAccount.getPassword().equals(account.getPassword())) {
-            savedAccount.setUserToken(UUID.randomUUID().toString());
-            return accountRepository.save(savedAccount);
-        }
+////        Account account = requestForm.toAccount();
+//        Optional<Account> maybeAccount = accountRepository.findByEmail(account.getEmail());
+//
+//        if(maybeAccount.isEmpty()){
+//            return null;
+//        }
+//        Account savedAccount = maybeAccount.get();
+//        if (savedAccount.getPassword().equals(account.getPassword())) {
+//            savedAccount.setUserToken(UUID.randomUUID().toString());
+//            return accountRepository.save(savedAccount);
+//        }
         return null;
     }
 
