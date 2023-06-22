@@ -8,6 +8,11 @@ public class NoticeRegistForm {
     String noticeTitle;
     String noticeContent;
 
+    public NoticeRegistForm(String noticeTitle, String noticeContent) {
+        this.noticeTitle = noticeTitle;
+        this.noticeContent = noticeContent;
+    }
+
     public NoticeBoard toNoticeBoard() {
         return new NoticeBoard(noticeTitle, noticeContent);
     }

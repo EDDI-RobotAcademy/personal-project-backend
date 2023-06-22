@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @ToString
@@ -21,12 +23,11 @@ public class NoticeBoard {
     private String noticeTitle;
     @Setter
     private String noticeContent;
-
-    private
+    private LocalDateTime noticeDate;
 
     public NoticeBoard(String noticeTitle, String noticeContent) {
         this.noticeTitle = noticeTitle;
         this.noticeContent = noticeContent;
-        this.
+        this.noticeDate = LocalDateTime.now();
     }
 }
