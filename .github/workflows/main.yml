@@ -46,7 +46,7 @@ jobs:
         run: |
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_TOKEN }}
             docker buildx create --name arm64builder --use
-            docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t ghcr.io/jnho1593/personal-project-backend:latest --push .
+            docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t ghcr.io/jinho1593/personal-project-backend:latest --push .
             docker logout
 
   deploy:
