@@ -23,12 +23,12 @@ public class NoticeListTest {
         List<NoticeBoard> noticeBoardList = noticeService.list();
 
         for (NoticeBoard noticeBoard: noticeBoardList){
-            System.out.println(noticeBoard.getId());
+            System.out.println(noticeBoard.getNoticeNumber());
             System.out.println(noticeBoard.getNoticeTitle());
             System.out.println(noticeBoard.getNoticeContent());
             System.out.println(noticeBoard.getNoticeDate());
 
-            assertTrue(noticeBoard.getId() != null);
+            assertTrue(noticeBoard.getNoticeNumber() != null);
             assertTrue(noticeBoard.getNoticeTitle() != null);
             assertTrue(noticeBoard.getNoticeContent() != null);
             assertTrue(noticeBoard.getNoticeDate() != null);

@@ -35,6 +35,6 @@ public class NoticeServiceImpl implements NoticeService{
 
     @Override
     public List<NoticeBoard> list() {
-        return noticeRepository.findAll(Sort.by(Sort.Direction.DESC,"id"));
+        return noticeRepository.findAll(Sort.by(Sort.Direction.DESC,"noticeNumber"));
     }
 }

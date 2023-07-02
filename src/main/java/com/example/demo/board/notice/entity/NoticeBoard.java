@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class NoticeBoard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long noticeNumber;
     @Setter
     private String noticeTitle;
     @Setter

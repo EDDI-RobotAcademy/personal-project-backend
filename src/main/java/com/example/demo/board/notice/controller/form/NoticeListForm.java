@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class NoticeListForm {
-    final private Long id;
+    final private Long noticeNumber;
     final private String noticeTitle;
     final private String noticeContent;
     final private LocalDateTime noticeDate;
