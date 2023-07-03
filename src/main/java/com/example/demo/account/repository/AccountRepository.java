@@ -1,6 +1,6 @@
 package com.example.demo.account.repository;
 
-import com.example.demo.account.controller.form.AccountDeleteRequestForm;
+import com.example.demo.account.controller.form.request.AccountDeleteRequestForm;
 import com.example.demo.account.entity.Account;
 import jakarta.transaction.Transactional;
 

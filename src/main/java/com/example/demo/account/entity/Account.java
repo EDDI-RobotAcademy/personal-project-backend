@@ -17,7 +17,6 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Setter
     private String email;
     @Setter
@@ -47,5 +46,10 @@ public class Account {
         this.email = email;
         this.password = password;
 
+    }
+
+    public Account(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 }

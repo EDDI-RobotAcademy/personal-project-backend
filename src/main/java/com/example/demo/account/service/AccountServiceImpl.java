@@ -1,9 +1,10 @@
 package com.example.demo.account.service;
 
-import com.example.demo.account.controller.form.AccountDeleteRequestForm;
-import com.example.demo.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.AccountModifyRequestForm;
-import com.example.demo.account.controller.form.AccountRegistRequestForm;
+import com.example.demo.account.controller.form.request.AccountDeleteRequestForm;
+import com.example.demo.account.controller.form.request.AccountLoginRequestForm;
+import com.example.demo.account.controller.form.request.AccountModifyRequestForm;
+import com.example.demo.account.controller.form.request.AccountRegistRequestForm;
+import com.example.demo.account.controller.form.response.AccountLoginResponseForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,19 +39,20 @@ public class AccountServiceImpl implements AccountService{
 
     // 로그인 기능
     @Override
-    public Account login(AccountLoginRequestForm requestForm) {
-////        Account account = requestForm.toAccount();
-//        Optional<Account> maybeAccount = accountRepository.findByEmail(account.getEmail());
-//
-//        if(maybeAccount.isEmpty()){
-//            return null;
-//        }
-//        Account savedAccount = maybeAccount.get();
-//        if (savedAccount.getPassword().equals(account.getPassword())) {
-//            savedAccount.setUserToken(UUID.randomUUID().toString());
-//            return accountRepository.save(savedAccount);
-//        }
-        return null;
+    public AccountLoginResponseForm login(AccountLoginRequestForm requestForm) {
+        Account account = requestForm.toAccount();
+        Optional<Account> maybeAccount = accountRepository.findByEmail(account.getEmail());
+
+        if(maybeAccount.isEmpty()){
+            return new AccountLoginResponseForm(account.getUserToken(),"WRONG_ID");
+        }
+        Account savedAccount = maybeAccount.get();
+        if (savedAccount.getPassword().equals(account.getPassword())) {
+            savedAccount.setUserToken(UUID.randomUUID().toString());
+            accountRepository.save(savedAccount);
+            return new AccountLoginResponseForm(savedAccount.getUserToken(),"SUCCESS_LOGIN");
+        }
+        return new AccountLoginResponseForm(account.getUserToken(),"WRONG_PW");
     }
 
     // 계정 리스트 확인 기능
