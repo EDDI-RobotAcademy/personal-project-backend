@@ -2,7 +2,7 @@ name : Deploy
 on:
   push:
     branches:
-      - hyunmin-chang
+      - main
      
 env:
   DOCKER_IMAGE: ghcr.io/${{ github.actor }}/personal-project-backend
