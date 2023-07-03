@@ -76,10 +76,10 @@ jobs:
               docker rm -f $(docker ps -qa --filter ancestor=mysql:8.0)
             fi
             echo "pass mysql-container"
-            if [[ "$(docker ps -qa --filter ancestorpersonal-project-backend/personal-project-backend-server:latest)" ]]; then
+            if [[ "$(docker ps -qa --filter ancestor=personal-project-backend/personal-project-backend-server:latest)" ]]; then
               docker rm -f $(docker ps -qa --filter ancestor=personal-project-backend/personal-project-backend-server:latest)
             fi
-            echo "passpersonal-project-backend/backend-deploy-test-server:latest"
+            echo "pass personal-project-backend/backend-deploy-test-server:latest"
             
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
             
