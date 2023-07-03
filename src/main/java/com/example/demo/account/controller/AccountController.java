@@ -1,11 +1,9 @@
 package com.example.demo.account.controller;
 
 
-import com.example.demo.account.controller.form.request.AccountDeleteRequestForm;
-import com.example.demo.account.controller.form.request.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.request.AccountModifyRequestForm;
-import com.example.demo.account.controller.form.request.AccountRegistRequestForm;
+import com.example.demo.account.controller.form.request.*;
 import com.example.demo.account.controller.form.response.AccountLoginResponseForm;
+import com.example.demo.account.controller.form.response.AccountPasswordResponseForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -79,7 +77,15 @@ public class AccountController {
         log.info("accountModify(): " + accountModifyRequestForm + ", email : " + email);
 
         accountService.modify(email, accountModifyRequestForm);
+    }
 
+    // 비밀번호 찾기 기능
+    @GetMapping("/password-find")
+    public AccountPasswordResponseForm accountPasswordFind(@RequestBody AccountPasswordFindRequestForm requestForm){
+        log.info(requestForm.getAccountName() + " 님의 비밀번호 찾기 ");
+        AccountPasswordResponseForm accountPasswordResponseForm = accountService.passwordFind(requestForm);
+
+        return accountPasswordResponseForm;
     }
 
 }

@@ -1,10 +1,8 @@
 package com.example.demo.account.service;
 
-import com.example.demo.account.controller.form.request.AccountDeleteRequestForm;
-import com.example.demo.account.controller.form.request.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.request.AccountModifyRequestForm;
-import com.example.demo.account.controller.form.request.AccountRegistRequestForm;
+import com.example.demo.account.controller.form.request.*;
 import com.example.demo.account.controller.form.response.AccountLoginResponseForm;
+import com.example.demo.account.controller.form.response.AccountPasswordResponseForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -110,6 +108,26 @@ public class AccountServiceImpl implements AccountService{
 
 
         return accountRepository.save(account);
+    }
+
+    // 비밀번호 찾기 기능
+    @Override
+    public AccountPasswordResponseForm passwordFind(AccountPasswordFindRequestForm requestForm) {
+        Optional<Account> maybeAccount = accountRepository.findByEmail(requestForm.getEmail());
+        if(maybeAccount.isEmpty()) {
+            log.info("없는 계정 입니다.");
+            return new AccountPasswordResponseForm("","WRONG_ID");
+        }
+        if(!maybeAccount.get().getAccountName().equals(requestForm.getAccountName())){
+            log.info("이름이 일치하지 않습니다.");
+            return new AccountPasswordResponseForm("","WRONG_NAME");
+        }
+        if(!maybeAccount.get().getAccountBirth().equals(requestForm.getAccountBirth())){
+            log.info("생년월일을 잘못 입력 하셨습니다.");
+            return new AccountPasswordResponseForm("","WRONG_BIRTH");
+        }
+
+        return new AccountPasswordResponseForm(maybeAccount.get().getPassword(),"SUCCESS_FIND_PASSWORD");
     }
 
 }
