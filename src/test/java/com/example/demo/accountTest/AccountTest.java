@@ -1,8 +1,11 @@
 package com.example.demo.accountTest;
 
+import com.example.demo.account.authentication.redis.RedisService;
+import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.repository.AccountRepository;
+import com.example.demo.account.service.AccountService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +13,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class AccountTest {
 
     @Autowired
     AccountRepository testAccountRepository;
+
+    @Autowired
+    RedisService testRedisService;
+
+    @Autowired
+    AccountService testAccountService;
 
     @Test
     @DisplayName("사용자 회원 가입")
@@ -56,5 +65,38 @@ public class AccountTest {
         Account account = maybeAccount.get();
 
         assertEquals(nickname, account.getNickname());
+    }
+
+    @Test
+    @DisplayName("없는 이메일 로그인")
+    void 없는_이메일_로그인(){
+        final String email = "testing@test.com";
+        final String password = "test";
+
+        AccountLoginRequestForm requestForm = new AccountLoginRequestForm(email, password);
+
+        assertNull(testAccountService.login(requestForm).getUserToken());
+    }
+
+    @Test
+    @DisplayName("틀린 비밀번호 로그인")
+    void 틀린_비밀번호_로그인(){
+        final String email = "test@test.com";
+        final String password = "testing";
+
+        AccountLoginRequestForm requestForm = new AccountLoginRequestForm(email, password);
+
+        assertNull(testAccountService.login(requestForm).getUserToken());
+    }
+
+    @Test
+    @DisplayName("정상 로그인")
+    void 로그인(){
+        final String email = "test@test.com";
+        final String password = "test";
+
+        AccountLoginRequestForm requestForm = new AccountLoginRequestForm(email, password);
+
+        assertNotNull(testAccountService.login(requestForm).getUserToken());
     }
 }

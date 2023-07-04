@@ -1,5 +1,8 @@
 package com.example.demo.account.service;
 
+import com.example.demo.account.authentication.redis.RedisService;
+import com.example.demo.account.controller.form.AccountLoginRequestForm;
+import com.example.demo.account.controller.form.AccountLoginResponseForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.repository.AccountRepository;
@@ -7,12 +10,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService{
 
     final private AccountRepository accountRepository;
+    final private RedisService redisService;
 
     @Override
     public Account register(AccountRegisterRequestForm requestForm) {
@@ -36,5 +41,26 @@ public class AccountServiceImpl implements AccountService{
             return false;
         }
         return true;
+    }
+
+    @Override
+    public AccountLoginResponseForm login(AccountLoginRequestForm requestForm) {
+        Optional<Account> maybeAccount =
+                accountRepository.findByEmail(requestForm.getEmail());
+
+        if(maybeAccount.isEmpty()){
+            System.out.println("이메일 틀림");
+            return new AccountLoginResponseForm(null);
+        }
+        Account account = maybeAccount.get();
+
+        if(!requestForm.getPassword().equals(account.getPassword())){
+            System.out.println("비밀번호 틀림");
+            return new AccountLoginResponseForm(null);
+        }
+        final String userToken = UUID.randomUUID().toString();
+        redisService.setKeyAndValue(userToken, account.getAccountId());
+
+        return new AccountLoginResponseForm(userToken);
     }
 }

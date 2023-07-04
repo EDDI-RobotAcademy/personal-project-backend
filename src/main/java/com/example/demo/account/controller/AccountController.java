@@ -1,5 +1,7 @@
 package com.example.demo.account.controller;
 
+import com.example.demo.account.controller.form.AccountLoginRequestForm;
+import com.example.demo.account.controller.form.AccountLoginResponseForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.service.AccountService;
@@ -29,5 +31,10 @@ public class AccountController {
     @PostMapping("nickname-check")
     public Boolean nicknameCheck(@Param("nickname") String nickname){
         return accountService.duplicateCheckNickname(nickname);
+    }
+
+    @PostMapping("login")
+    public AccountLoginResponseForm login(@RequestBody AccountLoginRequestForm requestForm){
+        return accountService.login(requestForm);
     }
 }
