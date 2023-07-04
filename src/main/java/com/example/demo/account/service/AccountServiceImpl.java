@@ -94,8 +94,8 @@ public class AccountServiceImpl implements AccountService{
 
     // 계정 수정 기능
     @Override
-    public Account modify(String email, AccountModifyRequestForm accountModifyRequestForm) {
-        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+    public Account modify(AccountModifyRequestForm requestForm) {
+        Optional<Account> maybeAccount = accountRepository.findByUserToken(requestForm.getUserToken());
 
         if (maybeAccount.isEmpty()){
             log.info("없는 계정입니다.");
@@ -103,9 +103,11 @@ public class AccountServiceImpl implements AccountService{
         }
         Account account = maybeAccount.get();
 
-        account.setEmail(accountModifyRequestForm.getEmail());
-        account.setPassword(accountModifyRequestForm.getPassword());
-
+        account.setPassword(requestForm.getPassword());
+        account.setAccountName(requestForm.getAccountName());
+        account.setAccountBirth(requestForm.getAccountBirth());
+        account.setAccountPhone(requestForm.getAccountPhone());
+        account.setAccountAddress(requestForm.getAccountAddress());
 
         return accountRepository.save(account);
     }

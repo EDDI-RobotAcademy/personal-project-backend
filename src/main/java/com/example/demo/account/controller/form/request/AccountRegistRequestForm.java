@@ -4,12 +4,12 @@ package com.example.demo.account.controller.form.request;
 import com.example.demo.account.entity.Account;
 
 public class AccountRegistRequestForm {
-    String email;
-    String password;
-    String accountName;
-    String accountBirth;
-    String accountPhone;
-    String accountAddress;
+    final private String email;
+    final private String password;
+    final private String accountName;
+    final private String accountBirth;
+    final private String accountPhone;
+    final private String accountAddress;
 
     public AccountRegistRequestForm(String email, String password, String accountName, String accountBirth, String accountPhone, String accountAddress) {
         this.email = email;

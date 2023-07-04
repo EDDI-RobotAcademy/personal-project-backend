@@ -9,9 +9,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AccountModifyRequestForm {
 
-    final private String email;
+    final private String userToken;
+
     final private String password;
-
-
+    final private String accountName;
+    final private String accountBirth;
+    final private String accountPhone;
+    final private String accountAddress;
 
 }

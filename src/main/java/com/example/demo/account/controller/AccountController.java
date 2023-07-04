@@ -72,11 +72,10 @@ public class AccountController {
     
     // 계정 수정 기능
     @PutMapping("/modify")
-    public void accountModify(@PathVariable("email") String email,
-                              @RequestBody AccountModifyRequestForm accountModifyRequestForm){
-        log.info("accountModify(): " + accountModifyRequestForm + ", email : " + email);
+    public void accountModify(@RequestBody AccountModifyRequestForm requestForm){
+        log.info("accountModify()");
 
-        accountService.modify(email, accountModifyRequestForm);
+        accountService.modify(requestForm);
     }
 
     // 비밀번호 찾기 기능

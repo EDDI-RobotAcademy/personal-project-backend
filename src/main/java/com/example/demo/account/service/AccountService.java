@@ -18,7 +18,7 @@ public interface AccountService {
 
     Boolean delete(AccountDeleteRequestForm accountDeleteRequestForm);
 
-    Account modify(String email, AccountModifyRequestForm accountModifyRequestForm);
+    Account modify(AccountModifyRequestForm requestForm);
 
     AccountPasswordResponseForm passwordFind(AccountPasswordFindRequestForm requestForm);
 }
