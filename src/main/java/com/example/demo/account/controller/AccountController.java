@@ -25,4 +25,9 @@ public class AccountController {
     public Boolean emailCheck(@Param("email") String email){
         return accountService.duplicateCheckEmail(email);
     }
+
+    @PostMapping("nickname-check")
+    public Boolean nicknameCheck(@Param("nickname") String nickname){
+        return accountService.duplicateCheckNickname(nickname);
+    }
 }

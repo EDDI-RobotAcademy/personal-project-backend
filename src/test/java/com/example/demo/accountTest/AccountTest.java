@@ -45,4 +45,16 @@ public class AccountTest {
 
         assertEquals(email, account.getEmail());
     }
+
+    @Test
+    @DisplayName("닉네임 중복 체크")
+    void 닉네임_중복_체크(){
+        final String nickname = "abc";
+
+        Optional<Account> maybeAccount = testAccountRepository.findByNickname(nickname);
+
+        Account account = maybeAccount.get();
+
+        assertEquals(nickname, account.getNickname());
+    }
 }

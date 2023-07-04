@@ -6,6 +6,6 @@ import com.example.demo.account.entity.Account;
 public interface AccountService {
 
     Account register(AccountRegisterRequestForm requestForm);
-
     Boolean duplicateCheckEmail(String email);
+    Boolean duplicateCheckNickname(String nickname);
 }
