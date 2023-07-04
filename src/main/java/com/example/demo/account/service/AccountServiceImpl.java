@@ -73,23 +73,17 @@ public class AccountServiceImpl implements AccountService{
 
     // 계정 삭제 기능
     @Override
-    public Boolean delete(AccountDeleteRequestForm requestForm) {
-        Account account = requestForm.toAccount();
-        Optional<Account> maybeAccount = accountRepository.findByUserToken(account.getUserToken());
+    public Boolean delete(AccountUserTokenRequestForm requestForm) {
+
+        Optional<Account> maybeAccount = accountRepository.findByUserToken(requestForm.getUserToken());
 
         if (maybeAccount.isEmpty()){
-            log.info("없는 계정입니다.");
+            log.info("에러 발생");
             return false;
         }
         Account existAccount = maybeAccount.get();
-
-//        일반 회원은 사용 불가
-//        if (existAccount.getRule() == normal){
-//            return false
-//        }
-
-//        accountRepository.deleteByUserToken();
-        return null;
+        accountRepository.deleteByUserToken(requestForm.getUserToken());
+        return true;
     }
 
     // 계정 수정 기능
@@ -139,6 +133,7 @@ public class AccountServiceImpl implements AccountService{
 
         if(maybeAccount.isEmpty()){
             log.info("에러 발생");
+            return null;
         }
 
         if(maybeAccount.get().getPassword().equals(accountGoMypageForm.getPassword())){
@@ -148,6 +143,18 @@ public class AccountServiceImpl implements AccountService{
             return false;
         }
 
+    }
+
+    @Override
+    public Account accountInfoList(AccountUserTokenRequestForm accountUserTokenRequestForm) {
+
+        Optional<Account> maybeAccount = accountRepository.findByUserToken(accountUserTokenRequestForm.getUserToken());
+        if (maybeAccount.isEmpty()){
+            log.info("에러 발생");
+            return null;
+        }
+
+        return maybeAccount.get();
     }
 
 }

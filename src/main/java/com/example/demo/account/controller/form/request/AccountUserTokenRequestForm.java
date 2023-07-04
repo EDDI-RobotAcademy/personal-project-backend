@@ -8,12 +8,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class AccountDeleteRequestForm {
+public class AccountUserTokenRequestForm {
     final private String userToken;
 
-    public Account toAccount(){
-        return new Account(userToken);
-    }
 }
 
 

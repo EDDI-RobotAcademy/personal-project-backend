@@ -63,8 +63,8 @@ public class AccountController {
 
     // 계정 삭제 기능
     @DeleteMapping("/delete")
-    public void accountDelete(@RequestBody AccountDeleteRequestForm requestForm) {
-        log.info(requestForm.getUserToken());
+    public void accountDelete(@RequestBody AccountUserTokenRequestForm requestForm) {
+
         log.info("accountDelete()");
         accountService.delete(requestForm);
 
@@ -88,12 +88,24 @@ public class AccountController {
     }
 
     // 마이페이지 들어갈 때
-    @GetMapping("/mypage")
-    public boolean goMyPage(@RequestBody AccountGoMypageForm accountGoMypageForm){
+    @GetMapping("/gomypage")
+    public boolean goMypage(@RequestBody AccountGoMypageForm accountGoMypageForm){
         log.info("accountGoMypageForm()");
 
         Boolean goMypage_result = accountService.goMypage(accountGoMypageForm);
 
         return goMypage_result;
     }
+
+    // 내 정보 확인
+    @GetMapping("/accountInfo")
+    public Account accountInfo(AccountUserTokenRequestForm accountUserTokenRequestForm){
+        log.info("accountInfo() ");
+
+        Account accountInfo = accountService.accountInfoList(accountUserTokenRequestForm);
+
+
+        return accountInfo;
+    }
+
 }

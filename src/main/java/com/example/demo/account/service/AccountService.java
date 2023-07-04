@@ -16,11 +16,13 @@ public interface AccountService {
 
     List<Account> list();
 
-    Boolean delete(AccountDeleteRequestForm accountDeleteRequestForm);
+    Boolean delete(AccountUserTokenRequestForm accountUserTokenRequestForm);
 
     Account modify(AccountModifyRequestForm requestForm);
 
     AccountPasswordResponseForm passwordFind(AccountPasswordFindRequestForm requestForm);
 
     Boolean goMypage(AccountGoMypageForm accountGoMypageForm);
+
+    Account accountInfoList(AccountUserTokenRequestForm accountUserTokenRequestForm);
 }
