@@ -33,4 +33,16 @@ public class AccountTest {
         assertEquals(password, testAccount.getPassword());
         assertEquals(nickname, testAccount.getNickname());
     }
+
+    @Test
+    @DisplayName("이메일 중복 체크")
+    void 이메일_중복_체크(){
+        final String email = "test@test.com";
+
+        Optional<Account> maybeAccount = testAccountRepository.findByEmail(email);
+
+        Account account = maybeAccount.get();
+
+        assertEquals(email, account.getEmail());
+    }
 }

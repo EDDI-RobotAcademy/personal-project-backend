@@ -6,6 +6,8 @@ import com.example.demo.account.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService{
@@ -16,5 +18,14 @@ public class AccountServiceImpl implements AccountService{
     public Account register(AccountRegisterRequestForm requestForm) {
 
         return accountRepository.save(requestForm.toAccount());
+    }
+
+    @Override
+    public Boolean duplicateCheckEmail(String email) {
+        final Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+        if(maybeAccount.isPresent()){
+            return false;
+        }
+        return true;
     }
 }
