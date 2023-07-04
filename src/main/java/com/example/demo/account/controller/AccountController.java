@@ -87,4 +87,13 @@ public class AccountController {
         return accountPasswordResponseForm;
     }
 
+    // 마이페이지 들어갈 때
+    @GetMapping("/mypage")
+    public boolean goMyPage(@RequestBody AccountGoMypageForm accountGoMypageForm){
+        log.info("accountGoMypageForm()");
+
+        Boolean goMypage_result = accountService.goMypage(accountGoMypageForm);
+
+        return goMypage_result;
+    }
 }

@@ -21,4 +21,6 @@ public interface AccountService {
     Account modify(AccountModifyRequestForm requestForm);
 
     AccountPasswordResponseForm passwordFind(AccountPasswordFindRequestForm requestForm);
+
+    Boolean goMypage(AccountGoMypageForm accountGoMypageForm);
 }

@@ -132,4 +132,22 @@ public class AccountServiceImpl implements AccountService{
         return new AccountPasswordResponseForm(maybeAccount.get().getPassword(),"SUCCESS_FIND_PASSWORD");
     }
 
+    @Override
+    public Boolean goMypage(AccountGoMypageForm accountGoMypageForm) {
+
+        Optional<Account> maybeAccount = accountRepository.findByUserToken(accountGoMypageForm.getUserToken());
+
+        if(maybeAccount.isEmpty()){
+            log.info("에러 발생");
+        }
+
+        if(maybeAccount.get().getPassword().equals(accountGoMypageForm.getPassword())){
+            return true;
+        }else {
+            log.info("틀린 비밀번호 입니다.");
+            return false;
+        }
+
+    }
+
 }
