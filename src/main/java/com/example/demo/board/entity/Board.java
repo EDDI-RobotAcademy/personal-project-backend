@@ -15,15 +15,20 @@ import java.util.Set;
 public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String user;
+    private Long boardId;
+    private String writer;
     @Setter
     private String title;
     @Setter
     private String content;
-    private Integer boardLike;
-    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
-    private Set<BoardCategory> boardCategories = new HashSet<>();
+    @Setter
+    private Integer likeCount;
+    @Setter
+    private Integer readCount;
+    @Setter
+    private Integer replyCount;
+//    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
+//    private Set<BoardCategory> boardCategories = new HashSet<>();
 
     @CreationTimestamp
     private LocalDateTime createDate;
@@ -31,11 +36,12 @@ public class Board {
     @UpdateTimestamp
     private LocalDateTime modifyDate;
 
-    public Board(Long id, String user, String title, String content, Integer boardLike) {
-        this.id = id;
-        this.user = user;
+    public Board(String writer, String title, String content, Integer likeCount, Integer readCount, Integer replyCount) {
+        this.writer = writer;
         this.title = title;
         this.content = content;
-        this.boardLike = boardLike;
+        this.likeCount = likeCount;
+        this.readCount = readCount;
+        this.replyCount = replyCount;
     }
 }
