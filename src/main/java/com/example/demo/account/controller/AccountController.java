@@ -108,4 +108,12 @@ public class AccountController {
         return accountInfo;
     }
 
+    @GetMapping("/userType-check")
+    public String userTypeCheck(AccountUserTokenRequestForm accountUserTokenRequestForm){
+        log.info("userTypeCheck()");
+        String userType = accountService.userTypeCheck(accountUserTokenRequestForm);
+
+        return userType;
+    }
+
 }

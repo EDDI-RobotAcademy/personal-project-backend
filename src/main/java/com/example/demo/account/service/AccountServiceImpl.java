@@ -157,4 +157,24 @@ public class AccountServiceImpl implements AccountService{
         return maybeAccount.get();
     }
 
+    @Override
+    public String userTypeCheck(AccountUserTokenRequestForm accountUserTokenRequestForm) {
+
+        Optional<Account> maybeAccount = accountRepository.findByUserToken(accountUserTokenRequestForm.getUserToken());
+        if(maybeAccount.isEmpty()){
+            log.info("에러 발생");
+            return "Error";
+        }
+        if(maybeAccount.get().getUserType().equals("Manager")){
+            log.info("매니저 입니다.");
+            return "Manager";
+        } else if (maybeAccount.get().getUserType().equals(("Account"))) {
+            log.info("일반 회원 입니다.");
+            return "Account";
+        }else {
+            return "Error";
+        }
+
+    }
+
 }

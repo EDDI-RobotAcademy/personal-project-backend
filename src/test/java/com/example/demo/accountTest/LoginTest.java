@@ -16,6 +16,20 @@ public class LoginTest {
     @Autowired
     AccountService accountService;
 
+    @Test
+    @DisplayName("매니저가 로그인을 합니다.")
+    void 매니저_로그인(){
+        final String email = "manager";
+        final String password ="11";
+
+        AccountLoginRequestForm accountLoginRequestForm = new AccountLoginRequestForm(email,password);
+        AccountLoginResponseForm accountLoginResponseForm = accountService.login(accountLoginRequestForm);
+
+        System.out.println(accountLoginResponseForm.getUserToken());
+        System.out.println(accountLoginResponseForm.getLoginStatus());
+
+        assertNotNull(accountLoginResponseForm.getLoginStatus());
+    }
 
     @Test
     @DisplayName("정상적인 회원이 로그인 시도")

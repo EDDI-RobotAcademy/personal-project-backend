@@ -20,7 +20,7 @@ public class AccountRegistRequestForm {
         this.accountBirth = accountBirth;
         this.accountPhone = accountPhone;
         this.accountAddress = accountAddress;
-        this.userType = "account";
+        this.userType = "Account";
     }
 
     public Account toAccount() {

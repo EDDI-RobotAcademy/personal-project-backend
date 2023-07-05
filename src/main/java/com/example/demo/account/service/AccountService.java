@@ -25,4 +25,6 @@ public interface AccountService {
     Boolean goMypage(AccountGoMypageForm accountGoMypageForm);
 
     Account accountInfoList(AccountUserTokenRequestForm accountUserTokenRequestForm);
+
+    String userTypeCheck(AccountUserTokenRequestForm accountUserTokenRequestForm);
 }
