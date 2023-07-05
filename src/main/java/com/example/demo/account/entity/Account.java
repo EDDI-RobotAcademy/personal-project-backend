@@ -21,6 +21,8 @@ public class Account {
     private String password;
     private String name;
     private String phoneNumber;
+    private String accessNumber = "123-456";
+
     @Setter
     private String userToken;
 
@@ -32,5 +34,11 @@ public class Account {
         this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
+    }
+
+    public Account(String email, String password, String accessNumber) {
+        this.email = email;
+        this.password = password;
+        this.accessNumber = accessNumber;
     }
 }

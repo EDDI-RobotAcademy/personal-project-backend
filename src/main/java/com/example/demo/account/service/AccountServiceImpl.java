@@ -1,5 +1,6 @@
 package com.example.demo.account.service;
 
+import com.example.demo.account.controller.request.AccessRegisterRequest;
 import com.example.demo.account.controller.request.AccountRegisterRequest;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.entity.AccountRole;
@@ -40,4 +41,20 @@ public class AccountServiceImpl implements AccountService{
         return true;
     }
 
+    @Override
+    public Boolean accessSignUp(AccessRegisterRequest request) {
+        final Optional<Account> maybeAccount = accountRepository.findByEmail(request.getEmail());
+
+        if (maybeAccount.isPresent() || !request.getAccessNumber().equals("123-456")) {
+            return false;
+        }
+
+        final Account account = accountRepository.save(request.toAccount());
+        final Role role = roleRepository.findByRoleType(request.getRoleType()).get();
+        final AccountRole accountRole = new AccountRole(account, role);
+
+        accountRoleRepository.save(accountRole);
+
+        return true;
+    }
 }
