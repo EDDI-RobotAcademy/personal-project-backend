@@ -8,6 +8,7 @@ import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,11 +20,12 @@ public class AccountServiceImpl implements AccountService{
 
     final private AccountRepository accountRepository;
     final private RedisService redisService;
+    final private BCryptPasswordEncoder encoder;
 
     @Override
     public Account register(AccountRegisterRequestForm requestForm) {
 
-        return accountRepository.save(requestForm.toAccount());
+        return accountRepository.save(requestForm.toAccount(encoder.encode(requestForm.getPassword())));
     }
 
     @Override
@@ -55,7 +57,7 @@ public class AccountServiceImpl implements AccountService{
         }
         Account account = maybeAccount.get();
 
-        if(!requestForm.getPassword().equals(account.getPassword())){
+        if(!encoder.matches(requestForm.getPassword(), account.getPassword())){
             System.out.println("비밀번호 틀림");
             return new AccountLoginResponseForm(null);
         }
