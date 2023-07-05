@@ -135,4 +135,13 @@ public class AccountTest {
         assertEquals(modifyNickname, testAccountService.modify(requestForm).getNickname());
         assertEquals(modifyPassword, testAccountService.modify(requestForm).getPassword());
     }
+
+    @Test
+    @DisplayName("로그아웃")
+    void 로그아웃(){
+        final String userToken = "4afd1e0d-bcd3-4639-91a1-28ffe8de0193";
+
+        assertTrue(testAccountService.logout(userToken));
+        assertNull(testRedisService.getValueByKey(userToken));
+    }
 }

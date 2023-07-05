@@ -40,4 +40,9 @@ public class AccountController {
     public Account modify(@RequestBody AccountModifyRequestForm requestForm){
         return accountService.modify(requestForm);
     }
+
+    @PostMapping("logout")
+    public Boolean logout(@RequestParam("userToken") String userToken){
+        return accountService.logout(userToken);
+    }
 }

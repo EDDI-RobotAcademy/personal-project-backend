@@ -13,4 +13,5 @@ public interface AccountService {
     Boolean duplicateCheckNickname(String nickname);
     AccountLoginResponseForm login(AccountLoginRequestForm requestForm);
     Account modify(AccountModifyRequestForm requestForm);
+    Boolean logout(String userToken);
 }

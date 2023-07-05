@@ -83,4 +83,15 @@ public class AccountServiceImpl implements AccountService{
 
         return accountRepository.save(account);
     }
+
+    @Override
+    public Boolean logout(String userToken){
+        Long accountId = redisService.getValueByKey(userToken);
+
+        if(accountId==null){
+            return false;
+        }
+        redisService.deleteByKey(userToken);
+        return true;
+    }
 }
