@@ -57,4 +57,13 @@ public class AccountServiceImpl implements AccountService {
         }
         return null;
     }
+
+    @Override
+    public String findNicknameByAccountId(Long accountID) {
+       Optional<Account> account = accountRepository.findById(accountID);
+       if (account.isPresent()){
+           return account.get().getNickname();
+       }
+    return null;
+    }
 }
