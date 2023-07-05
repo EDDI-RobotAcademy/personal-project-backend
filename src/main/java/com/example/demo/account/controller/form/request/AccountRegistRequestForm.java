@@ -10,6 +10,8 @@ public class AccountRegistRequestForm {
     final private String accountBirth;
     final private String accountPhone;
     final private String accountAddress;
+    final private String userType;
+
 
     public AccountRegistRequestForm(String email, String password, String accountName, String accountBirth, String accountPhone, String accountAddress) {
         this.email = email;
@@ -18,10 +20,11 @@ public class AccountRegistRequestForm {
         this.accountBirth = accountBirth;
         this.accountPhone = accountPhone;
         this.accountAddress = accountAddress;
+        this.userType = "account";
     }
 
     public Account toAccount() {
-        return new Account(email,password,accountName,accountBirth,accountPhone,accountAddress);
+        return new Account(email,password,accountName,accountBirth,accountPhone,accountAddress,userType);
     }
 
 }

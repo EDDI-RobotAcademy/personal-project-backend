@@ -31,14 +31,16 @@ public class Account {
     private String accountAddress;
     @Setter
     private String userToken;
+    private String userType;
 
-    public Account(String email, String password, String accountName, String accountBirth, String accountPhone, String accountAddress) {
+    public Account(String email, String password, String accountName, String accountBirth, String accountPhone, String accountAddress, String userType) {
         this.email = email;
         this.password = password;
         this.accountName = accountName;
         this.accountBirth = accountBirth;
         this.accountPhone = accountPhone;
         this.accountAddress = accountAddress;
+        this.userType = userType;
     }
 
     public Account(String userToken) {
@@ -52,4 +54,5 @@ public class Account {
         this.email = email;
         this.password = password;
     }
+
 }
