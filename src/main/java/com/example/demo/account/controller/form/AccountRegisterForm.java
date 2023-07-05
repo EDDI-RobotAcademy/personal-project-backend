@@ -10,12 +10,14 @@ import lombok.ToString;
 @NoArgsConstructor
 public class AccountRegisterForm {
     private String email;
+    private String password;
 
-    public AccountRegisterForm(String email) {
+    public AccountRegisterForm(String email, String password) {
         this.email = email;
+        this.password = password;
     }
 
     public AccountRegisterRequest toAccountRegisterRequest() {
-        return new AccountRegisterRequest(email);
+        return new AccountRegisterRequest(email, password);
     }
 }

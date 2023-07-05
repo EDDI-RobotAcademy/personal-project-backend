@@ -21,7 +21,11 @@ public class MemberAccount {
     @Getter
     private String email;
 
-    public MemberAccount(String email) {
+    @Getter
+    private String password;
+
+    public MemberAccount(String email, String password) {
         this.email = email;
+        this.password = password;
     }
 }

@@ -34,47 +34,4 @@ public class AccountServiceImpl implements AccountService {
 
         return true;
     }
-
-    @Override
-    public Long findAccountIdByEmail(String email) {
-        if (email == null) {
-            return -1L;
-        }
-
-        final Optional<MemberAccount> maybeAccount = accountRepository.findByEmail(email);
-
-        if (maybeAccount.isEmpty()) {
-            return -1L;
-        }
-
-        return maybeAccount.get().getId();
-    }
-
-    @Override
-    public Long signUpWithEmail(String email) {
-        final Optional<MemberAccount> maybeAccount = accountRepository.findByEmail(email);
-
-        if (maybeAccount.isPresent()) {
-            return maybeAccount.get().getId();
-        }
-
-        final MemberAccount account = new MemberAccount(email);
-
-        return accountRepository.save(account).getId();
-    }
-
-    @Override
-    public AccountResponseForm findAccountInfoById(Long accountId) {
-        final Optional<MemberAccount> maybeAccount = accountRepository.findById(accountId);
-
-        if (maybeAccount.isEmpty()) {
-            log.info("이런 계정은 존재하지 않습니다.");
-            return null;
-        }
-
-        final MemberAccount account = maybeAccount.get();
-        final AccountResponseForm responseForm = new AccountResponseForm(account.getEmail());
-
-        return responseForm;
-    }
 }
