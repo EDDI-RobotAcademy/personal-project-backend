@@ -3,6 +3,7 @@ package com.example.demo.account.service;
 import com.example.demo.account.authentication.redis.RedisService;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.form.AccountLoginResponseForm;
+import com.example.demo.account.controller.form.AccountModifyRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.repository.AccountRepository;
@@ -62,5 +63,24 @@ public class AccountServiceImpl implements AccountService{
         redisService.setKeyAndValue(userToken, account.getAccountId());
 
         return new AccountLoginResponseForm(userToken);
+    }
+
+    @Override
+    public Account modify(AccountModifyRequestForm requestForm) {
+        Optional<Account> maybeAccount = accountRepository.findById(redisService.getValueByKey(requestForm.getUserToken()));
+
+        if(maybeAccount.isEmpty()){
+            return null;
+        }
+        Account account = maybeAccount.get();
+
+        if(requestForm.getNickname()!=null){
+            account.setNickname(requestForm.getNickname());
+        }
+        if(requestForm.getPassword()!=null){
+            account.setPassword(requestForm.getPassword());
+        }
+
+        return accountRepository.save(account);
     }
 }

@@ -2,6 +2,7 @@ package com.example.demo.accountTest;
 
 import com.example.demo.account.authentication.redis.RedisService;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
+import com.example.demo.account.controller.form.AccountModifyRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.repository.AccountRepository;
@@ -30,9 +31,9 @@ public class AccountTest {
     @Test
     @DisplayName("사용자 회원 가입")
     void 사용자_회원_가입 () {
-        final String email = "test@test.com";
-        final String password = "test";
-        final String nickname = "abc";
+        final String email = "testing@test.com";
+        final String password = "testing";
+        final String nickname = "testing";
 
         AccountRegisterRequestForm testRequestForm = new AccountRegisterRequestForm(email, password, nickname);
 
@@ -98,5 +99,40 @@ public class AccountTest {
         AccountLoginRequestForm requestForm = new AccountLoginRequestForm(email, password);
 
         assertNotNull(testAccountService.login(requestForm).getUserToken());
+    }
+
+    @Test
+    @DisplayName("닉네임 수정")
+    void 닉네임_수정(){
+        final String modifyNickname = "qwe";
+        final String userToken = "2c2d1983-e8b6-41bc-a9f6-5262ebe49c21";
+
+        AccountModifyRequestForm requestForm = new AccountModifyRequestForm(userToken, modifyNickname, null);
+
+        assertEquals(modifyNickname, testAccountService.modify(requestForm).getNickname());
+    }
+
+    @Test
+    @DisplayName("비밀번호 수정")
+    void 비밀번호_수정(){
+        final String modifyPassword = "testing";
+        final String userToken = "2c2d1983-e8b6-41bc-a9f6-5262ebe49c21";
+
+        AccountModifyRequestForm requestForm = new AccountModifyRequestForm(userToken, null, modifyPassword);
+
+        assertEquals(modifyPassword, testAccountService.modify(requestForm).getPassword());
+    }
+
+    @Test
+    @DisplayName("닉네임_비밀번호 수정")
+    void 닉네임_비밀번호_수정(){
+        final String modifyNickname = "zxc";
+        final String modifyPassword = "asd";
+        final String userToken = "2c2d1983-e8b6-41bc-a9f6-5262ebe49c21";
+
+        AccountModifyRequestForm requestForm = new AccountModifyRequestForm(userToken, modifyNickname, modifyPassword);
+
+        assertEquals(modifyNickname, testAccountService.modify(requestForm).getNickname());
+        assertEquals(modifyPassword, testAccountService.modify(requestForm).getPassword());
     }
 }
