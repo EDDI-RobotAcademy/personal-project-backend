@@ -28,5 +28,10 @@ public class MemberController {
             return memberService.checkNickName(nickName);
     }
 
+    @PostMapping("/login")
+    public MemberLoginResponseForm memberLogin(@RequestBody MemberLoginRequestForm memberLoginRequestForm){
+        return memberService.login(memberLoginRequestForm.toMemberLoginRequest());
+    }
+
 
 }
