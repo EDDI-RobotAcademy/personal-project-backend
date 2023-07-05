@@ -45,4 +45,9 @@ public class AccountController {
     public Boolean logout(@RequestParam("userToken") String userToken){
         return accountService.logout(userToken);
     }
+
+    @DeleteMapping("withdrawal")
+    public Boolean withdrawal(@RequestParam("userToken") String userToken){
+        return accountService.withdrawal(userToken);
+    }
 }

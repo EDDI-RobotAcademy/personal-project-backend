@@ -94,4 +94,17 @@ public class AccountServiceImpl implements AccountService{
         redisService.deleteByKey(userToken);
         return true;
     }
+
+    @Override
+    public Boolean withdrawal(String userToken) {
+        Long accountId = redisService.getValueByKey(userToken);
+
+        if(accountId==null){
+            System.out.println("accountId = " + accountId);
+            return false;
+        }
+        redisService.deleteByKey(userToken);
+        accountRepository.deleteById(accountId);
+        return true;
+    }
 }

@@ -39,7 +39,7 @@ public class AccountTest {
 
         Account testAccount = testAccountRepository.save(testRequestForm.toAccount());
 
-        assertEquals(email, testAccount.getAccountId());
+        assertEquals(email, testAccount.getEmail());
         assertEquals(password, testAccount.getPassword());
         assertEquals(nickname, testAccount.getNickname());
     }
@@ -143,5 +143,13 @@ public class AccountTest {
 
         assertTrue(testAccountService.logout(userToken));
         assertNull(testRedisService.getValueByKey(userToken));
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴")
+    void 회원_탈퇴(){
+        final String userToken = "97b91f2f-0765-43e7-8bec-7185aada1de0";
+
+        assertTrue(testAccountService.withdrawal(userToken));
     }
 }

@@ -14,4 +14,5 @@ public interface AccountService {
     AccountLoginResponseForm login(AccountLoginRequestForm requestForm);
     Account modify(AccountModifyRequestForm requestForm);
     Boolean logout(String userToken);
+    Boolean withdrawal(String userToken);
 }
