@@ -1,5 +1,7 @@
 package com.example.demo.board.notice.service;
 
+import com.example.demo.board.notice.controller.form.NoticeModifyForm;
+import com.example.demo.board.notice.controller.form.NoticeNumberForm;
 import com.example.demo.board.notice.controller.form.NoticeRegistForm;
 import com.example.demo.board.notice.entity.NoticeBoard;
 import com.example.demo.board.notice.repository.NoticeRepository;
@@ -31,6 +33,24 @@ public class NoticeServiceImpl implements NoticeService{
         NoticeBoard saveNoticeBoard = noticeRepository.save(noticeBoard);
 
         return saveNoticeBoard;
+    }
+
+    // 공지사항 게시판 수정
+    @Override
+    public NoticeBoard modify(NoticeModifyForm noticeModifyForm) {
+
+        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeNumber(noticeModifyForm.getNoticeNumber());
+
+        if(maybeNoticeBoard.isEmpty()){
+            log.info("에러 발생");
+            return null;
+        }
+        NoticeBoard noticeBoard = maybeNoticeBoard.get();
+
+        noticeBoard.setNoticeTitle(noticeModifyForm.getNoticeTitle());
+        noticeBoard.setNoticeContent(noticeModifyForm.getNoticeContent());
+
+        return noticeRepository.save(noticeBoard);
     }
 
     @Override

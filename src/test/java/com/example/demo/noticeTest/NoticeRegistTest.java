@@ -21,8 +21,8 @@ public class NoticeRegistTest {
     @Test
     @DisplayName("공지사항 게시판 등록")
     void 공지사항_게시판_등록 (){
-        final String noticeTitle = "제목6";
-        final String noticeContent = "내용6";
+        final String noticeTitle = "제목7";
+        final String noticeContent = "내용7";
 
         NoticeRegistForm noticeRegistForm = new NoticeRegistForm(noticeTitle,noticeContent);
 

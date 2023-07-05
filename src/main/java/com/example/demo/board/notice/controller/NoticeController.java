@@ -1,14 +1,13 @@
 package com.example.demo.board.notice.controller;
 
+import com.example.demo.board.notice.controller.form.NoticeModifyForm;
+import com.example.demo.board.notice.controller.form.NoticeNumberForm;
 import com.example.demo.board.notice.controller.form.NoticeRegistForm;
 import com.example.demo.board.notice.entity.NoticeBoard;
 import com.example.demo.board.notice.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,6 +39,13 @@ public class NoticeController {
         log.info("NoticeList : " + returnedNoticeList);
 
         return returnedNoticeList;
+    }
+
+    @PutMapping("/modify")
+    public void noticeModify(@RequestBody NoticeModifyForm noticeModifyForm){
+        log.info("noticeModify() ");
+        NoticeBoard noticeBoard = noticeService.modify(noticeModifyForm);
+
     }
 
 
