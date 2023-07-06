@@ -34,12 +34,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
             
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        
       - name: Create application.yaml for CD Deploy
         run: |
           mkdir -p src/main/resources
           cd src/main/resources
           pwd
-          echo "${{ secret.CD_DEPLOY_CONFIG }}" > application.properties
+          echo "${{ secrets.CD_DEPLOY_CONFIG }}" > application.properties
           cat application.properties
 
       ## gradle build
@@ -49,7 +52,7 @@ jobs:
       ## docker build & push to production
       - name: Docker build & push to prod
         run: |
-            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr .io -u ${{ github.actor }} --password-stdin
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_TOKEN }}
             docker buildx create --name arm64builder --use
             docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t ghcr.io/zisoo-choi/personal-project-backend:latest --push .
             docker logout
