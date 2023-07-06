@@ -44,4 +44,9 @@ public class Board {
         this.readCount = readCount;
         this.replyCount = replyCount;
     }
+    public Board(String writer, String title, String content) {
+        this.writer = writer;
+        this.title = title;
+        this.content = content;
+    }
 }

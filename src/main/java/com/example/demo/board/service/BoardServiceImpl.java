@@ -18,4 +18,10 @@ public class BoardServiceImpl implements BoardService{
     public List<Board> list() {
         return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
     }
+
+    @Override
+    public Board register(Board registerBoard) {
+        return boardRepository.save(registerBoard);
+    }
+
 }

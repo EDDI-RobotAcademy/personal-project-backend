@@ -1,12 +1,12 @@
 package com.example.demo.board.controller;
 
+import com.example.demo.board.controller.form.RequestBoardForm;
 import com.example.demo.board.entity.Board;
 import com.example.demo.board.service.BoardService;
+import com.example.demo.board.service.request.BoardRegisterRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,5 +22,9 @@ public class BoardController {
 
         List<Board> returnedBoardList = boardService.list();
         return returnedBoardList;
+    }
+    @PostMapping("/register")
+    public Board registerBoard (@RequestBody BoardRegisterRequest request) {
+        return boardService.register(request.toBoard());
     }
 }
