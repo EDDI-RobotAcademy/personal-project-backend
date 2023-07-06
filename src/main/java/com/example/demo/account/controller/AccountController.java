@@ -1,11 +1,11 @@
 package com.example.demo.account.controller;
 
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.AccountLoginResponseForm;
 import com.example.demo.account.controller.form.AccountModifyRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.service.AccountService;
+import com.example.demo.authentication.jwt.TokenInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +31,7 @@ public class AccountController {
     }
 
     @PostMapping("login")
-    public AccountLoginResponseForm login(@RequestBody AccountLoginRequestForm requestForm){
+    public TokenInfo login(@RequestBody AccountLoginRequestForm requestForm){
         return accountService.login(requestForm);
     }
 

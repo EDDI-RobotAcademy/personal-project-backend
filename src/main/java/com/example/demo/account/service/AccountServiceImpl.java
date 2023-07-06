@@ -1,19 +1,22 @@
 package com.example.demo.account.service;
 
-import com.example.demo.account.authentication.redis.RedisService;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.AccountLoginResponseForm;
 import com.example.demo.account.controller.form.AccountModifyRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.repository.AccountRepository;
+import com.example.demo.authentication.jwt.JwtTokenUtil;
+import com.example.demo.authentication.jwt.TokenInfo;
+import com.example.demo.authentication.redis.RedisService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService{
@@ -22,10 +25,16 @@ public class AccountServiceImpl implements AccountService{
     final private RedisService redisService;
     final private BCryptPasswordEncoder encoder;
 
+
+
+    @Value("${jwt.secret}")
+    private String secretKey;
+
     @Override
     public Account register(AccountRegisterRequestForm requestForm) {
+        Account account = accountRepository.save(requestForm.toAccount(encoder.encode(requestForm.getPassword())));
 
-        return accountRepository.save(requestForm.toAccount(encoder.encode(requestForm.getPassword())));
+        return account;
     }
 
     @Override
@@ -47,24 +56,24 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public AccountLoginResponseForm login(AccountLoginRequestForm requestForm) {
+    public TokenInfo login(AccountLoginRequestForm requestForm) {
         Optional<Account> maybeAccount =
                 accountRepository.findByEmail(requestForm.getEmail());
 
         if(maybeAccount.isEmpty()){
             System.out.println("이메일 틀림");
-            return new AccountLoginResponseForm(null);
+            return null;
         }
         Account account = maybeAccount.get();
 
         if(!encoder.matches(requestForm.getPassword(), account.getPassword())){
             System.out.println("비밀번호 틀림");
-            return new AccountLoginResponseForm(null);
+            return null;
         }
-        final String userToken = UUID.randomUUID().toString();
-        redisService.setKeyAndValue(userToken, account.getAccountId());
 
-        return new AccountLoginResponseForm(userToken);
+        long expireTimeMs = 1000 * 60 * 60;     // Token 유효 시간 = 60분
+
+        return JwtTokenUtil.createToken(account.getEmail(), secretKey, expireTimeMs);
     }
 
     @Override
@@ -108,5 +117,25 @@ public class AccountServiceImpl implements AccountService{
         redisService.deleteByKey(userToken);
         accountRepository.deleteById(accountId);
         return true;
+    }
+
+    @Override
+    public Account getLoginAccountById(Long id) {
+        if(id == null) return null;
+
+        Optional<Account> optionalAccount = accountRepository.findById(id);
+        if(optionalAccount.isEmpty()) return null;
+
+        return optionalAccount.get();
+    }
+
+    @Override
+    public Account getLoginAccountByEmail(String email) {
+        if(email == null) return null;
+
+        Optional<Account> optionalAccount = accountRepository.findByEmail(email);
+        if(optionalAccount.isEmpty()) return null;
+
+        return optionalAccount.get();
     }
 }

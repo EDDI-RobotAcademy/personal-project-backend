@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -14,6 +15,9 @@ public class CorsConfig implements WebMvcConfigurer {
                         "http://localhost:8080",
                         "http://3.36.251.74"
                  )
-                .allowedMethods("GET", "POST", "PUT", "DELETE");
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedHeaders("*")
+                .exposedHeaders(HttpHeaders.AUTHORIZATION)
+                .allowCredentials(true);
     }
 }
