@@ -1,4 +1,4 @@
-package com.example.demo.account.authentication.redis;
+package com.example.demo.authentication.redis;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
