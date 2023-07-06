@@ -36,14 +36,6 @@ jobs:
             
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-        
-      - name: Create application.yaml for CD Deploy
-        run: |
-          mkdir -p src/main/resources
-          cd src/main/resources
-          pwd
-          echo "${{ secrets.CD_DEPLOY_CONFIG }}" > application.properties
-          cat application.properties
 
       ## gradle build
       - name: Build with Gradle
@@ -79,7 +71,7 @@ jobs:
           script: |
             pwd
             ls -al
-            cd project/actions-runner
+            cd personal-project/actions-runner
             pwd
             if [[ "$(docker ps -q --filter ancestor=mysql:8.0)" ]]; then
               docker rm -f $(docker ps -qa --filter ancestor=mysql:8.0)
@@ -87,15 +79,14 @@ jobs:
             echo "pass mysql-container"
 
             if [[ "$(docker ps -qa --filter ancestor=personal-poject-backend/personal-poject-backend-server:latest)" ]]; then
-              docker rm -f $(docker ps -qa --filter ancestor=personal-poject-backend/personal-poject-backend-server:latest)
+            docker rm -f $(docker ps -qa --filter ancestor=personal-poject-backend/personal-poject-backend-server:latest)
             fi
             echo "pass personal-poject-backend/personal-poject-backend-server:latest"
            
-            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
            
-            docker pull ghcr.io/zisoo-choi/personal-project-backend:latest
+            docker pull ghcr.io/zjsoo-choi/personal-project-backend:latest
 
             docker image prune -f
             docker logout
-            
             docker-compose up -d
