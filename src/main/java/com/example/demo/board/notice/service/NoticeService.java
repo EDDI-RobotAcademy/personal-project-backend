@@ -14,4 +14,6 @@ public interface NoticeService {
     NoticeBoard regist(NoticeRegistForm noticeRegistForm);
 
     NoticeBoard modify(NoticeModifyForm noticeModifyForm);
+
+    Boolean delete(Long noticeNumber);
 }

@@ -54,6 +54,21 @@ public class NoticeServiceImpl implements NoticeService{
     }
 
     @Override
+    public Boolean delete(Long noticeNumber) {
+        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeNumber(noticeNumber);
+
+        if (maybeNoticeBoard.isEmpty()){
+            log.info("에러 발생");
+            return false;
+        }
+        NoticeBoard noticeBoard = maybeNoticeBoard.get();
+        noticeRepository.delete(noticeBoard);
+
+        return true;
+
+    }
+
+    @Override
     public List<NoticeBoard> list() {
         return noticeRepository.findAll(Sort.by(Sort.Direction.DESC,"noticeNumber"));
     }

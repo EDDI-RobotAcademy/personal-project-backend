@@ -42,9 +42,18 @@ public class NoticeController {
     }
 
     @PutMapping("/modify")
-    public void noticeModify(@RequestBody NoticeModifyForm noticeModifyForm){
+    public Long noticeModify(@RequestBody NoticeModifyForm noticeModifyForm){
         log.info("noticeModify() ");
         NoticeBoard noticeBoard = noticeService.modify(noticeModifyForm);
+
+        return noticeBoard.getNoticeNumber();
+    }
+
+    @DeleteMapping("/delete")
+    public void noticeDelete(@RequestParam("noticeNumber") Long noticeNumber){
+        log.info("noticeDelete() ");
+
+        noticeService.delete(noticeNumber);
 
     }
 

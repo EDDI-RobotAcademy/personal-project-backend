@@ -10,7 +10,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class AccountUserTokenRequestForm {
-   private String userToken;
+    private String userToken;
+
+    public AccountUserTokenRequestForm(String userToken) {
+        this.userToken = userToken;
+    }
 }
 
 

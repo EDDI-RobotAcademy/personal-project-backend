@@ -2,13 +2,17 @@ package com.example.demo.board.notice.controller.form;
 
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class NoticeNumberForm {
 
-    final private Long noticeNumber;
+    private Long noticeNumber;
 
+    public NoticeNumberForm(Long noticeNumber) {
+        this.noticeNumber = noticeNumber;
+    }
 }
 
