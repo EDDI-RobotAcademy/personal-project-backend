@@ -48,7 +48,7 @@ public class AccountController {
         return accountService.checkEmail(email);
     }
 
-    // 계정 리스트 확인 기능
+    // 모든 계정 리스트 확인 기능
     @GetMapping("/list")
     public List<Account> accountList(){
         log.info("  ");
