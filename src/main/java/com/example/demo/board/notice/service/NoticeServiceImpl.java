@@ -53,6 +53,7 @@ public class NoticeServiceImpl implements NoticeService{
         return noticeRepository.save(noticeBoard);
     }
 
+    // 공지사항 게시물 삭제
     @Override
     public Boolean delete(Long noticeNumber) {
         Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeNumber(noticeNumber);
@@ -66,6 +67,18 @@ public class NoticeServiceImpl implements NoticeService{
 
         return true;
 
+    }
+
+    @Override
+    public NoticeBoard read(Long noticeNumber) {
+        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeNumber(noticeNumber);
+
+        if (maybeNoticeBoard.isEmpty()){
+            log.info("에러 발생");
+            return null;
+        }
+
+        return maybeNoticeBoard.get();
     }
 
     @Override

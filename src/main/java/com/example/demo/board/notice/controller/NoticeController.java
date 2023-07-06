@@ -34,11 +34,19 @@ public class NoticeController {
     // 공지사항 게시물 목록 확인 기능
     @GetMapping("/list")
     public List<NoticeBoard> noticeList(){
-        log.info("NoticeList run");
+        log.info("NoticeList() ");
         List<NoticeBoard> returnedNoticeList = noticeService.list();
         log.info("NoticeList : " + returnedNoticeList);
 
         return returnedNoticeList;
+    }
+    @GetMapping("/list/{noticeNumber}")
+    public NoticeBoard noticeRead(@PathVariable Long NoticeNumber){
+        log.info("NoticeRead() ");
+
+        NoticeBoard readNoticeBoard = noticeService.read(NoticeNumber);
+
+        return readNoticeBoard;
     }
 
     @PutMapping("/modify")

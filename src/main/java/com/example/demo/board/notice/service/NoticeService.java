@@ -16,4 +16,6 @@ public interface NoticeService {
     NoticeBoard modify(NoticeModifyForm noticeModifyForm);
 
     Boolean delete(Long noticeNumber);
+
+    NoticeBoard read(Long noticeNumber);
 }

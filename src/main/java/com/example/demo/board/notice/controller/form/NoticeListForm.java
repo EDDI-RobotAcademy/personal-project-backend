@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 public class NoticeListForm {
     final private Long noticeNumber;
     final private String noticeTitle;
-    final private String noticeContent;
     final private LocalDateTime noticeDate;
 
 }
