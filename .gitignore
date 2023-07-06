@@ -38,4 +38,4 @@ out/
 
 ### 보안 설정 ###
 redis.properties
-application.properties
+application.yaml
