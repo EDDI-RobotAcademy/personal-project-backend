@@ -31,9 +31,9 @@ services:
       - app
 
   server:
-    image: ghcr.io/zisoo-choi/personal-project-backend-server
+    image: ghcr.io/zisoo-choi/personal-project-backend:latest
     build: .
-    container_name: backend-deploy-server
+    container_name: personal-project-backend-server
     volumes:
       - appdata:/app
     depends_on:
