@@ -34,8 +34,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
             
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Create application.yaml for CD Deploy
+        run: |
+          mkdir -p src/main/resources
+          cd src/main/resources
+          pwd
+          echo "${{ secret.CD_DEPLOY_CONFIG }}" > application.properties
+          cat application.properties
 
       ## gradle build
       - name: Build with Gradle
@@ -44,7 +49,7 @@ jobs:
       ## docker build & push to production
       - name: Docker build & push to prod
         run: |
-            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_TOKEN }}
+            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr .io -u ${{ github.actor }} --password-stdin
             docker buildx create --name arm64builder --use
             docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t ghcr.io/zisoo-choi/personal-project-backend:latest --push .
             docker logout
@@ -79,14 +84,15 @@ jobs:
             echo "pass mysql-container"
 
             if [[ "$(docker ps -qa --filter ancestor=personal-poject-backend/personal-poject-backend-server:latest)" ]]; then
-            docker rm -f $(docker ps -qa --filter ancestor=personal-poject-backend/personal-poject-backend-server:latest)
+              docker rm -f $(docker ps -qa --filter ancestor=personal-poject-backend/personal-poject-backend-server:latest)
             fi
             echo "pass personal-poject-backend/personal-poject-backend-server:latest"
            
-            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
            
             docker pull ghcr.io/zisoo-choi/personal-project-backend:latest
 
             docker image prune -f
             docker logout
+            
             docker-compose up -d
