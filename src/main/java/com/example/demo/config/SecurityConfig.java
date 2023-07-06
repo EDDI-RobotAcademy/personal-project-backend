@@ -31,8 +31,8 @@ public class SecurityConfig {
                 .and()
                 .addFilterBefore(new JwtTokenFilter(accountService, secretKey), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .requestMatchers("/account/login2").authenticated()
-                .requestMatchers("/account/login").hasAuthority(RoleType.NORMAL.name())
+//                .requestMatchers("/account/login2").authenticated()
+                .requestMatchers("/account/login2").hasAuthority(RoleType.NORMAL.name())
                 .and().build();
     }
 }

@@ -35,6 +35,11 @@ public class AccountController {
         return accountService.login(requestForm);
     }
 
+    @PostMapping("login2")
+    public TokenInfo login2(@RequestBody AccountLoginRequestForm requestForm){
+        return accountService.login(requestForm);
+    }
+
     @PutMapping("modify")
     public Account modify(@RequestBody AccountModifyRequestForm requestForm){
         return accountService.modify(requestForm);
