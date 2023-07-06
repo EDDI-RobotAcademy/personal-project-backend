@@ -39,7 +39,7 @@ jobs:
           mkdir -p src/main/resources
           cd src/main/resources
           pwd
-          echo "${{ secret.CD_DEPLOY_CONFIG }}" > application.properties
+          echo "${{ secrets.CD_DEPLOY_CONFIG }}" > application.properties
           cat application.properties
 
       ## gradle build
