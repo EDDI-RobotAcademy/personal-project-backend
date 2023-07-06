@@ -1,7 +1,7 @@
 package com.example.demo.account.controller;
 
-import com.example.demo.account.controller.form.AccountSignUpRequestForm;
 import com.example.demo.account.controller.form.AccessRegisterRequestForm;
+import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,5 +29,6 @@ public class AccountController {
     public Boolean adminSignUp(@RequestBody AccessRegisterRequestForm form) {
         log.info("admin: " + form);
 
+        return accountService.accessSignUp(form.toAccessRegisterRequest());
     }
 }
