@@ -1,13 +1,14 @@
 name: Deploy
+ 
 on:
   push:
     branches:
       - main
+
 env:
-  DOCKER_IMAGE: ghcr.io/${{ github.actor }}/${{ secrets.SERVER_IMAGE }}
+  DOCKER_IMAGE: ghcr.io/${{ github.actor }}/personal-project-backend
   VERSION: ${{ github.sha }}
-  NAME: ${{ secrets.SERVER_IMAGE }}
-  REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+  NAME: personal-project-backend
 
 jobs:
   build:
@@ -22,7 +23,7 @@ jobs:
           java-version: '17'
           distribution: 'zulu' # https://github.com/actions/setup-java
 
-      ## grable cacing
+      ## gradle caching
       - name: Gradle Caching
         uses: actions/cache@v3
         with:
@@ -32,29 +33,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-            
-      - name: Create redis.properties for CD Deploy
-        run: |
-          mkdir -p src/main/resources
-          cd src/main/resources
-          pwd
-          echo "${{ secrets.REDIS_PROPERTIES }}" > redis.properties
-          cat redis.properties
-          
-      - name: Create application.properties for CD Deploy
-        run: |
-          mkdir -p src/main/resources
-          cd src/main/resources
-          pwd
-          echo "${{ secrets.APP_PROPERTIES }}" > application.properties
-          cat application.properties
-          
-      - name: Create application.yaml for CD Deploy
-        run: |
-          mkdir -p src/main/resources
-          pwd
-          echo "${{ secrets.APP_YML }}" > src/main/resources/application.yaml
-          cat src/main/resources/application.yaml
             
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -68,8 +46,9 @@ jobs:
         run: |
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_TOKEN }}
             docker buildx create --name arm64builder --use
-            docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t ghcr.io/ziso-choi/${{ secrets.SERVER_IMAGE }}:latest --push .
+            docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t ghcr.io/zisoo-choi/personal-project-backend:latest --push .
             docker logout
+
   deploy:
     needs: build
     name: Deploy
@@ -98,14 +77,16 @@ jobs:
               docker rm -f $(docker ps -qa --filter ancestor=mysql:8.0)
             fi
             echo "pass mysql-container"
-            if [[ "$(docker ps -qa --filter ancestor=${{ secrets.SERVER_CONTAINER }}:latest)" ]]; then
-              docker rm -f $(docker ps -qa --filter ancestor=${{ secrets.SERVER_CONTAINER }}:latest)
+
+            if [[ "$(docker ps -qa --filter ancestor=personal-poject-backend/personal-poject-backend-server:latest)" ]]; then
+            docker rm -f $(docker ps -qa --filter ancestor=personal-poject-backend/personal-poject-backend-server:latest)
             fi
-            echo "pass backend-deploy/${{ secrets.SERVER_CONTAINER }}:latest"
-  
-            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_TOKEN }}
-            
-            docker pull ghcr.io/zisoo-choi/${{ secrets.SERVER_IMAGE }}:latest
+            echo "pass personal-poject-backend/personal-poject-backend-server:latest"
+           
+            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+           
+            docker pull ghcr.io/zisoo-choi/personal-project-backend:latest
+
             docker image prune -f
             docker logout
             docker-compose up -d
