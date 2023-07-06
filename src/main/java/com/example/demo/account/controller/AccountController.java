@@ -1,8 +1,8 @@
 package com.example.demo.account.controller;
 
 import com.example.demo.account.controller.form.AccountSignUpRequestForm;
+import com.example.demo.account.controller.form.AccessRegisterRequestForm;
 import com.example.demo.account.service.AccountService;
-import com.example.demo.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,12 +18,16 @@ public class AccountController {
 
     final private AccountService accountService;
 
-    final private RedisService redisService;
-
     @PostMapping("/sign-up")
-    private Boolean signUp(@RequestBody AccountSignUpRequestForm form) {
+    public Boolean signUp(@RequestBody AccountRegisterRequestForm form) {
         log.info("signUp(): " + form);
 
-        return accountService.signUp(form.toAccountSignUpRequest());
+        return accountService.signUp(form.toAccountRegisterRequest());
+    }
+
+    @PostMapping("/admin-sign-up")
+    public Boolean adminSignUp(@RequestBody AccessRegisterRequestForm form) {
+        log.info("admin: " + form);
+
     }
 }

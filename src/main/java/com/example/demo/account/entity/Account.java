@@ -25,9 +25,10 @@ public class Account {
 
     private String phoneNumber;
 
+    private String accessNumber = "123-456";
 
     @Setter
-    private String UserToken;
+    private String userToken;
 
     @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
     private AccountRole accountRole;
@@ -37,5 +38,11 @@ public class Account {
         this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
+    }
+
+    public Account(String email, String password, String accessNumber) {
+        this.email = email;
+        this.password = password;
+        this.accessNumber = accessNumber;
     }
 }
