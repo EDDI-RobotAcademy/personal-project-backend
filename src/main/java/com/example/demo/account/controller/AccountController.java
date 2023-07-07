@@ -6,6 +6,8 @@ import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.service.AccountService;
 import com.example.demo.authentication.jwt.TokenInfo;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +33,14 @@ public class AccountController {
     }
 
     @PostMapping("login")
-    public TokenInfo login(@RequestBody AccountLoginRequestForm requestForm){
+    public TokenInfo login(@RequestBody AccountLoginRequestForm requestForm, HttpServletResponse response){
+        TokenInfo tokenInfo = accountService.login(requestForm);
+        Cookie cookie = new Cookie("AccessToken", tokenInfo.getAccessToken());
+        cookie.setAttribute("RefreshToken", tokenInfo.getRefreshToken());
+        cookie.setMaxAge(60*60);
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+
         return accountService.login(requestForm);
     }
 

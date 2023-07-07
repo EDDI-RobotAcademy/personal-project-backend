@@ -25,16 +25,12 @@ public class AccountServiceImpl implements AccountService{
     final private RedisService redisService;
     final private BCryptPasswordEncoder encoder;
 
-
-
     @Value("${jwt.secret}")
     private String secretKey;
 
     @Override
     public Account register(AccountRegisterRequestForm requestForm) {
-        Account account = accountRepository.save(requestForm.toAccount(encoder.encode(requestForm.getPassword())));
-
-        return account;
+        return accountRepository.save(requestForm.toAccount(encoder.encode(requestForm.getPassword())));
     }
 
     @Override
@@ -73,7 +69,10 @@ public class AccountServiceImpl implements AccountService{
 
         long expireTimeMs = 1000 * 60 * 60;     // Token 유효 시간 = 60분
 
-        return JwtTokenUtil.createToken(account.getEmail(), secretKey, expireTimeMs);
+        TokenInfo tokenInfo = JwtTokenUtil.createToken(account.getEmail(), secretKey, expireTimeMs);
+        redisService.setKeyAndValue(tokenInfo.getRefreshToken(), account.getId());
+
+        return tokenInfo;
     }
 
     @Override
