@@ -1,11 +1,7 @@
 package com.happycamper.backend.member.service;
 
-import com.happycamper.backend.member.controller.form.CheckEmailAuthorizationRequestForm;
-import com.happycamper.backend.member.controller.form.CheckEmailDuplicateRequestForm;
-import com.happycamper.backend.member.entity.Email;
-import com.happycamper.backend.member.entity.Member;
-import com.happycamper.backend.member.entity.MemberRole;
-import com.happycamper.backend.member.entity.Role;
+import com.happycamper.backend.member.controller.form.*;
+import com.happycamper.backend.member.entity.*;
 import com.happycamper.backend.member.entity.sellerInfo.SellerInfo;
 import com.happycamper.backend.member.entity.userProfile.UserProfile;
 import com.happycamper.backend.member.repository.MemberRepository;
@@ -17,6 +13,8 @@ import com.happycamper.backend.member.service.request.BusinessMemberRegisterRequ
 import com.happycamper.backend.member.service.request.NormalMemberRegisterRequest;
 import com.happycamper.backend.member.service.request.SellerInfoRegisterRequest;
 import com.happycamper.backend.member.service.request.UserProfileRegisterRequest;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,6 +32,8 @@ public class MemberServiceImpl implements MemberService{
     final private SellerInfoRepository sellerInfoRepository;
     final private RoleRepository roleRepository;
     final EmailService emailService;
+    final JwtTokenService jwtTokenService;
+    final RedisService redisService;
 
     // 일반 회원의 회원가입
     @Override
@@ -56,6 +56,18 @@ public class MemberServiceImpl implements MemberService{
         Optional<Member> maybeMember = memberRepository.findByEmail(requestForm.getEmail());
 
         if(maybeMember.isPresent()) {
+            return true;
+        }
+        return false;
+    }
+
+    // 사업자 번호 중복 확인
+    @Override
+    public Boolean checkBusinessNumberDuplicate(CheckBusinessNumberDuplicateRequestForm requestForm) {
+        // 존재하는 사업자 번호인지 확인
+        Optional<MemberRole> maybeMemberRole = memberRoleRepository.findByBusinessNumber(requestForm.getBusinessNumber());
+
+        if(maybeMemberRole.isPresent()) {
             return true;
         }
         return false;
@@ -141,5 +153,38 @@ public class MemberServiceImpl implements MemberService{
         System.out.println("SellerInfo: " + sellerInfo);
 
         return sellerInfoRepository.save(sellerInfo);
+    }
+
+    // 회원의 로그인
+    @Override
+    public void login(MemberLoginRequestForm requestForm, HttpServletResponse response) {
+        Optional<Member> maybeMember = memberRepository.findByEmail(requestForm.getEmail());
+
+        if(maybeMember.isPresent()) {
+            if(requestForm.getPassword().equals(maybeMember.get().getPassword())) {
+
+                final Member member = maybeMember.get();
+
+                String accessToken = jwtTokenService.generateAccessToken(requestForm.getEmail());
+                String refreshToken = jwtTokenService.generateRefreshToken(requestForm.getEmail());
+                redisService.setKeyAndValue(refreshToken, member.getId());
+
+                String tokens = "Bearer " + accessToken + " " + refreshToken;
+
+                response.setHeader("Authorization", tokens);
+                System.out.println("accessToken + refreshToken: " + tokens);
+            }
+        }
+    }
+
+    // 사용자 인증
+    @Override
+    public String authorize(AuthRequestForm requestForm) {
+        System.out.println("검증할 토큰: " + requestForm.getAuthorizationHeader());
+
+        String token = requestForm.getAuthorizationHeader();
+        Claims claims = jwtTokenService.parseJwtToken(token);
+        System.out.println("Claims: " + claims);
+        return claims.getSubject();
     }
 }

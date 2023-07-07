@@ -1,16 +1,11 @@
 package com.happycamper.backend.member.controller;
 
-import com.happycamper.backend.member.controller.form.BusinessMemberRegisterForm;
-import com.happycamper.backend.member.controller.form.CheckEmailAuthorizationRequestForm;
-import com.happycamper.backend.member.controller.form.CheckEmailDuplicateRequestForm;
-import com.happycamper.backend.member.controller.form.NormalMemberRegisterForm;
+import com.happycamper.backend.member.controller.form.*;
 import com.happycamper.backend.member.service.MemberService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -24,6 +19,13 @@ public class MemberController {
         Boolean isDuplicatedEmail = memberService.checkEmailDuplicate(requestForm);
 
         return isDuplicatedEmail;
+    }
+
+    @PostMapping("/check-businessNumber-duplicate")
+    public Boolean checkEmailDuplicate(@RequestBody CheckBusinessNumberDuplicateRequestForm requestForm) {
+        Boolean isDuplicatedBusinessNumber = memberService.checkBusinessNumberDuplicate(requestForm);
+
+        return isDuplicatedBusinessNumber;
     }
 
     @PostMapping("/check-email-authorize")
@@ -45,5 +47,15 @@ public class MemberController {
         Boolean isCompleteSignupMember = memberService.businessMemberRegister(requestForm.toBusinessMemberRegisterRequest());
 
         return isCompleteSignupMember;
+    }
+
+    @PostMapping("/login")
+    public void login(@RequestBody MemberLoginRequestForm requestForm, HttpServletResponse response) {
+        memberService.login(requestForm, response);
+    }
+
+    @PostMapping("/auth")
+    public String authorize(@RequestBody AuthRequestForm requestForm) {
+        return memberService.authorize(requestForm);
     }
 }
