@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
@@ -28,6 +29,9 @@ public class AccountTest {
     @Autowired
     AccountService testAccountService;
 
+    @Autowired
+    BCryptPasswordEncoder testEncoder;
+
     @Test
     @DisplayName("사용자 회원 가입")
     void 사용자_회원_가입 () {
@@ -37,11 +41,12 @@ public class AccountTest {
 
         AccountRegisterRequestForm testRequestForm = new AccountRegisterRequestForm(email, password, nickname);
 
-        Account testAccount = testAccountRepository.save(testRequestForm.toAccount());
+        Account testAccount = testAccountRepository.save(testRequestForm.toAccount(testEncoder.encode(password)));
 
         assertEquals(email, testAccount.getEmail());
-        assertEquals(password, testAccount.getPassword());
+        assertNotEquals(password, testAccount.getPassword());
         assertEquals(nickname, testAccount.getNickname());
+        assertTrue(testEncoder.matches(password, testAccount.getPassword()));
     }
 
     @Test
@@ -93,8 +98,8 @@ public class AccountTest {
     @Test
     @DisplayName("정상 로그인")
     void 로그인(){
-        final String email = "test@test.com";
-        final String password = "test";
+        final String email = "testing@test.com";
+        final String password = "testing";
 
         AccountLoginRequestForm requestForm = new AccountLoginRequestForm(email, password);
 

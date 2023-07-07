@@ -1,13 +1,12 @@
 package com.example.demo.account.controller;
 
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.AccountLoginResponseForm;
 import com.example.demo.account.controller.form.AccountModifyRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.service.AccountService;
+import com.example.demo.authentication.jwt.TokenInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,7 +31,12 @@ public class AccountController {
     }
 
     @PostMapping("login")
-    public AccountLoginResponseForm login(@RequestBody AccountLoginRequestForm requestForm){
+    public TokenInfo login(@RequestBody AccountLoginRequestForm requestForm){
+        return accountService.login(requestForm);
+    }
+
+    @PostMapping("login2")
+    public TokenInfo login2(@RequestBody AccountLoginRequestForm requestForm){
         return accountService.login(requestForm);
     }
 
