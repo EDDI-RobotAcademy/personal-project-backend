@@ -21,6 +21,7 @@ public class NoticeServiceImpl implements NoticeService{
 
     final NoticeRepository noticeRepository;
 
+    // 공지사항 게시물 등록 기능
     @Override
     public NoticeBoard regist(NoticeRegistForm noticeRegistForm) {
         NoticeBoard noticeBoard = noticeRegistForm.toNoticeBoard();

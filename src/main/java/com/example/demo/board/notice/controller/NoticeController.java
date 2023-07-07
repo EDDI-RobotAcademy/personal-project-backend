@@ -22,7 +22,7 @@ public class NoticeController {
     // 공지사항 게시물 등록 기능
     @PostMapping("/regist")
     public String noticeRegist(NoticeRegistForm noticeRegistForm){
-        log.info("NoticeRegist run");
+        log.info("NoticeRegist() ");
         NoticeBoard noticeBoard = noticeService.regist(noticeRegistForm);
 
         if (noticeBoard == null){
@@ -41,10 +41,9 @@ public class NoticeController {
         return returnedNoticeList;
     }
     @GetMapping("/list/{noticeNumber}")
-    public NoticeBoard noticeRead(@PathVariable Long NoticeNumber){
+    public NoticeBoard noticeRead(@PathVariable Long noticeNumber){
         log.info("NoticeRead() ");
-
-        NoticeBoard readNoticeBoard = noticeService.read(NoticeNumber);
+        NoticeBoard readNoticeBoard = noticeService.read(noticeNumber);
 
         return readNoticeBoard;
     }
@@ -58,12 +57,11 @@ public class NoticeController {
     }
 
     @DeleteMapping("/delete")
-    public void noticeDelete(@RequestParam("noticeNumber") Long noticeNumber){
+    public boolean noticeDelete(@RequestParam("noticeNumber") Long noticeNumber){
         log.info("noticeDelete() ");
+        boolean resultDeleteNotice = noticeService.delete(noticeNumber);
 
-        noticeService.delete(noticeNumber);
-
+        return resultDeleteNotice;
     }
-
 
 }
