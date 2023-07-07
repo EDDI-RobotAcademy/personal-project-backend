@@ -18,10 +18,13 @@ public class Account {
     private String email;
     private String password;
     private String memberType;
+    private String nickname;
 
-    public Account(String email, String password, String memberType) {
+
+    public Account(String email, String password, String memberType, String nickname) {
         this.email = email;
         this.password = password;
         this.memberType= memberType;
+        this.nickname=nickname;
     }
 }

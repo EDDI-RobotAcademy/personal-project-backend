@@ -12,8 +12,9 @@ public class AccountRegisterForm {
     final private String email;
     final private String password;
     final private String memberType;
+    final private String nickname;
 
   public AccountRequest toAccountRequest(){
-      return new AccountRequest(email,password,memberType);
+      return new AccountRequest(email,password,memberType, nickname);
   }
 }

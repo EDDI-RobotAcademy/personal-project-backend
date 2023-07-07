@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RequestMapping("/account")
 @Slf4j
 @RequiredArgsConstructor
@@ -26,11 +29,14 @@ public class AccountController {
         return accountService.register(accountRegisterForm.toAccountRequest());
     }
     @PostMapping("/login")
-    public String accountLogin(@RequestBody AccountLoginRequestForm accountLoginRequestForm) {
-
-        String userToken = accountService.login(accountLoginRequestForm);
+    public List<String> accountLogin(@RequestBody AccountLoginRequestForm accountLoginRequestForm) {
+        List<String> responseList= new ArrayList<>();
+        String userToken= accountService.login(accountLoginRequestForm);
         Long accountID= accountService.findAccountIdByEmail(accountLoginRequestForm.getEmail());
+        String nickname= accountService.findNicknameByAccountId(accountID);
         redisService.setKeyAndValue(userToken,accountID);
-        return userToken;
+        responseList.add(userToken);
+        responseList.add(nickname);
+        return responseList;
     }
 }
