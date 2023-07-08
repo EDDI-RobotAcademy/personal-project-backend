@@ -7,4 +7,6 @@ public interface AccountService {
     Boolean signUp(AccountRegisterRequest request);
 
     Boolean accessSignUp(AccessRegisterRequest accessRegisterRequest);
+
+    Boolean checkEmail(String email);
 }

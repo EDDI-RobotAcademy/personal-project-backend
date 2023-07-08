@@ -57,4 +57,15 @@ public class AccountServiceImpl implements AccountService{
 
         return true;
     }
+
+    @Override
+    public Boolean checkEmail(String email) {
+        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+
+        if (maybeAccount.isPresent()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

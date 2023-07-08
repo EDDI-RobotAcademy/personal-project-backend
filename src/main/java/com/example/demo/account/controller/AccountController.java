@@ -5,10 +5,7 @@ import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -30,5 +27,12 @@ public class AccountController {
         log.info("admin: " + form);
 
         return accountService.accessSignUp(form.toAccessRegisterRequest());
+    }
+
+    @GetMapping("/check-email/{email}")
+    public Boolean checkEmail(@PathVariable("email") String email){
+        log.info("check email : " + email);
+
+        return accountService.checkEmail(email);
     }
 }
