@@ -22,44 +22,48 @@ public class AccountController {
         return accountService.register(requestForm);
     }
 
-    @PostMapping("email-check")
+    @GetMapping("/email-check")
     public Boolean emailCheck(@RequestParam("email") String email){
         return accountService.duplicateCheckEmail(email);
     }
 
-    @PostMapping("nickname-check")
+    @GetMapping("/nickname-check")
     public Boolean nicknameCheck(@RequestParam("nickname") String nickname){
         return accountService.duplicateCheckNickname(nickname);
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public TokenInfo login(@RequestBody AccountLoginRequestForm requestForm, HttpServletResponse response){
         TokenInfo tokenInfo = accountService.login(requestForm);
-        Cookie cookie = new Cookie("AccessToken", tokenInfo.getAccessToken());
-        cookie.setAttribute("RefreshToken", tokenInfo.getRefreshToken());
-        cookie.setMaxAge(60*60);
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
+        Cookie accessCookie = new Cookie("AccessToken", tokenInfo.getAccessToken());
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(60*60);
+        response.addCookie(accessCookie);
 
-        return accountService.login(requestForm);
+        Cookie refreshCookie = new Cookie("RefreshToken", tokenInfo.getRefreshToken());
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(60*60);
+        response.addCookie(refreshCookie);
+
+        return tokenInfo;
     }
 
-    @PostMapping("login2")
+    @PostMapping("/login2")
     public TokenInfo login2(@RequestBody AccountLoginRequestForm requestForm){
         return accountService.login(requestForm);
     }
 
-    @PutMapping("modify")
+    @PutMapping("/modify")
     public Account modify(@RequestBody AccountModifyRequestForm requestForm){
         return accountService.modify(requestForm);
     }
 
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public Boolean logout(@RequestParam("userToken") String userToken){
         return accountService.logout(userToken);
     }
 
-    @DeleteMapping("withdrawal")
+    @DeleteMapping("/withdrawal")
     public Boolean withdrawal(@RequestParam("userToken") String userToken){
         return accountService.withdrawal(userToken);
     }
