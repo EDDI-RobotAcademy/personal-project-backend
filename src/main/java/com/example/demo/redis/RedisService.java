@@ -6,5 +6,4 @@ public interface RedisService {
     Long getValueByKey(String userToken);
 
     void deleteByKey(String token);
-
 }

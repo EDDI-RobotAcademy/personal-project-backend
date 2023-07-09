@@ -1,10 +1,12 @@
 package com.example.demo.account.service;
 
+import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.request.AccessRegisterRequest;
 import com.example.demo.account.controller.request.AccountRegisterRequest;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.entity.AccountRole;
 import com.example.demo.account.entity.Role;
+import com.example.demo.account.entity.RoleType;
 import com.example.demo.account.repository.AccountRepository;
 import com.example.demo.account.repository.AccountRoleRepository;
 import com.example.demo.account.repository.RoleRepository;
@@ -58,6 +60,7 @@ public class AccountServiceImpl implements AccountService{
         return true;
     }
 
+    // 이메일 중복 확인
     @Override
     public Boolean checkEmail(String email) {
         Optional<Account> maybeAccount = accountRepository.findByEmail(email);
@@ -68,4 +71,29 @@ public class AccountServiceImpl implements AccountService{
             return true;
         }
     }
+
+    // 로그인
+    @Override
+    public String login(AccountLoginRequestForm form) {
+        Optional<Account> maybeAccount = accountRepository.findByEmail(form.getEmail());
+
+        if (maybeAccount.isPresent()) {
+            if (form.getPassword().equals(maybeAccount.get().getPassword())) {
+                final String userToken = UUID.randomUUID().toString();
+
+                return userToken;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Long findAccountInfoById(String email) {
+        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+        if (maybeAccount.isPresent()){
+            return maybeAccount.get().getId();
+        }
+        return null;
+    }
+
 }
