@@ -1,13 +1,14 @@
 package com.example.demo.account.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.demo.board.notice.entity.NoticeBoard;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -15,8 +16,11 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Account {
     @Id
+    @Column(name = "account_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long accountId;
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    private List<NoticeBoard> noticeBoards = new ArrayList<>();
     @Setter
     private String email;
     @Setter
@@ -44,7 +48,7 @@ public class Account {
     }
 
     public Account(String userToken) {
-        this.id = id;
+        this.accountId = accountId;
         this.email = email;
         this.password = password;
 
@@ -55,4 +59,7 @@ public class Account {
         this.password = password;
     }
 
+    public Account(Long accountId) {
+        this.accountId = accountId;
+    }
 }

@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class NoticeListForm {
-    final private Long noticeNumber;
-    final private String noticeTitle;
-    final private LocalDateTime noticeDate;
+    final private Long noticeId;
+    final private String title;
+    final private LocalDateTime date;
 
 }

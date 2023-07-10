@@ -5,11 +5,11 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class NoticeRegistForm {
-    final private String noticeTitle;
-    final private String noticeContent;
-
+    final private String title;
+    final private String content;
+    final private Long accountId;
 
     public NoticeBoard toNoticeBoard() {
-        return new NoticeBoard(noticeTitle, noticeContent);
+        return new NoticeBoard(title, content,accountId);
     }
 }

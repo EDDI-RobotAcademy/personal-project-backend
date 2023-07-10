@@ -1,13 +1,11 @@
 package com.example.demo.board.notice.service;
 
 import com.example.demo.board.notice.controller.form.NoticeModifyForm;
-import com.example.demo.board.notice.controller.form.NoticeNumberForm;
 import com.example.demo.board.notice.controller.form.NoticeRegistForm;
 import com.example.demo.board.notice.entity.NoticeBoard;
 import com.example.demo.board.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -23,14 +21,11 @@ public class NoticeServiceImpl implements NoticeService{
 
     // 공지사항 게시물 등록 기능
     @Override
-    public NoticeBoard regist(NoticeRegistForm noticeRegistForm) {
-        NoticeBoard noticeBoard = noticeRegistForm.toNoticeBoard();
-
-        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeTitle(noticeBoard.getNoticeTitle());
+    public NoticeBoard regist(NoticeBoard noticeBoard) {
+        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByTitle(noticeBoard.getTitle());
         if(maybeNoticeBoard.isPresent()){
             return null;
         }
-
         NoticeBoard saveNoticeBoard = noticeRepository.save(noticeBoard);
 
         return saveNoticeBoard;
@@ -38,42 +33,33 @@ public class NoticeServiceImpl implements NoticeService{
 
     // 공지사항 게시판 수정
     @Override
-    public NoticeBoard modify(NoticeModifyForm noticeModifyForm) {
-
-        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeNumber(noticeModifyForm.getNoticeNumber());
-
+    public NoticeBoard modify(NoticeBoard noticeBoard) {
+        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeId(noticeBoard.getNoticeId());
         if(maybeNoticeBoard.isEmpty()){
             log.info("에러 발생");
             return null;
         }
-        NoticeBoard noticeBoard = maybeNoticeBoard.get();
+        NoticeBoard getNoticeBoard = maybeNoticeBoard.get();
+        System.out.println(noticeBoard.getTitle());
+        System.out.println(noticeBoard.getContent());
 
-        noticeBoard.setNoticeTitle(noticeModifyForm.getNoticeTitle());
-        noticeBoard.setNoticeContent(noticeModifyForm.getNoticeContent());
 
-        return noticeRepository.save(noticeBoard);
+        getNoticeBoard.setTitle(noticeBoard.getTitle());
+        getNoticeBoard.setContent(noticeBoard.getContent());
+
+        return noticeRepository.save(getNoticeBoard);
     }
 
-    // 공지사항 게시물 삭제
+    // 공지사항 게시물 목록 확인
     @Override
-    public Boolean delete(Long noticeNumber) {
-        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeNumber(noticeNumber);
-
-        if (maybeNoticeBoard.isEmpty()){
-            log.info("에러 발생");
-            return false;
-        }
-        NoticeBoard noticeBoard = maybeNoticeBoard.get();
-        noticeRepository.delete(noticeBoard);
-
-        return true;
-
+    public List<NoticeBoard> list() {
+        return noticeRepository.findAll(Sort.by(Sort.Direction.DESC,"noticeId"));
     }
 
+    // 게시물 읽기
     @Override
-    public NoticeBoard read(Long noticeNumber) {
-        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeNumber(noticeNumber);
-
+    public NoticeBoard read(Long noticeId) {
+        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeId(noticeId);
         if (maybeNoticeBoard.isEmpty()){
             log.info("에러 발생");
             return null;
@@ -82,8 +68,16 @@ public class NoticeServiceImpl implements NoticeService{
         return maybeNoticeBoard.get();
     }
 
+    // 공지사항 게시물 삭제
     @Override
-    public List<NoticeBoard> list() {
-        return noticeRepository.findAll(Sort.by(Sort.Direction.DESC,"noticeNumber"));
+    public Boolean delete(Long noticeId) {
+        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeId(noticeId);
+        if (maybeNoticeBoard.isEmpty()){
+            log.info("에러 발생");
+            return false;
+        }
+        NoticeBoard noticeBoard = maybeNoticeBoard.get();
+        noticeRepository.delete(noticeBoard);
+        return true;
     }
 }
