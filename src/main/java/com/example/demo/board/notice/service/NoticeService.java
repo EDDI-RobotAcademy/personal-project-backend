@@ -1,7 +1,6 @@
 package com.example.demo.board.notice.service;
 
 import com.example.demo.board.notice.controller.form.NoticeModifyForm;
-import com.example.demo.board.notice.controller.form.NoticeNumberForm;
 import com.example.demo.board.notice.controller.form.NoticeRegistForm;
 import com.example.demo.board.notice.entity.NoticeBoard;
 
@@ -11,11 +10,11 @@ public interface NoticeService {
 
     List<NoticeBoard> list();
 
-    NoticeBoard regist(NoticeRegistForm noticeRegistForm);
+    NoticeBoard regist(NoticeBoard noticeBoard);
 
-    NoticeBoard modify(NoticeModifyForm noticeModifyForm);
+    NoticeBoard modify(NoticeBoard noticeBoard);
 
-    Boolean delete(Long noticeNumber);
+    Boolean delete(Long noticeId);
 
-    NoticeBoard read(Long noticeNumber);
+    NoticeBoard read(Long noticeId);
 }

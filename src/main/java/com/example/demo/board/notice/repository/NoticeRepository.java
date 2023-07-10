@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface NoticeRepository extends JpaRepository<NoticeBoard, Long> {
-    Optional<NoticeBoard> findByNoticeTitle(String noticeTitle);
-    Optional<NoticeBoard> findByNoticeNumber(Long noticeNumber);
+    Optional<NoticeBoard> findByTitle(String title);
+    Optional<NoticeBoard> findByNoticeId(Long noticeId);
 }

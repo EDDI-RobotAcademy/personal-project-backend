@@ -1,7 +1,6 @@
 package com.example.demo.board.notice.controller;
 
 import com.example.demo.board.notice.controller.form.NoticeModifyForm;
-import com.example.demo.board.notice.controller.form.NoticeNumberForm;
 import com.example.demo.board.notice.controller.form.NoticeRegistForm;
 import com.example.demo.board.notice.entity.NoticeBoard;
 import com.example.demo.board.notice.service.NoticeService;
@@ -23,15 +22,24 @@ public class NoticeController {
     @PostMapping("/regist")
     public String noticeRegist(NoticeRegistForm noticeRegistForm){
         log.info("NoticeRegist() ");
-        NoticeBoard noticeBoard = noticeService.regist(noticeRegistForm);
-
+        NoticeBoard noticeBoard = noticeService.regist(noticeRegistForm.toNoticeBoard());
         if (noticeBoard == null){
             return null;
         }
-        return noticeBoard.getNoticeTitle();
+
+        return noticeBoard.getTitle();
     }
 
-    // 공지사항 게시물 목록 확인 기능
+    // 공지사항 게시판 수정
+    @PutMapping("/modify")
+    public Long noticeModify(@RequestBody NoticeModifyForm noticeModifyForm){
+        log.info("noticeModify() ");
+        NoticeBoard noticeBoard = noticeService.modify(noticeModifyForm.toNoticeBoard());
+
+        return noticeBoard.getNoticeId();
+    }
+
+    // 공지사항 게시물 목록 확인
     @GetMapping("/list")
     public List<NoticeBoard> noticeList(){
         log.info("NoticeList() ");
@@ -40,26 +48,22 @@ public class NoticeController {
 
         return returnedNoticeList;
     }
-    @GetMapping("/list/{noticeNumber}")
-    public NoticeBoard noticeRead(@PathVariable Long noticeNumber){
+
+    // 게시물 읽기
+    @GetMapping("/list/{noticeId}")
+    public NoticeBoard noticeRead(@PathVariable Long noticeId){
         log.info("NoticeRead() ");
-        NoticeBoard readNoticeBoard = noticeService.read(noticeNumber);
+        NoticeBoard readNoticeBoard = noticeService.read(noticeId);
 
         return readNoticeBoard;
     }
 
-    @PutMapping("/modify")
-    public Long noticeModify(@RequestBody NoticeModifyForm noticeModifyForm){
-        log.info("noticeModify() ");
-        NoticeBoard noticeBoard = noticeService.modify(noticeModifyForm);
 
-        return noticeBoard.getNoticeNumber();
-    }
-
+    // 공지사항 게시물 삭제
     @DeleteMapping("/delete")
-    public boolean noticeDelete(@RequestParam("noticeNumber") Long noticeNumber){
+    public boolean noticeDelete(@RequestParam("noticeId") Long noticeId){
         log.info("noticeDelete() ");
-        boolean resultDeleteNotice = noticeService.delete(noticeNumber);
+        boolean resultDeleteNotice = noticeService.delete(noticeId);
 
         return resultDeleteNotice;
     }

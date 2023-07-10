@@ -28,7 +28,7 @@ public class AccountController {
         if (account == null) {
             return null;
         }
-        return account.getId();
+        return account.getAccountId();
     }
 
     // 로그인 기능
