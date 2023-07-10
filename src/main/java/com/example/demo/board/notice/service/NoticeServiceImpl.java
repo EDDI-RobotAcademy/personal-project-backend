@@ -40,6 +40,9 @@ public class NoticeServiceImpl implements NoticeService{
             return null;
         }
         NoticeBoard getNoticeBoard = maybeNoticeBoard.get();
+        System.out.println(noticeBoard.getTitle());
+        System.out.println(noticeBoard.getContent());
+
 
         getNoticeBoard.setTitle(noticeBoard.getTitle());
         getNoticeBoard.setContent(noticeBoard.getContent());

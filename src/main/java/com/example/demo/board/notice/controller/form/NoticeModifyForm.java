@@ -13,6 +13,6 @@ public class NoticeModifyForm {
     final private String content;
 
     public NoticeBoard toNoticeBoard() {
-        return new NoticeBoard(title,content);
+        return new NoticeBoard(noticeId,title,content);
     }
 }
