@@ -26,7 +26,7 @@ public class CommunityController {
     @PostMapping("/regist")
     public String communityRegist(CommunityRegistForm communityRegistForm){
         log.info("CommunityRegist() ");
-        CommunityBoard communityBoard = communityServcie.regist(communityRegistForm);
+        CommunityBoard communityBoard = communityServcie.regist(communityRegistForm.toCommunityBoard());
         if (communityBoard == null){
             return null;
         }

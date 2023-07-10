@@ -24,8 +24,7 @@ public class CommunityServiceImpl implements CommunityServcie {
 
     // 커뮤니티 게시물 등록 기능
     @Override
-    public CommunityBoard regist(CommunityRegistForm communityRegistForm) {
-        CommunityBoard communityBoard = communityRegistForm.toCommunityBoard();
+    public CommunityBoard regist(CommunityBoard communityBoard) {
         Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityTitle(communityBoard.getCommunityTitle());
         if(maybeCommunityBoard.isPresent()){
             return null;

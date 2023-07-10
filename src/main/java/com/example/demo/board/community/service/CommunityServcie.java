@@ -13,7 +13,7 @@ public interface CommunityServcie {
 
     List<CommunityBoard> list();
 
-    CommunityBoard regist(CommunityRegistForm communityRegistForm);
+    CommunityBoard regist(CommunityBoard communityBoard);
 
     CommunityBoard modify(CommunityModifyForm communityModifyForm);
 
