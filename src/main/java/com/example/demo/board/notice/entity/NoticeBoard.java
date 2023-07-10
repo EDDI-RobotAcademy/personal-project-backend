@@ -3,10 +3,7 @@ package com.example.demo.board.notice.entity;
 import com.example.demo.account.entity.Account;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -15,6 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 @NoArgsConstructor
+@EqualsAndHashCode
 public class NoticeBoard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

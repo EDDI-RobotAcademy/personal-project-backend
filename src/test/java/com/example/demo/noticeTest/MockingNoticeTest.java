@@ -4,49 +4,61 @@ import com.example.demo.board.notice.controller.form.NoticeModifyForm;
 import com.example.demo.board.notice.controller.form.NoticeRegistForm;
 import com.example.demo.board.notice.entity.NoticeBoard;
 import com.example.demo.board.notice.repository.NoticeRepository;
+import com.example.demo.board.notice.service.NoticeService;
 import com.example.demo.board.notice.service.NoticeServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jdk.jshell.spi.ExecutionControlProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 public class MockingNoticeTest {
 
-    @Mock
-    private NoticeRepository noticeRepository;
-    @InjectMocks
-    NoticeServiceImpl noticeService;
-    @BeforeEach
-    public void setup() throws Exception{
-        MockitoAnnotations.initMocks(this);
-    }
+    @Autowired
+    private MockMvc mockMvc;
+    @MockBean
+    private NoticeService noticeService;
 
     @Test
     @DisplayName("공지사항 게시판 등록")
-    void 게시판_등록 (){
+    void 게시판_등록 () throws Exception {
         final String title = "제목";
         final String content = "내용";
         final Long accountId = 1L;
-        NoticeRegistForm noticeRegistForm = new NoticeRegistForm(title,content,accountId);
+        final NoticeRegistForm noticeRegistForm = new NoticeRegistForm(title,content,accountId);
         final NoticeBoard noticeBoard = noticeRegistForm.toNoticeBoard();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String boardRequestBody = objectMapper.writeValueAsString(noticeBoard);
 
-        when(noticeRepository.save(noticeBoard)).thenReturn(new NoticeBoard("제목","내용",1L));
-        final NoticeServiceImpl sut = new NoticeServiceImpl(noticeRepository);
-        final NoticeBoard actual = sut.regist(noticeBoard);
-
-        assertEquals(actual.getTitle(),noticeBoard.getTitle());
-        assertEquals(actual.getContent(),noticeBoard.getContent());
-
+        when(noticeService.regist(noticeRegistForm.toNoticeBoard())).thenReturn(noticeBoard);
+        mockMvc.perform(post("/notice/regist")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(boardRequestBody))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(6))
+                .andExpect(jsonPath("$.title").value("제목"))
+                .andExpect(jsonPath("$.content").value("내용"))
+                .andExpect(jsonPath("$.writer").value("작성자"));
+        verify(noticeService, times(1)).regist(noticeRegistForm.toNoticeBoard());
     }
 
     @Test
