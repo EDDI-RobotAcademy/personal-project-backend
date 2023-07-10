@@ -22,7 +22,7 @@ public class NoticeServiceImpl implements NoticeService{
     // 공지사항 게시물 등록 기능
     @Override
     public NoticeBoard regist(NoticeBoard noticeBoard) {
-        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByTitle(noticeBoard.getTitle());
+        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeId(noticeBoard.getNoticeId());
         if(maybeNoticeBoard.isPresent()){
             return null;
         }

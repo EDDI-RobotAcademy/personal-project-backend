@@ -10,10 +10,10 @@ import lombok.RequiredArgsConstructor;
 @NoArgsConstructor
 public class CommunityNumberForm {
 
-    private Long communityNumber;
+    private Long communityId;
 
     public CommunityNumberForm(Long communityNumber) {
-        this.communityNumber = communityNumber;
+        this.communityId = communityId;
     }
 
 }

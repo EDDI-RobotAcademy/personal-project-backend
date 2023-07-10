@@ -15,7 +15,7 @@ public interface CommunityServcie {
 
     CommunityBoard regist(CommunityBoard communityBoard);
 
-    CommunityBoard modify(CommunityModifyForm communityModifyForm);
+    CommunityBoard modify(CommunityBoard communityBoard);
 
     Boolean delete(Long communityNumber);
 

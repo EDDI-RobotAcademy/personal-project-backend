@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class CommunityListForm {
-    final private Long communityNumber;
-    final private String communityTitle;
-    final private LocalDateTime communityDate;
+    final private Long communityId;
+    final private String title;
+    final private LocalDateTime date;
 
 }

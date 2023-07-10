@@ -25,7 +25,7 @@ public class CommunityServiceImpl implements CommunityServcie {
     // 커뮤니티 게시물 등록 기능
     @Override
     public CommunityBoard regist(CommunityBoard communityBoard) {
-        Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityTitle(communityBoard.getCommunityTitle());
+        Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityId(communityBoard.getCommunityId());
         if(maybeCommunityBoard.isPresent()){
             return null;
         }
@@ -36,23 +36,23 @@ public class CommunityServiceImpl implements CommunityServcie {
 
     // 커뮤니티 게시판 수정
     @Override
-    public CommunityBoard modify(CommunityModifyForm communityModifyForm) {
-        Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityNumber(communityModifyForm.getCommunityNumber());
+    public CommunityBoard modify(CommunityBoard communityBoard) {
+        Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityId(communityBoard.getCommunityId());
         if (maybeCommunityBoard.isEmpty()) {
             log.info("에러 발생");
             return null;
         }
-        CommunityBoard communityBoard = maybeCommunityBoard.get();
-        communityBoard.setCommunityTitle(communityModifyForm.getCommunityTitle());
-        communityBoard.setCommunityContent(communityModifyForm.getCommunityContent());
+        CommunityBoard getCommunityBoard = maybeCommunityBoard.get();
+        getCommunityBoard.setTitle(communityBoard.getTitle());
+        getCommunityBoard.setContent(communityBoard.getContent());
 
-        return communityRepository.save(communityBoard);
+        return communityRepository.save(getCommunityBoard);
     }
 
     // 커뮤니티 게시판 삭제
     @Override
-    public Boolean delete(Long communityNumber) {
-        Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityNumber(communityNumber);
+    public Boolean delete(Long communityId) {
+        Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityId(communityId);
         if (maybeCommunityBoard.isEmpty()){
             log.info("에러 발생");
             return false;
@@ -65,8 +65,8 @@ public class CommunityServiceImpl implements CommunityServcie {
 
     // 커뮤니티 게시판 상세 정보
     @Override
-    public CommunityBoard read(Long communityNumber) {
-        Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityNumber(communityNumber);
+    public CommunityBoard read(Long communityId) {
+        Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityId(communityId);
         if (maybeCommunityBoard.isEmpty()){
             log.info("에러 발생");
             return null;
@@ -78,11 +78,6 @@ public class CommunityServiceImpl implements CommunityServcie {
     // 커뮤니티 전체 게시판 목록
     @Override
     public List<CommunityBoard> list() {
-        return communityRepository.findAll(Sort.by(Sort.Direction.DESC,"communityNumber"));
+        return communityRepository.findAll(Sort.by(Sort.Direction.DESC,"communityId"));
     }
-
-
-
-
-
 }

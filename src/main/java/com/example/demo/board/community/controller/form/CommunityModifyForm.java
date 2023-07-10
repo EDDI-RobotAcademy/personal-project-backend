@@ -1,5 +1,6 @@
 package com.example.demo.board.community.controller.form;
 
+import com.example.demo.board.community.entity.CommunityBoard;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,7 +8,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CommunityModifyForm {
 
-    final private Long communityNumber;
-    final private String communityTitle;
-    final private String communityContent;
+    final private Long communityId;
+    final private String title;
+    final private String content;
+
+    public CommunityBoard toCommunityBoard() {
+        return new CommunityBoard(communityId,title,content);
+    }
 }

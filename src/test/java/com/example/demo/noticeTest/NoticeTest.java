@@ -26,8 +26,8 @@ public class NoticeTest {
     @Test
     @DisplayName("공지사항 게시물 생성")
     void 게시물_생성(){
-        final String title = "제목8";
-        final String content = "내용8";
+        final String title = "공지사항 제목8";
+        final String content = "공지사항 내용8";
         final Long accountId = 1L;
         NoticeRegistForm noticeRegistForm = new NoticeRegistForm(title,content,accountId);
         NoticeBoard noticeBoard = noticeService.regist(noticeRegistForm.toNoticeBoard());
@@ -95,8 +95,8 @@ public class NoticeTest {
     @Test
     @DisplayName("공지사항 게시물을 삭제합니다.")
     void 게시물_삭제(){
-        final Long noticeNumber = 3L;
-        Boolean resultNoticeDelete = noticeService.delete(noticeNumber);
+        final Long noticeId = 3L;
+        Boolean resultNoticeDelete = noticeService.delete(noticeId);
 
         assertTrue(resultNoticeDelete);
     }

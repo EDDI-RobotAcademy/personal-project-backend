@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface CommunityRepository extends JpaRepository<CommunityBoard, Long> {
-    Optional<CommunityBoard> findByCommunityTitle(String communityTitle);
-    Optional<CommunityBoard> findByCommunityNumber(Long communityNumber);
+    Optional<CommunityBoard> findByTitle(String title);
+    Optional<CommunityBoard> findByCommunityId(Long communityId);
 
 }
