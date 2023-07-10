@@ -23,18 +23,11 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public Long getValueByKey(String token) {
+    public String getValueByToken(String token) {
         ValueOperations<String, String> value = redisTemplate.opsForValue();
-        String tmpAccountId = value.get(token);
-        Long accountId;
+        String tokenValue = value.get(token);
 
-        if (tmpAccountId == null) {
-            accountId = null;
-        } else {
-            accountId = Long.parseLong(tmpAccountId);
-        }
-
-        return accountId;
+        return tokenValue;
     }
 
     @Override
@@ -42,7 +35,9 @@ public class RedisServiceImpl implements RedisService {
         redisTemplate.delete(token);
     }
 
-    public Boolean isRefreshTokenExists(String token) {
-        return getValueByKey(token) != null;
+    @Override
+    public void registBlackList(String token, Long expTime) {
+        ValueOperations<String, String> value = redisTemplate.opsForValue();
+        value.set(token, "LogOut", Duration.ofMinutes(expTime));
     }
 }

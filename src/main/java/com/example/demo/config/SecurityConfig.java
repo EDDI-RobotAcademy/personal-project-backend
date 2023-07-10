@@ -3,6 +3,8 @@ package com.example.demo.config;
 import com.example.demo.account.entity.RoleType;
 import com.example.demo.account.service.AccountService;
 import com.example.demo.authentication.jwt.JwtTokenFilter;
+import com.example.demo.authentication.jwt.JwtTokenUtil;
+import com.example.demo.authentication.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AccountService accountService;
+    private final RedisService redisService;
+    private final JwtTokenUtil jwtTokenUtil;
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -29,7 +33,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(new JwtTokenFilter(accountService, secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenFilter(accountService, secretKey, redisService, jwtTokenUtil), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .requestMatchers("/account/register", "/account/login", "/account/email-check", "/account/nickname-check").permitAll()
                 .anyRequest().hasAuthority(RoleType.NORMAL.name())

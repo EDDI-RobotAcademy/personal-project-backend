@@ -5,17 +5,30 @@ import com.example.demo.account.controller.form.AccountModifyRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.service.AccountService;
+import com.example.demo.authentication.jwt.JwtTokenUtil;
 import com.example.demo.authentication.jwt.TokenInfo;
+import com.example.demo.authentication.redis.RedisService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/account")
 public class AccountController {
     final private AccountService accountService;
+    final private JwtTokenUtil jwtTokenUtil;
+    final private RedisService redisService;
+
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     @PostMapping("/register")
     public Account accountRegister (@RequestBody AccountRegisterRequestForm requestForm) {
@@ -33,38 +46,74 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public TokenInfo login(@RequestBody AccountLoginRequestForm requestForm, HttpServletResponse response){
+    public void login(@RequestBody AccountLoginRequestForm requestForm, HttpServletResponse response){
         TokenInfo tokenInfo = accountService.login(requestForm);
-        Cookie accessCookie = new Cookie("AccessToken", tokenInfo.getAccessToken());
-        accessCookie.setPath("/");
-        accessCookie.setMaxAge(60*60);
+
+        Cookie accessCookie = jwtTokenUtil.generateCookie("AccessToken", tokenInfo.getAccessToken(), 60*60);
         response.addCookie(accessCookie);
 
-        Cookie refreshCookie = new Cookie("RefreshToken", tokenInfo.getRefreshToken());
-        refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(60*60);
+        Cookie refreshCookie = jwtTokenUtil.generateCookie("RefreshToken", tokenInfo.getRefreshToken(), 24*60*60);
         response.addCookie(refreshCookie);
-
-        return tokenInfo;
-    }
-
-    @PostMapping("/login2")
-    public TokenInfo login2(@RequestBody AccountLoginRequestForm requestForm){
-        return accountService.login(requestForm);
     }
 
     @PutMapping("/modify")
-    public Account modify(@RequestBody AccountModifyRequestForm requestForm){
-        return accountService.modify(requestForm);
+    public Account modify(@RequestBody AccountModifyRequestForm requestForm, HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        String email = null;
+
+        for(Cookie cookie : cookies) {
+            if (cookie.getName().equals("AccessToken")) {
+                String token = cookie.getValue();
+                email = JwtTokenUtil.getEmail(token, secretKey);
+                break;
+            }
+        }
+        return accountService.modify(email, requestForm);
     }
 
     @PostMapping("/logout")
-    public Boolean logout(@RequestParam("userToken") String userToken){
-        return accountService.logout(userToken);
+    public Boolean logout(HttpServletRequest request, HttpServletResponse response){
+        Cookie[] cookies = request.getCookies();
+
+        for(Cookie cookie : cookies){
+            if(cookie.getName().equals("AccessToken")){
+                String token = cookie.getValue();
+
+                Date exp = JwtTokenUtil.getExp(token, secretKey);
+                Date date = new Date();
+
+                redisService.registBlackList(token, exp.getTime()-date.getTime());
+            }
+            if(cookie.getName().equals("RefreshToken")){
+                String token = cookie.getValue();
+                redisService.deleteByKey(token);
+            }
+        }
+
+        Cookie accessCookie = jwtTokenUtil.generateCookie("AccessToken", null, 0);
+        response.addCookie(accessCookie);
+
+        Cookie refreshCookie = jwtTokenUtil.generateCookie("RefreshToken", null, 0);
+        response.addCookie(refreshCookie);
+
+        return accountService.logout(response);
     }
 
     @DeleteMapping("/withdrawal")
-    public Boolean withdrawal(@RequestParam("userToken") String userToken){
-        return accountService.withdrawal(userToken);
+    public Boolean withdrawal(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        String email = null;
+
+        for(Cookie cookie : cookies) {
+            if (cookie.getName().equals("AccessToken")) {
+                String token = cookie.getValue();
+                email = JwtTokenUtil.getEmail(token, secretKey);
+            }
+            if(cookie.getName().equals("RefreshToken")){
+                String token = cookie.getValue();
+                redisService.deleteByKey(token);
+            }
+        }
+        return accountService.withdrawal(email);
     }
 }
