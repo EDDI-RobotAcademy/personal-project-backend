@@ -81,7 +81,7 @@ jobs:
             echo "pass health-deploy/health-deploy-server:latest"
             
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-            docker login ghcr.io -u ${{ github.actor }} -p {{ secrets.GHCR_TOKEN }}
+            ## docker login ghcr.io -u ${{ github.actor }} -p {{ secrets.GHCR_TOKEN }}
             
             docker pull ghcr.io/qnfthslr/personal-project-backend:latest
             
