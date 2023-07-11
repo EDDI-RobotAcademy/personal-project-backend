@@ -33,7 +33,7 @@ public class NoticeController {
     // 공지사항 게시판 수정
     @PutMapping("/modify")
     public Long noticeModify(@RequestBody NoticeModifyForm noticeModifyForm){
-        log.info("noticeModify() ");
+        log.info("NoticeModify() ");
         NoticeBoard noticeBoard = noticeService.modify(noticeModifyForm.toNoticeBoard());
 
         return noticeBoard.getNoticeId();
@@ -62,7 +62,7 @@ public class NoticeController {
     // 공지사항 게시물 삭제
     @DeleteMapping("/delete")
     public boolean noticeDelete(@RequestParam("noticeId") Long noticeId){
-        log.info("noticeDelete() ");
+        log.info("NoticeDelete() ");
         boolean resultDeleteNotice = noticeService.delete(noticeId);
 
         return resultDeleteNotice;
