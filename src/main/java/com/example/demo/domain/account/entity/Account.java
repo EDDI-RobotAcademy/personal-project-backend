@@ -1,6 +1,7 @@
 package com.example.demo.domain.account.entity;
 
 import com.example.demo.domain.playlist.entity.Playlist;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +25,7 @@ public class Account {
     private RoleType role;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JsonIgnore
     private List<Playlist> playlist;
 
     public Account(String email, String password, String nickname) {
