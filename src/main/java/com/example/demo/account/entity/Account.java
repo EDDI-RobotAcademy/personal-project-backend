@@ -30,19 +30,24 @@ public class Account {
     @Setter
     private String userToken;
 
+    @Enumerated(EnumType.STRING)
+    private RoleType roleType;
+
     @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
     private AccountRole accountRole;
 
-    public Account(String email, String password, String name, String phoneNumber) {
+    public Account(String email, String password, String name, String phoneNumber, RoleType roleType) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
+        this.roleType = roleType;
     }
 
-    public Account(String email, String password, String accessNumber) {
+    public Account(String email, String password, String accessNumber, RoleType roleType) {
         this.email = email;
         this.password = password;
         this.accessNumber = accessNumber;
+        this.roleType = roleType;
     }
 }

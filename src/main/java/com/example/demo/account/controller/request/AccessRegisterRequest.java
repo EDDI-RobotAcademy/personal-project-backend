@@ -8,13 +8,16 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class AccessRegisterRequest {
+
     final private String email;
+
     final private String password;
+
     final private String accessNumber;
 
     final private RoleType roleType;
 
     public Account toAccount () {
-        return new Account(email, password, accessNumber);
+        return new Account(email, password, accessNumber, roleType);
     }
 }
