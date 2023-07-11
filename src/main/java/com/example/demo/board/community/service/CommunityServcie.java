@@ -17,7 +17,7 @@ public interface CommunityServcie {
 
     CommunityBoard modify(CommunityBoard communityBoard);
 
-    Boolean delete(Long communityNumber);
+    Boolean delete(Long communityId);
 
-    CommunityBoard read(Long communityNumber);
+    CommunityBoard read(Long communityId);
 }

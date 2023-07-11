@@ -56,7 +56,7 @@ public class CommunityController {
     // 커뮤니티 게시판 수정 기능
     @PutMapping("/modify")
     public Long communityModify(@RequestBody CommunityModifyForm communityModifyForm){
-        log.info("noticeModify() ");
+        log.info("CommunityModify() ");
         CommunityBoard communityBoard = communityServcie.modify(communityModifyForm.toCommunityBoard());
 
         return communityBoard.getCommunityId();
@@ -65,7 +65,7 @@ public class CommunityController {
     //커뮤니티 게시판 삭제 기능
     @DeleteMapping("/delete")
     public boolean communityDelete(@RequestParam("communityId") Long communityId){
-        log.info("noticeDelete() ");
+        log.info("CommunityDelete() ");
         boolean resultDeleteCommunity = communityServcie.delete(communityId);
 
         return resultDeleteCommunity;
