@@ -5,6 +5,7 @@ import com.example.demo.account.controller.form.AccountModifyRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.authentication.jwt.TokenInfo;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface AccountService {
 
@@ -16,9 +17,9 @@ public interface AccountService {
 
     TokenInfo login(AccountLoginRequestForm requestForm);
 
-    Account modify(AccountModifyRequestForm requestForm);
+    Account modify(String email, AccountModifyRequestForm requestForm);
 
-    Boolean logout(String userToken);
+    Boolean logout(HttpServletResponse response);
 
     Boolean withdrawal(String userToken);
 
