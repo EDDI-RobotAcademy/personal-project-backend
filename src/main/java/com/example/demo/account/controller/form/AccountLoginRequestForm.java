@@ -1,6 +1,5 @@
 package com.example.demo.account.controller.form;
 
-import com.example.demo.account.entity.RoleType;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -12,8 +11,11 @@ public class AccountLoginRequestForm {
 
     final private String password;
 
-    public AccountLoginRequestForm(String email, String password) {
+    final private String accessToken;
+
+    public AccountLoginRequestForm(String email, String password, String accessToken) {
         this.email = email;
         this.password = password;
+        this.accessToken = accessToken;
     }
 }

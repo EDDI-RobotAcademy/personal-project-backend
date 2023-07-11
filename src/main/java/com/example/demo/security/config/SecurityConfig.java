@@ -1,6 +1,5 @@
 package com.example.demo.security.config;
 
-import com.example.demo.security.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
-    final private JwtFilter jwtFilter;
 
 //    private static String[] PERMIT_URL_ARRAY = {"/account/sing-up", "/account/log-in", "/account/check-email/**"};
 
@@ -52,8 +49,6 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
 
                                 .and()
-
-                                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 )
                 .httpBasic(Customizer.withDefaults())
                 .build();
