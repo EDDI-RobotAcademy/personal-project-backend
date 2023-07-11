@@ -30,7 +30,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     }
 
     @Override
-    public boolean register(RequestRegisterBoardForm requestForm) {
+    public MemberBoard register(RequestRegisterBoardForm requestForm) {
         log.info(String.valueOf(requestForm));
         List<FilePaths> filePathList = requestForm.getAwsFileList();
         MemberBoard savedBoard = boardRepository.save(requestForm.toMemberBoard());
@@ -40,25 +40,19 @@ public class MemberBoardServiceImpl implements MemberBoardService {
 
         for (FilePaths filePaths : filePathList){
             String imagePath = filePaths.getImagePath();
-//            filePathsRepository.save(new FilePaths());
             FilePaths imageFilePath = new FilePaths(imagePath, savedBoard);
             filePathsRepository.save(imageFilePath);
 
         }
-        return true;
+        return savedBoard;
     }
 
-
-//    @Override
-//    public Boolean register(List<FilePaths> fileList, RequestRegisterBoardForm info) {
-//
-//        for (FilePaths filePaths : fileList) {
-//            String filename = filePaths.getImagePath();
-//            filePathsRepository.save(new FilePaths());
-//        }
-//        MemberBoard board = info.toMemberBoard(fileList);
-//        boardRepository.save(board);
-//        return true;
-//
-//    }
+    @Override
+    public MemberBoard read(Long boardId) {
+        Optional<MemberBoard> maybeBoard = boardRepository.findById(boardId);
+        if(maybeBoard.isEmpty()){
+            return null;
+        }
+        return maybeBoard.get();
+    }
 }

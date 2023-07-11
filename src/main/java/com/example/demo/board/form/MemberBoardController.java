@@ -28,10 +28,17 @@ public class MemberBoardController {
     }
 
     @PostMapping("/register")
-    public boolean registerBoard (@RequestBody RequestRegisterBoardForm requestBoardForm) {
+    public MemberBoard registerBoard (@RequestBody RequestRegisterBoardForm requestBoardForm) {
         log.info("registerBoard()");
 
         return boardService.register(requestBoardForm);
+    }
+    @GetMapping("/{boardId}")
+    public MemberBoard readBoard (@PathVariable("boardId") Long boardId) {
+
+        log.info("boardRead()");
+
+        return boardService.read(boardId);
     }
 
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MemberBoardService {
     List<MemberBoard> list();
-//    MemberBoard register(MemberBoard memberBoard);
-    boolean register(RequestRegisterBoardForm requestform);
+    MemberBoard register(RequestRegisterBoardForm requestform);
 
+    MemberBoard read(Long boardId);
 }
