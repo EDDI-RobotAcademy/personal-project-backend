@@ -1,10 +1,5 @@
 package com.example.demo.eventTest;
 
-import com.example.demo.board.community.controller.form.CommunityModifyForm;
-import com.example.demo.board.community.controller.form.CommunityRegistForm;
-import com.example.demo.board.community.entity.CommunityBoard;
-import com.example.demo.board.community.repository.CommunityRepository;
-import com.example.demo.board.community.service.CommunityServcie;
 import com.example.demo.board.event.controller.form.EventModifyForm;
 import com.example.demo.board.event.controller.form.EventRegistForm;
 import com.example.demo.board.event.entity.EventBoard;
@@ -104,7 +99,7 @@ public class EventTest {
     }
 
     @Test
-    @DisplayName("커뮤니티 게시물을 삭제합니다.")
+    @DisplayName("이벤트 게시물을 삭제합니다.")
     void 게시물_삭제(){
         final Long eventId = 3L;
         Boolean resultEventDelete = eventService.delete(eventId);

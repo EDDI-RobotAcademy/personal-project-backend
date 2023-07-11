@@ -49,7 +49,7 @@ public class NoticeController {
         return returnedNoticeList;
     }
 
-    // 게시물 읽기
+    // 공지사항 게시물 읽기
     @GetMapping("/list/{noticeId}")
     public NoticeBoard noticeRead(@PathVariable Long noticeId){
         log.info("NoticeRead() ");
