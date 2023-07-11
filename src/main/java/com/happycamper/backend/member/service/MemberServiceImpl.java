@@ -1,5 +1,6 @@
 package com.happycamper.backend.member.service;
 
+import com.happycamper.backend.member.authorization.JwtUtil;
 import com.happycamper.backend.member.controller.form.*;
 import com.happycamper.backend.member.entity.*;
 import com.happycamper.backend.member.entity.sellerInfo.SellerInfo;
@@ -13,10 +14,16 @@ import com.happycamper.backend.member.service.request.BusinessMemberRegisterRequ
 import com.happycamper.backend.member.service.request.NormalMemberRegisterRequest;
 import com.happycamper.backend.member.service.request.SellerInfoRegisterRequest;
 import com.happycamper.backend.member.service.request.UserProfileRegisterRequest;
-import io.jsonwebtoken.Claims;
+import com.happycamper.backend.member.service.response.AuthResponse;
+import com.happycamper.backend.member.service.response.SellerInfoResponse;
+import com.happycamper.backend.member.service.response.UserProfileResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -31,15 +38,51 @@ public class MemberServiceImpl implements MemberService{
     final private UserProfileRepository userProfileRepository;
     final private SellerInfoRepository sellerInfoRepository;
     final private RoleRepository roleRepository;
-    final EmailService emailService;
-    final JwtTokenService jwtTokenService;
-    final RedisService redisService;
+    final private EmailService emailService;
+    final private JwtUtil jwtUtil;
+    final private RedisService redisService;
+    final private PasswordEncoder passwordEncoder;
+
+    @Value("${jwt.password}")
+    private String secretKey;
+
+    // 이메일로 회원 찾기
+    @Override
+    public Member findLoginMemberByEmail(String email) {
+        Optional<Member> maybeMember = memberRepository.findByEmail(email);
+        if(maybeMember.isEmpty()) {
+            return null;
+        }
+        return maybeMember.get();
+    }
+
+    // 이메일로 회원 role 찾기
+    @Override
+    public Role findLoginMemberRoleByEmail(String email) {
+        Optional<Member> maybeMember = memberRepository.findByEmail(email);
+        if(maybeMember.isEmpty()) {
+            return null;
+        }
+        Member member = maybeMember.get();
+
+        Optional<MemberRole> maybeMemberRole = memberRoleRepository.findByMember(member);
+        if(maybeMemberRole.isPresent()) {
+            return maybeMemberRole.get().getRole();
+        }
+        return null;
+    }
 
     // 일반 회원의 회원가입
     @Override
-    public Boolean normalMemberRegister(NormalMemberRegisterRequest request) {
+    public Boolean normalMemberRegister(NormalMemberRegisterForm requestForm) {
+        String email = requestForm.getEmail();
+        String password = passwordEncoder.encode(requestForm.getPassword());
+
+        final NormalMemberRegisterRequest request = requestForm.toNormalMemberRegisterRequest();
+        final Member member = request.toMember(email, password);
+
         // 계정 생성
-        final Member member = memberRepository.save(request.toMember());
+        memberRepository.save(member);
 
         // 회원 타입 부여
         final Role role = roleRepository.findByRoleType(request.getRoleType()).get();
@@ -73,15 +116,33 @@ public class MemberServiceImpl implements MemberService{
         return false;
     }
 
+    // 닉네임 중복 확인
+    @Override
+    public Boolean checkNickNameDuplicate(CheckNickNameDuplicateRequestForm requestForm) {
+        // 존재하는 닉네임인지 확인
+        Optional<UserProfile> maybeUserProfile = userProfileRepository.findByNickName(requestForm.getNickName());
+
+        if(maybeUserProfile.isPresent()) {
+            return true;
+        }
+        return false;
+    }
+
     // 사업자 회원의 회원가입
     @Override
-    public Boolean businessMemberRegister(BusinessMemberRegisterRequest request) {
+    public Boolean businessMemberRegister(BusinessMemberRegisterForm requestForm) {
+
+        String email = requestForm.getEmail();
+        String password = passwordEncoder.encode(requestForm.getPassword());
+
+        final BusinessMemberRegisterRequest request = requestForm.toBusinessMemberRegisterRequest();
+        final Member member = request.toMember(email, password);
+
+        // 계정 생성
+        memberRepository.save(member);
 
         final Long businessNumber = request.getBusinessNumber();
         final String businessName = request.getBusinessName();
-
-        // 계정 생성
-        final Member member = memberRepository.save(request.toMember());
 
         // 회원 타입 부여
         final Role role = roleRepository.findByRoleType(request.getRoleType()).get();
@@ -101,10 +162,10 @@ public class MemberServiceImpl implements MemberService{
 
     // 일반 회원의 회원 프로필 생성
     @Override
-    public UserProfile addProfile(Long accountId, UserProfileRegisterRequest request) {
-        final Optional<Member> maybeMember = memberRepository.findById(accountId);
+    public Boolean addProfile(UserProfileRegisterRequest request) {
+        final Optional<Member> maybeMember = memberRepository.findByEmail(request.getEmail());
         if (maybeMember.isEmpty()) {
-            return null;
+            return false;
         }
         Member member = maybeMember.get();
 
@@ -113,7 +174,8 @@ public class MemberServiceImpl implements MemberService{
         if (maybeUserProfile.isEmpty()) {
             UserProfile userProfile =
                     new UserProfile(request.getName(), request.getContactNumber(), request.getNickName(), request.getBirthday(), member);
-            return userProfileRepository.save(userProfile);
+            userProfileRepository.save(userProfile);
+            return true;
         }
 
         UserProfile userProfile = maybeUserProfile.get();
@@ -124,15 +186,16 @@ public class MemberServiceImpl implements MemberService{
 
         System.out.println("UserProfile: " + userProfile);
 
-        return userProfileRepository.save(userProfile);
+        userProfileRepository.save(userProfile);
+        return true;
     }
 
     // 판매자 회원의 고객센터 정보 생성
     @Override
-    public SellerInfo addSellerInfo(Long accountId, SellerInfoRegisterRequest request) {
-        final Optional<Member> maybeMember = memberRepository.findById(accountId);
+    public Boolean addSellerInfo(SellerInfoRegisterRequest request) {
+        final Optional<Member> maybeMember = memberRepository.findByEmail(request.getEmail());
         if (maybeMember.isEmpty()) {
-            return null;
+            return false;
         }
         Member member = maybeMember.get();
 
@@ -141,7 +204,9 @@ public class MemberServiceImpl implements MemberService{
         if (maybeSellerInfo.isEmpty()) {
             SellerInfo sellerInfo =
                     new SellerInfo(request.getAddress(), request.getContactNumber(), request.getBank(), request.getAccountNumber(), member);
-            return sellerInfoRepository.save(sellerInfo);
+            System.out.println("궁금하다: " + sellerInfo);
+            sellerInfoRepository.save(sellerInfo);
+            return true;
         }
 
         SellerInfo sellerInfo = maybeSellerInfo.get();
@@ -152,39 +217,178 @@ public class MemberServiceImpl implements MemberService{
 
         System.out.println("SellerInfo: " + sellerInfo);
 
-        return sellerInfoRepository.save(sellerInfo);
+        sellerInfoRepository.save(sellerInfo);
+        return true;
     }
 
     // 회원의 로그인
     @Override
-    public void login(MemberLoginRequestForm requestForm, HttpServletResponse response) {
+    public Boolean login(MemberLoginRequestForm requestForm, HttpServletResponse response) {
         Optional<Member> maybeMember = memberRepository.findByEmail(requestForm.getEmail());
 
         if(maybeMember.isPresent()) {
-            if(requestForm.getPassword().equals(maybeMember.get().getPassword())) {
+            if(passwordEncoder.matches(requestForm.getPassword(), maybeMember.get().getPassword())) {
 
                 final Member member = maybeMember.get();
 
-                String accessToken = jwtTokenService.generateAccessToken(requestForm.getEmail());
-                String refreshToken = jwtTokenService.generateRefreshToken(requestForm.getEmail());
+                String accessToken = jwtUtil.generateToken(requestForm.getEmail(), secretKey, 6 * 60 * 60 * 1000);
+                String refreshToken = jwtUtil.generateToken(requestForm.getEmail(), secretKey, 2 * 7 * 24 * 60 * 60 * 1000);
                 redisService.setKeyAndValue(refreshToken, member.getId());
 
-                String tokens = "Bearer " + accessToken + " " + refreshToken;
+                System.out.println("AccessToken: " + accessToken);
+                System.out.println("RefreshToken: " + refreshToken);
 
-                response.setHeader("Authorization", tokens);
-                System.out.println("accessToken + refreshToken: " + tokens);
+                Cookie assessCookie = jwtUtil.generateCookie("AccessToken", accessToken, 60 * 60 * 6, false);
+                Cookie refreshCookie = jwtUtil.generateCookie("RefreshToken", refreshToken, 60 * 60 * 24 * 14, true);
+
+                response.addCookie(assessCookie);
+                response.addCookie(refreshCookie);
+
+                return true;
             }
         }
+        return false;
     }
 
-    // 사용자 인증
+    // 토큰 검증 후 권한 확인
     @Override
-    public String authorize(AuthRequestForm requestForm) {
-        System.out.println("검증할 토큰: " + requestForm.getAuthorizationHeader());
+    public AuthResponse authorize(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
 
-        String token = requestForm.getAuthorizationHeader();
-        Claims claims = jwtTokenService.parseJwtToken(token);
-        System.out.println("Claims: " + claims);
-        return claims.getSubject();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("AccessToken")) {
+
+                    String accessToken = cookie.getValue();
+                    String email = jwtUtil.getEmail(accessToken, secretKey);
+
+                    Optional<Member> maybeMember = memberRepository.findByEmail(email);
+                    if(maybeMember.isPresent()) {
+                        Optional<MemberRole> maybeMemberRole = memberRoleRepository.findByMember(maybeMember.get());
+                        if(maybeMemberRole.isPresent()) {
+                            return new AuthResponse(email, maybeMemberRole.get().getRole().getRoleType().toString());
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    // 일반 회원 프로필 가져오기
+    @Override
+    public UserProfileResponse getUserProfile(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("AccessToken")) {
+
+                    String accessToken = cookie.getValue();
+                    String email = jwtUtil.getEmail(accessToken, secretKey);
+
+                    Optional<Member> maybeMember = memberRepository.findByEmail(email);
+                    if(maybeMember.isPresent()) {
+
+                        Optional<UserProfile> maybeUserProfile = userProfileRepository.findUserProfileByMember(maybeMember.get());
+                        if(maybeUserProfile.isPresent()) {
+
+                        UserProfile userProfile = maybeUserProfile.get();
+                        UserProfileResponse response =
+                                new UserProfileResponse(
+                                        email,
+                                        userProfile.getName(),
+                                        userProfile.getContactNumber(),
+                                        userProfile.getNickName(),
+                                        userProfile.getBirthday());
+
+                                return response;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    // 판매자 회원 고객센터 정보 가져오기
+    @Override
+    public SellerInfoResponse getSellerInfo(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("AccessToken")) {
+
+                    String accessToken = cookie.getValue();
+                    String email = jwtUtil.getEmail(accessToken, secretKey);
+
+                    Optional<Member> maybeMember = memberRepository.findByEmail(email);
+                    if(maybeMember.isPresent()) {
+
+                        Optional<SellerInfo> maybeSellerInfo = sellerInfoRepository.findSellerInfoByMember(maybeMember.get());
+                        Optional<MemberRole> maybeMemberRole = memberRoleRepository.findByMember(maybeMember.get());
+
+                        if(maybeSellerInfo.isPresent() && maybeMemberRole.isPresent()) {
+                            SellerInfo sellerInfo = maybeSellerInfo.get();
+                            SellerInfoResponse response =
+                                    new SellerInfoResponse(
+                                            email,
+                                            maybeMemberRole.get().getBusinessNumber(),
+                                            maybeMemberRole.get().getBusinessName(),
+                                            sellerInfo.getAddress().getCity(),
+                                            sellerInfo.getAddress().getStreet(),
+                                            sellerInfo.getAddress().getAddressDetail(),
+                                            sellerInfo.getAddress().getZipcode(),
+                                            sellerInfo.getContactNumber(),
+                                            sellerInfo.getBank(),
+                                            sellerInfo.getAccountNumber());
+
+                            return response;
+                        }
+                        if(maybeSellerInfo.isEmpty()) {
+                            if(maybeMemberRole.isPresent()) {
+                                SellerInfoResponse response =
+                                        new SellerInfoResponse(
+                                                email,
+                                                maybeMemberRole.get().getBusinessNumber(),
+                                                maybeMemberRole.get().getBusinessName());
+                                return response;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    // 로그아웃
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("AccessToken")) {
+
+                    String accessToken = cookie.getValue();
+                    System.out.println("클라이언트에서 가져온 accessToken: " + accessToken);
+
+                    Cookie assessCookie = jwtUtil.generateCookie("AccessToken", null, 0, false);
+
+                    response.addCookie(assessCookie);
+                }
+                if(cookie.getName().equals("RefreshToken")) {
+                    String refreshToken = cookie.getValue();
+                    System.out.println("클라이언트에서 가져온 refreshToken: " + refreshToken);
+
+                    Cookie refreshCookie = jwtUtil.generateCookie("RefreshToken", null, 0, true);
+                    response.addCookie(refreshCookie);
+
+                    redisService.deleteByKey(refreshToken);
+                }
+            }
+        }
     }
 }
