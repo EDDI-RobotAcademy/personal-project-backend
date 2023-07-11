@@ -1,7 +1,7 @@
 package com.example.demo.config;
 
-import com.example.demo.account.entity.RoleType;
-import com.example.demo.account.service.AccountService;
+import com.example.demo.domain.account.entity.RoleType;
+import com.example.demo.domain.account.service.AccountService;
 import com.example.demo.authentication.jwt.JwtTokenFilter;
 import com.example.demo.authentication.jwt.JwtTokenUtil;
 import com.example.demo.authentication.redis.RedisService;

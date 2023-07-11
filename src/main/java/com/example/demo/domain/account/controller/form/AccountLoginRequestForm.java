@@ -1,4 +1,4 @@
-package com.example.demo.account.controller.form;
+package com.example.demo.domain.account.controller.form;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,17 +1,15 @@
 package com.example.demo.accountTest;
 
-import com.example.demo.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.AccountModifyRequestForm;
-import com.example.demo.account.controller.form.AccountRegisterRequestForm;
-import com.example.demo.account.entity.Account;
-import com.example.demo.account.repository.AccountRepository;
-import com.example.demo.account.service.AccountService;
-import com.example.demo.account.service.AccountServiceImpl;
+import com.example.demo.domain.account.controller.form.AccountLoginRequestForm;
+import com.example.demo.domain.account.controller.form.AccountRegisterRequestForm;
+import com.example.demo.domain.account.entity.Account;
+import com.example.demo.domain.account.repository.AccountRepository;
+import com.example.demo.domain.account.service.AccountService;
+import com.example.demo.domain.account.service.AccountServiceImpl;
 import com.example.demo.authentication.redis.RedisService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;

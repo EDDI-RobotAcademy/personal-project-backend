@@ -1,10 +1,10 @@
-package com.example.demo.account.controller;
+package com.example.demo.domain.account.controller;
 
-import com.example.demo.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.AccountModifyRequestForm;
-import com.example.demo.account.controller.form.AccountRegisterRequestForm;
-import com.example.demo.account.entity.Account;
-import com.example.demo.account.service.AccountService;
+import com.example.demo.domain.account.controller.form.AccountLoginRequestForm;
+import com.example.demo.domain.account.controller.form.AccountModifyRequestForm;
+import com.example.demo.domain.account.controller.form.AccountRegisterRequestForm;
+import com.example.demo.domain.account.entity.Account;
+import com.example.demo.domain.account.service.AccountService;
 import com.example.demo.authentication.jwt.JwtTokenUtil;
 import com.example.demo.authentication.jwt.TokenInfo;
 import com.example.demo.authentication.redis.RedisService;
