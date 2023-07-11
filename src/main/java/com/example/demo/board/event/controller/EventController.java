@@ -53,7 +53,7 @@ public class EventController {
         return returnedEventList;
     }
 
-    // 게시물 읽기
+    // 이벤트 게시물 읽기
     @GetMapping("/list/{eventId}")
     public EventBoard eventRead(@PathVariable Long eventId){
         log.info("EventRead() ");
@@ -63,9 +63,9 @@ public class EventController {
     }
 
 
-    // 공지사항 게시물 삭제
+    // 이벤트 게시물 삭제
     @DeleteMapping("/delete")
-    public boolean eventDelete(@RequestParam("noticeId") Long eventId){
+    public boolean eventDelete(@RequestParam("eventId") Long eventId){
         log.info("EventDelete() ");
         boolean resultDeleteEvent = eventService.delete(eventId);
 

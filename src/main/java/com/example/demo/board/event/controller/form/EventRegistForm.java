@@ -1,7 +1,6 @@
 package com.example.demo.board.event.controller.form;
 
 import com.example.demo.board.event.entity.EventBoard;
-import com.example.demo.board.notice.entity.NoticeBoard;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
