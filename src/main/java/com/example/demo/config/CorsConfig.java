@@ -13,9 +13,7 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://127.0.0.1:8080", //vue는 허용하겠다는 소리, *로 써도 되지만 전부 다라는 이야기
                                 "http://localhost:8080",
                                 "http://192.168.20.3:8080",
-                                "http://localhost:3000",
-                                "http://localhost:3001",
-                                "http://localhost:3002")
+                                "http://43.201.44.74")
                 .allowedMethods("GET", "POST", "PUT", "DELETE");
     }
 }
