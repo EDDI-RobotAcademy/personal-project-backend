@@ -1,8 +1,12 @@
 package com.example.demo.board.notice.controller.form;
 
 import com.example.demo.board.notice.entity.NoticeBoard;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
+@Getter
+@ToString
 @RequiredArgsConstructor
 public class NoticeRegistForm {
     final private String title;

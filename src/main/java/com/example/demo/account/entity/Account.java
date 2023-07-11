@@ -2,10 +2,7 @@ package com.example.demo.account.entity;
 
 import com.example.demo.board.notice.entity.NoticeBoard;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +11,7 @@ import java.util.List;
 @Getter
 @ToString
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Account {
     @Id
     @Column(name = "account_id")
