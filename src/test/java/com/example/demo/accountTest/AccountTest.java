@@ -39,7 +39,7 @@ public class AccountTest {
         final String accountAddress = "부산시 부산역 9번 출구";
         AccountRegistRequestForm accountRegistRequestForm =
                 new AccountRegistRequestForm(email,password,accountName,accountBirth,accountPhone,accountAddress);
-        Account account = accountService.regist(accountRegistRequestForm);
+        Account account = accountService.regist(accountRegistRequestForm.toAccount());
 
         assertEquals(email, account.getEmail());
         assertEquals(password, account.getPassword());
@@ -47,8 +47,24 @@ public class AccountTest {
         assertEquals(accountBirth, account.getAccountBirth());
         assertEquals(accountPhone, account.getAccountPhone());
         assertEquals(accountAddress, account.getAccountAddress());
+    }
+
+    @Test
+    @DisplayName("매니저 회원가입")
+    void 매니저_회원_가입(){
+        final String email = "manager";
+        final String password = "1234";
+        ManagerRegistRequestForm managerRegistRequestForm = new ManagerRegistRequestForm(email,password);
+        Account account = accountService.regist(managerRegistRequestForm.toAccount());
+
+        assertEquals(email,account.getEmail());
+        assertEquals(password,account.getPassword());
+        assertEquals("Manager",account.getUserType());
 
     }
+
+
+
 
     @Test
     @DisplayName("DB에 있는 이메일 중복확인을 합니다.")

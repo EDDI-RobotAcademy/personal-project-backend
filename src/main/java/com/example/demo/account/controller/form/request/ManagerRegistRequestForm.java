@@ -11,7 +11,7 @@ public class ManagerRegistRequestForm {
     final private String password;
     final private String userType;
 
-    public ManagerRegistRequestForm(String email, String password, String userType) {
+    public ManagerRegistRequestForm(String email, String password) {
         this.email = email;
         this.password = password;
         this.userType = "Manager";
