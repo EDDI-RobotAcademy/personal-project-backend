@@ -14,7 +14,7 @@ public interface AccountService {
 
     Boolean checkEmail(String email);
 
-    Boolean login(AccountLoginRequestForm form);
+    TokenResponse login(AccountLoginRequestForm form);
 
     Long findAccountInfoById(String email);
 

@@ -44,7 +44,7 @@ public class AccountController {
     }
 
     @PostMapping("/log-in")
-    public Boolean login(@RequestBody AccountLoginRequestForm form) {
+    public TokenResponse  login(@RequestBody AccountLoginRequestForm form) {
         log.info("로그인: " + form);
 
         return accountService.login(form);

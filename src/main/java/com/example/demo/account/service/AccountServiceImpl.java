@@ -87,7 +87,7 @@ public class AccountServiceImpl implements AccountService{
 
     // 로그인
     @Override
-    public Boolean login(AccountLoginRequestForm form) {
+    public TokenResponse  login(AccountLoginRequestForm form) {
         Optional<Account> maybeAccount = accountRepository.findByEmail(form.getEmail());
 
         if (maybeAccount.isPresent()) {
@@ -102,10 +102,10 @@ public class AccountServiceImpl implements AccountService{
                 log.info("accessToken: " + accessToken);
                 log.info("refreshToken: " + refreshToken);
 
-                return true;
+                return tokenResponse;
             }
         }
-        return false;
+        return null;
     }
 
     @Override
