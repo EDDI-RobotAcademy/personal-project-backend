@@ -95,16 +95,18 @@ public class AccountServiceImpl implements AccountService{
                 Account account = maybeAccount.get();
                 TokenResponse tokenResponse = jwtProvider.createTokenByLogin(account);
 
-                // Store the accessToken in the form object
-                form.setAccessToken(tokenResponse.getAccessToken());
+                String accessToken = tokenResponse.getAccessToken();
+                String refreshToken = tokenResponse.getRefreshToken();
+                form.setEmail(accessToken, refreshToken);
+
+                log.info("accessToken: " + accessToken);
+                log.info("refreshToken: " + refreshToken);
 
                 return true;
             }
         }
         return false;
     }
-
-
 
     @Override
     public Long findAccountInfoById(String email) {

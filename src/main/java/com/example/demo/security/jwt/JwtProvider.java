@@ -26,18 +26,19 @@ public class JwtProvider {
     private String key;
 
     @Value("${spring.jwt.live.atk}")
-    private long accessTokenLive;
+    private Long accessTokenLive;
 
     @PostConstruct
     protected void init () {
         key = Base64.getEncoder().encodeToString(key.getBytes());
     }
 
+
     public TokenResponse createTokenByLogin(Account account) {
         try {
             Subject tokenSubject = Subject.accessToken(account.getId(), account.getEmail());
             String accessToken = createToken(tokenSubject, accessTokenLive);
-            return new TokenResponse(accessToken, null);
+            return new TokenResponse(accessToken, null); // accessToken 값을 첫 번째 매개변수로 설정
         } catch (JsonProcessingException e) {
             e.printStackTrace(); // 예외 처리
             return null; // 예외 발생 시 null 반환 또는 적절한 오류 처리

@@ -7,15 +7,17 @@ import lombok.ToString;
 @ToString
 public class AccountLoginRequestForm {
 
-    final private String email;
+    private String email;
 
-    final private String password;
+    private String password;
 
-    final private String accessToken;
-
-    public AccountLoginRequestForm(String email, String password, String accessToken) {
+    public AccountLoginRequestForm(String email, String password) {
         this.email = email;
         this.password = password;
-        this.accessToken = accessToken;
+    }
+
+    public void setEmail(String accountToken, String refreshToken) {
+        this.email = accountToken;
+//        this.email = refreshToken;
     }
 }

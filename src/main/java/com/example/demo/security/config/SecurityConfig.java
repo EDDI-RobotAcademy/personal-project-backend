@@ -1,5 +1,6 @@
 package com.example.demo.security.config;
 
+import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
