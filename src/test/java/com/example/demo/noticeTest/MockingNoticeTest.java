@@ -45,7 +45,7 @@ public class MockingNoticeTest {
                 .andExpect(jsonPath("$.length()").value(5))
                 .andExpect(jsonPath("$.title").value("제목"))
                 .andExpect(jsonPath("$.content").value("내용"));
-//                .andExpect(jsonPath("$.writer").value("작성자"));
+
         verify(noticeService, times(1)).regist(noticeRegistForm.toNoticeBoard());
     }
 
