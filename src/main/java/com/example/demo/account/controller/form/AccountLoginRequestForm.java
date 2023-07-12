@@ -18,6 +18,6 @@ public class AccountLoginRequestForm {
 
     public void setEmail(String accountToken, String refreshToken) {
         this.email = accountToken;
-//        this.email = refreshToken;
+        this.email = refreshToken;
     }
 }

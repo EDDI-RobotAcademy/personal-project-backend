@@ -10,6 +10,7 @@ import com.example.demo.account.entity.RoleType;
 import com.example.demo.account.repository.AccountRepository;
 import com.example.demo.account.repository.AccountRoleRepository;
 import com.example.demo.account.repository.RoleRepository;
+import com.example.demo.redis.RedisService;
 import com.example.demo.security.jwt.JwtProvider;
 import com.example.demo.security.jwt.exception.BadRequestException;
 import com.example.demo.security.jwt.subject.TokenResponse;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,7 @@ public class AccountServiceImpl implements AccountService{
     final private PasswordEncoder passwordEncoder;
     final private ObjectMapper objectMapper;
     final private JwtProvider jwtProvider;
+    final private RedisService redisService;
 
     // 회원 가입
     @Override
@@ -101,7 +104,7 @@ public class AccountServiceImpl implements AccountService{
 
                 log.info("accessToken: " + accessToken);
                 log.info("refreshToken: " + refreshToken);
-
+                redisService.setKeyAndValue(refreshToken, account.getEmail());
                 return tokenResponse;
             }
         }

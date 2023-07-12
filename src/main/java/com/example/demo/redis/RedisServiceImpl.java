@@ -16,8 +16,8 @@ public class RedisServiceImpl implements RedisService{
     final private StringRedisTemplate redisTemplate;
 
     @Override
-    public void setKeyAndValue(String token, Long accountId) {
-        String accountIdToString = String.valueOf(accountId);
+    public void setKeyAndValue(String token, String email) {
+        String accountIdToString = String.valueOf(email);
         ValueOperations<String, String> value = redisTemplate.opsForValue();
         value.set(token, accountIdToString, Duration.ofMinutes(3));
     }
