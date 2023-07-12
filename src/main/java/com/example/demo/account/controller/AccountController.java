@@ -53,9 +53,7 @@ public class AccountController {
     public List<Account> accountList(){
         log.info("  ");
         log.info("AccountList()");
-
         List<Account> returnedAccountList = accountService.list();
-
         log.info("returnedAccountList : " + returnedAccountList);
 
         return returnedAccountList;
@@ -91,7 +89,6 @@ public class AccountController {
     @GetMapping("/gomypage")
     public boolean goMypage(@RequestBody AccountGoMypageForm accountGoMypageForm){
         log.info("accountGoMypageForm()");
-
         Boolean goMypage_result = accountService.goMypage(accountGoMypageForm);
 
         return goMypage_result;
@@ -101,9 +98,7 @@ public class AccountController {
     @GetMapping("/accountInfo")
     public Account accountInfo(AccountUserTokenRequestForm accountUserTokenRequestForm){
         log.info("accountInfo() ");
-
         Account accountInfo = accountService.accountInfoList(accountUserTokenRequestForm);
-
 
         return accountInfo;
     }

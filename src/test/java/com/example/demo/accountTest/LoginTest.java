@@ -21,10 +21,8 @@ public class LoginTest {
     void 매니저_로그인(){
         final String email = "manager";
         final String password ="11";
-
         AccountLoginRequestForm accountLoginRequestForm = new AccountLoginRequestForm(email,password);
         AccountLoginResponseForm accountLoginResponseForm = accountService.login(accountLoginRequestForm);
-
         System.out.println(accountLoginResponseForm.getUserToken());
         System.out.println(accountLoginResponseForm.getLoginStatus());
 
@@ -36,11 +34,8 @@ public class LoginTest {
     void 정상적인_회원이_로그인을_시도(){
         final String email = "test@test.com";
         final String password = "111";
-
-
         AccountLoginRequestForm accountLoginRequestForm = new AccountLoginRequestForm(email,password);
         AccountLoginResponseForm accountLoginResponseForm = accountService.login(accountLoginRequestForm);
-
         System.out.println(accountLoginResponseForm.getUserToken());
         System.out.println(accountLoginResponseForm.getLoginStatus());
 
@@ -52,11 +47,8 @@ public class LoginTest {
     void Email이_틀린_회원이_로그인_시도(){
         final String email = "asdf@asdf.com";
         final String password = "111";
-
-
         AccountLoginRequestForm accountLoginRequestForm = new AccountLoginRequestForm(email,password);
         AccountLoginResponseForm accountLoginResponseForm = accountService.login(accountLoginRequestForm);
-
         System.out.println(accountLoginResponseForm.getUserToken());
         System.out.println(accountLoginResponseForm.getLoginStatus());
 
@@ -68,11 +60,8 @@ public class LoginTest {
     void PW가_틀린_회원이_로그인_시도(){
         final String email = "test@test.com";
         final String password = "11111";
-
-
         AccountLoginRequestForm accountLoginRequestForm = new AccountLoginRequestForm(email,password);
         AccountLoginResponseForm accountLoginResponseForm = accountService.login(accountLoginRequestForm);
-
         System.out.println(accountLoginResponseForm.getUserToken());
         System.out.println(accountLoginResponseForm.getLoginStatus());
 

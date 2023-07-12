@@ -68,7 +68,7 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public List<Account> list() {
-        return accountRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        return accountRepository.findAll(Sort.by(Sort.Direction.DESC, "accountId"));
     }
 
     // 계정 삭제 기능
