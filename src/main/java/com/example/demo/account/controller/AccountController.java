@@ -24,7 +24,7 @@ public class AccountController {
     @PostMapping("/regist")
     public Long regist(@RequestBody AccountRegistRequestForm requestForm) {
         log.info("regist()");
-        Account account = accountService.regist(requestForm);
+        Account account = accountService.regist(requestForm.toAccount());
         if (account == null) {
             return null;
         }
@@ -110,5 +110,15 @@ public class AccountController {
 
         return userType;
     }
+
+    @PostMapping("/manager/regist")
+    public String managerRegist(ManagerRegistRequestForm managerRegistRequestForm){
+        log.info("ManagerRegist() ");
+        Account managerAccount = accountService.regist(managerRegistRequestForm.toAccount());
+
+
+        return managerAccount.getEmail();
+    }
+
 
 }

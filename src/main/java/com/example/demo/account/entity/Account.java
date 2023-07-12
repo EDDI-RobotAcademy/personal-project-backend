@@ -60,4 +60,10 @@ public class Account {
     public Account(Long accountId) {
         this.accountId = accountId;
     }
+
+    public Account(String email, String password, String userType) {
+        this.email = email;
+        this.password = password;
+        this.userType = userType;
+    }
 }

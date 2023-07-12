@@ -8,7 +8,7 @@ import com.example.demo.account.entity.Account;
 import java.util.List;
 
 public interface AccountService {
-    Account regist(AccountRegistRequestForm requestForm);
+    Account regist(Account account);
 
     AccountLoginResponseForm login(AccountLoginRequestForm requestForm);
 

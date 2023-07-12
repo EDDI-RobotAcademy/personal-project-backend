@@ -22,14 +22,11 @@ public class AccountServiceImpl implements AccountService{
 
     // 계정 등록 기능
     @Override
-    public Account regist(AccountRegistRequestForm requestForm) {
-        Account account = requestForm.toAccount();
-
+    public Account regist(Account account) {
 //        Optional<Account> maybeAccount = accountRepository.findByEmail(account.getEmail());
 //        if(maybeAccount.isPresent()) {
 //            return null;
 //        } // 아이디 중복 확인하면서 확인할 것이기 때문에 구지 안해도 됌
-
         Account savedAccount = accountRepository.save(account);
         System.out.println(savedAccount);
         return savedAccount;
