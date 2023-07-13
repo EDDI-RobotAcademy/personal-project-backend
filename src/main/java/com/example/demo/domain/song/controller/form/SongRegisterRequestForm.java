@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class SongRegisterRequestForm {
-    final private Long id;
+    final private Long playlistId;
     final private String title;
     final private String singer;
     final private String genre;
