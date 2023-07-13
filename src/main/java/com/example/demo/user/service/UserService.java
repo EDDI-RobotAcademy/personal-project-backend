@@ -1,7 +1,13 @@
 package com.example.demo.user.service;
 
-public interface UserService {
-    Boolean checkEmailDuplication(String email);
+import com.example.demo.user.controller.form.UserSignInResponseForm;
+import com.example.demo.user.entity.RoleType;
+import com.example.demo.user.service.request.UserSignInRequest;
+import com.example.demo.user.service.request.UserSignUpRequest;
 
-    Boolean signUp(UserRegisterRequest request);
+public interface UserService {
+    Boolean signUp(UserSignUpRequest userSignUpRequest);
+    UserSignInResponseForm signIn(UserSignInRequest request);
+    RoleType lookup(String userToken);
+    Long findUserId(String userToken);
 }
