@@ -10,7 +10,7 @@ import java.util.List;
 public interface BoardService {
     Board boardRegister(BoardRegisterRequestForm form);
 
-//    List<Board> list();
-//
+    List<Board> list();
+
 //    Board read(Long id);
 }

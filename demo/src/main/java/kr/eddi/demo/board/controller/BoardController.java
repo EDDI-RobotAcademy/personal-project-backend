@@ -25,12 +25,12 @@ public class BoardController {
       log.info(registerBoard.toString());
     return registerBoard;
     }
-//    @PostMapping("/list")
-//    public List<Board> boardList(){
-//        List<Board> returnBoardList= boardService.list();
-//        log.info(returnBoardList.toString());
-//        return returnBoardList;
-//    }
+    @PostMapping("/list")
+    public List<Board> boardList(){
+        List<Board> returnBoardList= boardService.list();
+        log.info(returnBoardList.toString());
+        return returnBoardList;
+    }
 //    @PostMapping("/read/{id}")
 //    public Board readBoard (@PathVariable("id") Long id){
 //        log.info("보드 가져와");

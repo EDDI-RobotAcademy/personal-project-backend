@@ -24,10 +24,10 @@ public class BoardServiceImpl implements BoardService{
         return board;
     }
 
-//    @Override
-//    public List<Board> list() {
-//        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-//    }
+    @Override
+    public List<Board> list() {
+        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+    }
 //
 //    @Override
 //    public Board read(Long id){
