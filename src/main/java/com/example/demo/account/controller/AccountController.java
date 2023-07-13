@@ -54,12 +54,5 @@ public class AccountController {
 
         return accountService.login(form);
     }
-
-    @GetMapping("/log-in/test")
-    public String test() {
-        log.info("test!");
-        return "test";
-    }
-
 }
 

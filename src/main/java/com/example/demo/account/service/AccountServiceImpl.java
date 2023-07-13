@@ -6,24 +6,19 @@ import com.example.demo.account.controller.request.AccountRegisterRequest;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.entity.AccountRole;
 import com.example.demo.account.entity.Role;
-import com.example.demo.account.entity.RoleType;
 import com.example.demo.account.repository.AccountRepository;
 import com.example.demo.account.repository.AccountRoleRepository;
 import com.example.demo.account.repository.RoleRepository;
 import com.example.demo.redis.RedisService;
 import com.example.demo.security.jwt.JwtProvider;
-import com.example.demo.security.jwt.exception.BadRequestException;
 import com.example.demo.security.jwt.subject.TokenResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -67,7 +62,11 @@ public class AccountServiceImpl implements AccountService{
             return false;
         }
 
-        final Account account = accountRepository.save(request.toAccount());
+        Account account = request.toAccount();
+        String password = passwordEncoder.encode(request.getPassword());
+        account.setPassword(password);
+        accountRepository.save(account);
+
         final Role role = roleRepository.findByRoleType(request.getRoleType()).get();
         final AccountRole accountRole = new AccountRole(account, role);
 

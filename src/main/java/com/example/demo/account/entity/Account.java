@@ -25,10 +25,7 @@ public class Account {
 
     private String phoneNumber;
 
-    private String accessNumber = "123-456";
-
-    @Setter
-    private String userToken;
+    private String accessNumber;
 
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
