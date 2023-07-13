@@ -144,7 +144,7 @@ public class AccountTest {
         final String password = "testing";
 
         AccountLoginRequestForm requestForm = new AccountLoginRequestForm(email, password);
-        String accessToken = testAccountService.login(requestForm).getAccessToken();
+        String accessToken = testAccountService.login(requestForm).getTokenInfo().getAccessToken();
         System.out.println(accessToken);
         assertNotNull(accessToken);
 

@@ -1,6 +1,7 @@
 package com.example.demo.domain.account.service;
 
 import com.example.demo.domain.account.controller.form.AccountLoginRequestForm;
+import com.example.demo.domain.account.controller.form.AccountLoginResponseForm;
 import com.example.demo.domain.account.controller.form.AccountModifyRequestForm;
 import com.example.demo.domain.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.domain.account.entity.Account;
@@ -53,7 +54,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public TokenInfo login(AccountLoginRequestForm requestForm) {
+    public AccountLoginResponseForm login(AccountLoginRequestForm requestForm) {
         Optional<Account> maybeAccount =
                 accountRepository.findByEmail(requestForm.getEmail());
 
@@ -73,7 +74,7 @@ public class AccountServiceImpl implements AccountService{
         TokenInfo tokenInfo = JwtTokenUtil.createToken(account.getEmail(), secretKey, expireTimeMs);
         redisService.setKeyAndValue(tokenInfo.getRefreshToken(), account.getId());
 
-        return tokenInfo;
+        return new AccountLoginResponseForm(tokenInfo, account.getNickname());
     }
 
     @Override
@@ -107,16 +108,6 @@ public class AccountServiceImpl implements AccountService{
     public Boolean withdrawal(String email) {
         accountRepository.deleteByEmail(email);
         return true;
-    }
-
-    @Override
-    public Account getLoginAccountById(Long id) {
-        if(id == null) return null;
-
-        Optional<Account> optionalAccount = accountRepository.findById(id);
-        if(optionalAccount.isEmpty()) return null;
-
-        return optionalAccount.get();
     }
 
     @Override

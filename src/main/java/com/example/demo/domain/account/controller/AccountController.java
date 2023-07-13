@@ -1,6 +1,7 @@
 package com.example.demo.domain.account.controller;
 
 import com.example.demo.domain.account.controller.form.AccountLoginRequestForm;
+import com.example.demo.domain.account.controller.form.AccountLoginResponseForm;
 import com.example.demo.domain.account.controller.form.AccountModifyRequestForm;
 import com.example.demo.domain.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.domain.account.entity.Account;
@@ -46,14 +47,16 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody AccountLoginRequestForm requestForm, HttpServletResponse response){
-        TokenInfo tokenInfo = accountService.login(requestForm);
+    public String login(@RequestBody AccountLoginRequestForm requestForm, HttpServletResponse response){
+        AccountLoginResponseForm loginResponse = accountService.login(requestForm);
 
-        Cookie accessCookie = jwtTokenUtil.generateCookie("AccessToken", tokenInfo.getAccessToken(), 60*60);
+        Cookie accessCookie = jwtTokenUtil.generateCookie("AccessToken", loginResponse.getTokenInfo().getAccessToken(), 60*60);
         response.addCookie(accessCookie);
 
-        Cookie refreshCookie = jwtTokenUtil.generateCookie("RefreshToken", tokenInfo.getRefreshToken(), 24*60*60);
+        Cookie refreshCookie = jwtTokenUtil.generateCookie("RefreshToken", loginResponse.getTokenInfo().getRefreshToken(), 24*60*60);
         response.addCookie(refreshCookie);
+
+        return loginResponse.getNickname();
     }
 
     @PutMapping("/modify")
