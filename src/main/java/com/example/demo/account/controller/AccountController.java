@@ -32,7 +32,7 @@ public class AccountController {
     }
 
     // 로그인 기능
-    @PostMapping("/login")
+    @GetMapping("/login")
     public AccountLoginResponseForm login(@RequestBody AccountLoginRequestForm requestForm){
         log.info("login");
         AccountLoginResponseForm accountLoginResponseForm = accountService.login(requestForm);
