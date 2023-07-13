@@ -1,7 +1,10 @@
 package com.example.demo.user.controller;
 
 import com.example.demo.user.controller.form.UserRegisterForm;
+import com.example.demo.user.controller.form.UserSignInRequestForm;
+import com.example.demo.user.controller.form.UserSignInResponseForm;
 import com.example.demo.user.service.UserService;
+import com.example.demo.user.service.request.UserSignUpRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -13,16 +16,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
     final private UserService userService;
-    @GetMapping("check-email/{email}")
-    public Boolean checkEmail(@PathVariable("email")String email) {
-        log.info("check-email duplication" + email);
-
-        return userService.checkEmailDuplication(email);
+    @PostMapping("/sign-up")
+    public Boolean userSignUp(@RequestBody UserRegisterForm registerForm) {
+        return userService.signUp(registerForm.toUserSignUpRequest());
     }
-    @PostMapping("sign-up")
-    public Boolean signUp(@RequestBody UserRegisterForm form) {
-        log.info("signUp(): " + form);
-
-        return userService.signUp(form.toUserRegisterRequest());
+    @PostMapping("sign-in")
+    public UserSignInResponseForm UserSignIn(@RequestBody UserSignInRequestForm signInRequestForm){
+        return userService.signIn(signInRequestForm.toUserSignInRequest());
     }
+
 }
+
+
