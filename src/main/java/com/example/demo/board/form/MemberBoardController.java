@@ -20,7 +20,7 @@ public class MemberBoardController {
     final private MemberBoardService boardService;
 
     @GetMapping("/list")
-    public List<MemberBoard> boardList () {
+    public List<MemberBoard> boardList() {
         log.info("boardList()");
 
         List<MemberBoard> returnedBoardList = boardService.list();
@@ -28,13 +28,13 @@ public class MemberBoardController {
     }
 
     @PostMapping("/register")
-    public MemberBoard registerBoard (@RequestBody RequestRegisterBoardForm requestBoardForm) {
+    public MemberBoard registerBoard(@RequestBody RequestRegisterBoardForm requestBoardForm) {
         log.info("registerBoard()");
 
         return boardService.register(requestBoardForm);
     }
     @GetMapping("/{boardId}")
-    public MemberBoard readBoard (@PathVariable("boardId") Long boardId) {
+    public ResponseBoardForm readBoard(@PathVariable("boardId") Long boardId) {
 
         log.info("boardRead()");
 
@@ -42,16 +42,4 @@ public class MemberBoardController {
     }
 
 
-//    @PostMapping(value = "/register",
-//            consumes = {
-//                    MediaType.APPLICATION_JSON_VALUE,
-//                    MediaType.APPLICATION_JSON_VALUE })
-//    public Boolean fileRegisterRequestHandler (
-//            @RequestPart(value = "files") List<FilePaths> fileList,
-//            @RequestPart(value = "boardInfo") RequestRegisterBoardForm info)
-//    {
-//
-//        log.info("fileRegisterRequestHandler(): " + info);
-//        return boardService.register(fileList, info);
-//    }
 }

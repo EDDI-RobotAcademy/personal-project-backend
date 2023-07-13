@@ -8,6 +8,5 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface MemberBoardRepository extends JpaRepository<MemberBoard, Long> {
-    @Query("select mb from MemberBoard mb")
     List<MemberBoard> findAll();
 }

@@ -4,14 +4,15 @@ package com.example.demo.board.service;
 import com.example.demo.board.entity.FilePaths;
 import com.example.demo.board.entity.MemberBoard;
 import com.example.demo.board.form.RequestRegisterBoardForm;
+import com.example.demo.board.form.ResponseBoardForm;
 import com.example.demo.board.reposiitory.FilePathsRepository;
 import com.example.demo.board.reposiitory.MemberBoardRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     final private FilePathsRepository filePathsRepository;
 
     @Override
+    @Transactional
     public List<MemberBoard> list() {
         return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
     }
@@ -48,11 +50,18 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     }
 
     @Override
-    public MemberBoard read(Long boardId) {
+    @Transactional
+    public ResponseBoardForm read(Long boardId) {
         Optional<MemberBoard> maybeBoard = boardRepository.findById(boardId);
         if(maybeBoard.isEmpty()){
             return null;
         }
-        return maybeBoard.get();
+        List<Long> idList = maybeBoard.get().getFilePathList().stream().map(FilePaths::getFileId).toList();
+        // lazy 걸려있어서 proxy patten안에 있어서 못가져옴 Transactional 하면 해결, 그치만 조회해야 거기서 쿼리가 한번 나간다.
+        // joinFetch로 사용 가능
+        List<FilePaths> savedFilePath = boardRepository.findById(boardId).get().getFilePathList();
+        final ResponseBoardForm responseBoardForm = new ResponseBoardForm(maybeBoard.get(),savedFilePath);
+
+        return responseBoardForm;
     }
 }
