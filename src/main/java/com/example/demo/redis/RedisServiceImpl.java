@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
 @Slf4j
 @Service
+@Component
 @RequiredArgsConstructor
 public class RedisServiceImpl implements RedisService{
 
@@ -19,22 +21,7 @@ public class RedisServiceImpl implements RedisService{
     public void setKeyAndValue(String token, String email) {
         String accountIdToString = String.valueOf(email);
         ValueOperations<String, String> value = redisTemplate.opsForValue();
-        value.set(token, accountIdToString, Duration.ofMinutes(3));
-    }
-
-    @Override
-    public Long getValueByKey(String token) {
-        ValueOperations<String, String> value = redisTemplate.opsForValue();
-        String tmpAccountId = value.get(token);
-        Long accountId;
-
-        if (tmpAccountId == null) {
-            accountId = null;
-        } else {
-            accountId = Long.parseLong(tmpAccountId);
-        }
-
-        return accountId;
+        value.set(token, accountIdToString, Duration.ofMinutes(300000));
     }
 
     @Override
@@ -42,7 +29,9 @@ public class RedisServiceImpl implements RedisService{
         redisTemplate.delete(token);
     }
 
-    public Boolean isRefreshTokenExists(String token) {
-        return getValueByKey(token) != null;
+    @Override
+    public String getValues(String token) {
+        ValueOperations<String, String> values = redisTemplate.opsForValue();
+        return values.get(token);
     }
 }

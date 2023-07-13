@@ -30,23 +30,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
-
         if (!Objects.isNull(authorization)) {
-            String accessToken = authorization.substring(7);
-
+            String accountToken = authorization.substring(7);
             try {
-                Subject subject = jwtProvider.getSubject(accessToken);
+                Subject subject = jwtProvider.getSubject(accountToken);
                 String requestURI = request.getRequestURI();
 
-                // redis 요청을 통해 rft 를 받기위해 추가된 코드
-                if (subject.getTypes().equals("refreshToken") && !requestURI.equals("/account/reissue")) {
-                    throw new JwtException("토큰을 확인하세요");
+                // 토큰 타입이 refreshToken 인 경우 RequestURL 이 /account/reissue 인 경우에만 허용
+                if (subject.getTypes().equals("RTK") && !requestURI.equals("/account/reissue")) {
+                    throw new JwtException("토큰을 확인하세요.");
                 }
-                // 
-
                 UserDetails userDetails = accountDetailsService.loadUserByUsername(subject.getEmail());
                 Authentication token = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-
                 SecurityContextHolder.getContext().setAuthentication(token);
             } catch (JwtException e) {
                 request.setAttribute("exception", e.getMessage());

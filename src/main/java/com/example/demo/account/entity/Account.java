@@ -1,15 +1,12 @@
 package com.example.demo.account.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Getter
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Account {
 
     @Id
@@ -55,5 +52,4 @@ public class Account {
         this.accessNumber = accessNumber;
         this.roleType = roleType;
     }
-
 }

@@ -3,7 +3,7 @@ package com.example.demo.account.controller;
 import com.example.demo.account.controller.form.AccessRegisterRequestForm;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
-import com.example.demo.account.entity.Account;
+import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.account.service.AccountService;
 //import com.example.demo.redis.RedisService;
 import com.example.demo.security.jwt.JwtProvider;
@@ -12,10 +12,10 @@ import com.example.demo.security.jwt.subject.TokenResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.antlr.v4.runtime.Token;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RestController
@@ -49,10 +49,23 @@ public class AccountController {
     }
 
     @PostMapping("/log-in")
-    public TokenResponse  login(@RequestBody AccountLoginRequestForm form) {
+    public TokenResponse login(@RequestBody AccountLoginRequestForm form) {
         log.info("로그인: " + form);
 
         return accountService.login(form);
     }
+
+    @PostMapping("/reissue")
+    public TokenResponse reissue(@AuthenticationPrincipal AccountDetails accountDetails) throws JsonProcessingException {
+        if (accountDetails == null) {
+            log.info("인증 실패");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증 실패");
+        }
+
+        AccountResponse accountResponse = AccountResponse.of(accountDetails.getAccount());
+        log.info("인증 성공");
+        return jwtProvider.reissueAccessToken(accountResponse);
+    }
+
 }
 

@@ -4,6 +4,7 @@ import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.request.AccessRegisterRequest;
 import com.example.demo.account.controller.request.AccountRegisterRequest;
 import com.example.demo.account.entity.Account;
+import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.account.entity.AccountRole;
 import com.example.demo.account.entity.Role;
 import com.example.demo.account.repository.AccountRepository;
@@ -95,7 +96,7 @@ public class AccountServiceImpl implements AccountService{
         if (maybeAccount.isPresent()) {
             if (passwordEncoder.matches(form.getPassword(), maybeAccount.get().getPassword())) {
                 Account account = maybeAccount.get();
-                TokenResponse tokenResponse = jwtProvider.createTokenByLogin(account);
+                TokenResponse tokenResponse = jwtProvider.createTokenByLogin(AccountResponse.of(account));
 
                 String accessToken = tokenResponse.getAccessToken();
                 String refreshToken = tokenResponse.getRefreshToken();

@@ -13,8 +13,7 @@ public class AccountDetails extends User {
     private final Account account;
 
     public AccountDetails(Account account) {
-        super(account.getEmail(), account.getPassword(), List.of(new SimpleGrantedAuthority("NORMAL")));
+        super(account.getEmail(), account.getPassword(), List.of(new SimpleGrantedAuthority("USER")));
         this.account = account;
     }
-
 }
