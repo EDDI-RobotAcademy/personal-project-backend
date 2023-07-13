@@ -9,5 +9,5 @@ import java.util.UUID;
 public class MemberLoginResponseForm {
     final private String userToken;
     final private String roleType;
-    final private Boolean isLogin;
+    final private String nickName;
 }

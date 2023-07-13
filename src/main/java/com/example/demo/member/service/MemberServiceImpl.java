@@ -64,7 +64,7 @@ public class MemberServiceImpl implements MemberService{
             redisService.setKeyAndValue(userToken, member.getId());
 
             final Role role = memberRoleRepository.findRoleInfoMember(member);
-            return new MemberLoginResponseForm(userToken, role.getRoleType().name(), true);
+            return new MemberLoginResponseForm(userToken, role.getRoleType().name(),member.getNickName());
         }
         return null;
     }
