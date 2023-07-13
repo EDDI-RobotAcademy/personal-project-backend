@@ -6,4 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface SongService {
     Song register(SongRegisterRequestForm requestForm, HttpServletRequest request);
+
+    int countSong(HttpServletRequest request);
+
+    Song read(Long id);
 }

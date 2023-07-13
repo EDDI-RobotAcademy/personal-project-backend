@@ -1,15 +1,13 @@
 package com.example.demo.domain.song.controller;
 
+import com.example.demo.domain.playlist.controller.form.PlaylistReadResponseForm;
 import com.example.demo.domain.song.controller.form.SongRegisterRequestForm;
 import com.example.demo.domain.song.entity.Song;
 import com.example.demo.domain.song.service.SongService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequestMapping("/song")
@@ -22,5 +20,16 @@ public class SongController {
     public Song songRegister (@RequestBody SongRegisterRequestForm requestForm, HttpServletRequest request) {
 
         return songService.register(requestForm, request);
+    }
+
+    @PostMapping("count-song")
+    public int countSong(HttpServletRequest request){
+        return songService.countSong(request);
+    }
+
+    @GetMapping("/{id}")
+    public Song readSong(@PathVariable("id") Long id, HttpServletRequest request){
+        Song song = songService.read(id);
+        return song;
     }
 }
