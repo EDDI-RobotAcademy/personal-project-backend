@@ -1,5 +1,6 @@
 package com.example.demo.account.entity;
 
+import com.example.demo.board.community.entity.CommunityBoard;
 import com.example.demo.board.notice.entity.NoticeBoard;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,6 +20,8 @@ public class Account {
     private Long accountId;
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<NoticeBoard> noticeBoards = new ArrayList<>();
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    private List<CommunityBoard> communityBoards = new ArrayList<>();
     @Setter
     private String email;
     @Setter
