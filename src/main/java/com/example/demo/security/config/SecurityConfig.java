@@ -1,6 +1,9 @@
 package com.example.demo.security.config;
 
-import com.example.demo.security.jwt.JwtFilter;
+import com.example.demo.security.jwt.CustomAuthenticationEntryPoint;
+import com.example.demo.security.jwt.JwtAuthenticationFilter;
+import com.example.demo.security.jwt.JwtProvider;
+import com.example.demo.security.jwt.service.AccountDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +13,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,7 +24,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    final private JwtFilter jwtFilter;
+    private final JwtProvider jwtProvider;
+
+    private final AccountDetailsService accountDetailsService;
+
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
 //    private static String[] PERMIT_URL_ARRAY = {"/account/sing-up", "/account/log-in", "/account/check-email/**"};
 
@@ -29,33 +37,30 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+//    @Bean
+//    public AuthenticationManager authenticationManager(
+//            AuthenticationConfiguration authenticationConfiguration
+//    ) throws Exception {
+//        return authenticationConfiguration.getAuthenticationManager();
+//    }
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration
-    ) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .csrf().disable()
-                .formLogin().disable();
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.cors().and().csrf().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .requestMatchers(HttpMethod.GET,"/account/check-email/**").permitAll()
+                .requestMatchers("/account/sign-up").permitAll()
+                .requestMatchers("/account/log-in").permitAll()
+                .and()
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, accountDetailsService),
+                        UsernamePasswordAuthenticationFilter.class);
 
-        return httpSecurity
-                .authorizeHttpRequests(
-                        authorize -> authorize
-//                                .requestMatchers(PERMIT_URL_ARRAY).permitAll()
-                                .requestMatchers(HttpMethod.GET,"/account/check-email/**").permitAll()
-                                .requestMatchers("/account/sign-up").permitAll()
-                                .requestMatchers("/account/log-in").permitAll()
-//                                .requestMatchers("/login").permitAll()
-                                .anyRequest().authenticated()
+        return http.build();
 
-                                .and()
-
-                                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                )
-                .httpBasic(Customizer.withDefaults())
-                .build();
-    }
+        }
 }
+

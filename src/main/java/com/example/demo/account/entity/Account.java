@@ -36,6 +36,14 @@ public class Account {
     @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
     private AccountRole accountRole;
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public Account(String email, String password, String name, String phoneNumber, RoleType roleType) {
         this.email = email;
         this.password = password;
@@ -50,4 +58,5 @@ public class Account {
         this.accessNumber = accessNumber;
         this.roleType = roleType;
     }
+
 }

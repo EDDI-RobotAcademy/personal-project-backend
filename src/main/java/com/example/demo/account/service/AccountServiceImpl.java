@@ -10,8 +10,16 @@ import com.example.demo.account.entity.RoleType;
 import com.example.demo.account.repository.AccountRepository;
 import com.example.demo.account.repository.AccountRoleRepository;
 import com.example.demo.account.repository.RoleRepository;
+import com.example.demo.redis.RedisService;
+import com.example.demo.security.jwt.JwtProvider;
+import com.example.demo.security.jwt.exception.BadRequestException;
+import com.example.demo.security.jwt.subject.TokenResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -25,6 +33,10 @@ public class AccountServiceImpl implements AccountService{
     final private AccountRepository accountRepository;
     final private AccountRoleRepository accountRoleRepository;
     final private RoleRepository roleRepository;
+    final private PasswordEncoder passwordEncoder;
+    final private ObjectMapper objectMapper;
+    final private JwtProvider jwtProvider;
+    final private RedisService redisService;
 
     // 회원 가입
     @Override
@@ -35,7 +47,11 @@ public class AccountServiceImpl implements AccountService{
             return false;
         }
 
-        final Account account = accountRepository.save(request.toAccount());
+        Account account = request.toAccount();
+        String password = passwordEncoder.encode(request.getPassword());
+        account.setPassword(password);
+        accountRepository.save(account);
+
         final Role role = roleRepository.findByRoleType(request.getRoleType()).get();
         final AccountRole accountRole = new AccountRole(account, role);
         accountRoleRepository.save(accountRole);
@@ -74,14 +90,22 @@ public class AccountServiceImpl implements AccountService{
 
     // 로그인
     @Override
-    public String login(AccountLoginRequestForm form) {
+    public TokenResponse  login(AccountLoginRequestForm form) {
         Optional<Account> maybeAccount = accountRepository.findByEmail(form.getEmail());
 
         if (maybeAccount.isPresent()) {
-            if (form.getPassword().equals(maybeAccount.get().getPassword())) {
-                final String userToken = UUID.randomUUID().toString();
+            if (passwordEncoder.matches(form.getPassword(), maybeAccount.get().getPassword())) {
+                Account account = maybeAccount.get();
+                TokenResponse tokenResponse = jwtProvider.createTokenByLogin(account);
 
-                return userToken;
+                String accessToken = tokenResponse.getAccessToken();
+                String refreshToken = tokenResponse.getRefreshToken();
+                form.setEmail(accessToken, refreshToken);
+
+                log.info("accessToken: " + accessToken);
+                log.info("refreshToken: " + refreshToken);
+                redisService.setKeyAndValue(refreshToken, account.getEmail());
+                return tokenResponse;
             }
         }
         return null;
