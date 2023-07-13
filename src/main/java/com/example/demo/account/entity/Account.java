@@ -18,7 +18,7 @@ public class Account {
     @Column(name = "account_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
     private final List<NoticeBoard> noticeBoards = new ArrayList<>();
     @Setter
     private String email;
