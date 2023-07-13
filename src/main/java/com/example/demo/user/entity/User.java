@@ -1,44 +1,52 @@
 package com.example.demo.user.entity;
 
+import com.example.demo.board.entity.Board;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+
+import static jakarta.persistence.CascadeType.ALL;
+
+@Table(name = "USER")
 @Entity
 @Getter
-@Builder
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 public class User {
     @Id
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Setter
-    @Column(nullable = false)
-    private String nickName;
-
-    @Setter
-    @Column(nullable = false)
+    @Column(unique = true)
     private String name;
 
-    @Setter
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Setter
-    @Column(nullable = false)
     private String password;
 
-    @Setter
-    @UpdateTimestamp
-    private LocalDateTime signUpData;
+    private String nickName;
 
-    public User(String email){
-        this.email = email;
+    @Column(unique = true)
+    private String email;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private UserRole userRole;
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+
+        userRole.setUser(this);
     }
 
+    public User(String name, String password, String nickName, String email) {
+        this.name = name;
+        this.password = password;
+        this.nickName = nickName;
+        this.email = email;
+    }
 }
