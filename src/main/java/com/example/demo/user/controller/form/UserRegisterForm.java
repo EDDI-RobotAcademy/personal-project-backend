@@ -1,20 +1,22 @@
 package com.example.demo.user.controller.form;
 
-import com.example.demo.user.service.UserRegisterRequest;
+import com.example.demo.user.entity.RoleType;
+import com.example.demo.user.service.request.UserSignUpRequest;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @Getter
-@ToString
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class UserRegisterForm {
-    private String email;
+    final private String email;
+    final private String password;
+    final private String name;
+    final private String nickName;
 
-    public UserRegisterForm(String email) {
-        this.email = email;
+
+    public UserSignUpRequest toUserSignUpRequest () {
+        return new UserSignUpRequest(email,password,name,nickName);
     }
-    public UserRegisterRequest toUserRegisterRequest(){
-        return new UserRegisterRequest(email);
-    }
+
 }
