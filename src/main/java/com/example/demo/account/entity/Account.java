@@ -18,10 +18,8 @@ public class Account {
     @Column(name = "account_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "account")
     private List<NoticeBoard> noticeBoards = new ArrayList<>();
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
-    private List<CommunityBoard> communityBoards = new ArrayList<>();
     @Setter
     private String email;
     @Setter
