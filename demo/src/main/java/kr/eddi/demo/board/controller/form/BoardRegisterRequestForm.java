@@ -7,14 +7,15 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class BoardRegisterRequestForm {
-    final private String imgPath;
+    final private String boardTitle;
 
-    final private String textArea;
+    final private String boardInfo;
 
     final private String coordLat;
     final private String coordLng;
+    final private String writer;
 
     public BoardRegisterRequest toBoardRequest(){
-        return new BoardRegisterRequest(imgPath,textArea,coordLat,coordLng);
+        return new BoardRegisterRequest(boardTitle,boardInfo,coordLat,coordLng, writer);
     }
 }
