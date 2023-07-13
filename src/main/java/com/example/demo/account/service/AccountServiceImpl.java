@@ -133,10 +133,10 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public Boolean businessCheck(Long accountId) {
-        Optional<AccountRole> maybeAccountRole =accountRoleRepository.findByAccountIdWithRole(accountId);
+        Optional<AccountRole> maybeAccountRole = accountRoleRepository.findByAccountIdWithRole(accountId);
 
-        log.info("가져온 어카운트 롤 ID: "+String.valueOf(maybeAccountRole.get().getId()));
-        log.info("어카운트 롤의 롤타입: "+String.valueOf(maybeAccountRole.get().getRole().getRoleType()));
+        log.info("가져온 어카운트 롤 ID: " + String.valueOf(maybeAccountRole.get().getId()));
+        log.info("어카운트 롤의 롤타입: " + String.valueOf(maybeAccountRole.get().getRole().getRoleType()));
 
         Role role= maybeAccountRole.get().getRole();
         if (role.getRoleType().equals(BUSINESS)){

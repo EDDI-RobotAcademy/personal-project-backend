@@ -2,16 +2,19 @@ package com.example.demo.account.controller.form.normal;
 
 import com.example.demo.account.entity.RoleType;
 import com.example.demo.account.service.request.NormalAccountRegisterRequest;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class NormalAccountRegisterForm {
 
-    final private String email;
-    final private String password;
-    final private RoleType roleType;
+    private String email;
+    private String password;
+    private RoleType roleType;
 
     public NormalAccountRegisterRequest toAccountRegisterRequest () {
 

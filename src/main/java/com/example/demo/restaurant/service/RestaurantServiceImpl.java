@@ -4,12 +4,14 @@ import com.example.demo.account.entity.Account;
 import com.example.demo.account.repository.AccountRepository;
 import com.example.demo.account.repository.UserTokenRepository;
 import com.example.demo.account.repository.UserTokenRepositoryImpl;
+import com.example.demo.restaurant.controller.form.BusinessRestaurantListResponseForm;
 import com.example.demo.restaurant.controller.form.RestaurantListResponseForm;
 import com.example.demo.restaurant.controller.form.RestaurantReadResponseForm;
 import com.example.demo.restaurant.entity.Restaurant;
 import com.example.demo.restaurant.entity.RestaurantImages;
 import com.example.demo.restaurant.repository.RestaurantImagesRepository;
 import com.example.demo.restaurant.repository.RestaurantRepository;
+import com.example.demo.restaurant.service.request.RestaurantModifyRequest;
 import com.example.demo.restaurant.service.request.RestaurantRegisterRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -107,5 +109,19 @@ public class RestaurantServiceImpl implements RestaurantService {
         log.info("productImagesList: " + restaurantImagesList);
 
         return new RestaurantReadResponseForm(restaurant, restaurantImagesList);
+    }
+
+    @Override
+    public List<BusinessRestaurantListResponseForm> businessRegisterRestaurantList(Long accountId) {
+        List<BusinessRestaurantListResponseForm> businessRegisterRestaurantList = new ArrayList<>();
+        List<Restaurant> restaurantList = restaurantRepository.findAllByAccountId(accountId) ;
+
+        for (Restaurant restaurant: restaurantList ){
+            List<RestaurantImages> maybeImages = restaurantImagesRepository.findByRestaurantId(restaurant.getId());
+            BusinessRestaurantListResponseForm responseForm = new BusinessRestaurantListResponseForm(
+                    restaurant.getRestaurantName(), restaurant.getRestaurantInfo(), maybeImages.get(0).getImageResourcePath());
+            businessRegisterRestaurantList.add(responseForm);
+        }
+        return businessRegisterRestaurantList;
     }
 }

@@ -11,10 +11,8 @@ public class RestaurantRegisterRequest {
     final private String restaurantInfo;
     final private String userToken;
 
-
     public Restaurant toRestaurant() {
 
         return new Restaurant(restaurantName, restaurantInfo);
     }
-
 }
