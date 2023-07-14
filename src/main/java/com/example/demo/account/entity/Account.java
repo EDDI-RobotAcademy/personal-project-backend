@@ -19,7 +19,9 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
     @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
-    private final List<NoticeBoard> noticeBoards = new ArrayList<>();
+    private List<NoticeBoard> noticeBoards = new ArrayList<>();
+    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+    private List<CommunityBoard> communityBoards = new ArrayList<>();
     @Setter
     private String email;
     @Setter
