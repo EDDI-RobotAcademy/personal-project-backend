@@ -1,5 +1,6 @@
 package com.example.demo.domain.playlist.controller;
 
+import com.example.demo.domain.playlist.controller.form.PlaylistModifyRequestForm;
 import com.example.demo.domain.playlist.controller.form.PlaylistReadResponseForm;
 import com.example.demo.domain.playlist.controller.form.PlaylistRegisterRequestForm;
 import com.example.demo.domain.playlist.entity.Playlist;
@@ -43,5 +44,13 @@ public class PlaylistController {
     public PlaylistReadResponseForm readPlayList(@PathVariable("id") Long id, HttpServletRequest request){
         PlaylistReadResponseForm responseForm = playlistService.read(id);
         return responseForm;
+    }
+
+    @PostMapping("/modify")
+    public Playlist modifyPlaylist(@RequestBody PlaylistModifyRequestForm requestForm, HttpServletRequest request){
+        log.info(String.valueOf(requestForm.getId()));
+        log.info(requestForm.getTitle());
+        playlistService.modify(requestForm);
+        return null;
     }
 }
