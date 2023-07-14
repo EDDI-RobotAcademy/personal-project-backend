@@ -251,11 +251,11 @@ public class ProductServiceImpl implements ProductService {
         LocalDate CheckInDate = TransFormToDate.transformToDate(chkin);
         LocalDate CheckOutDate = TransFormToDate.transformToDate(chkout);
 
-        log.info("받은 날짜: " + CheckInDate + ", " + CheckOutDate);
+        log.info("Period: " + CheckInDate + " ~ " + CheckOutDate);
 
         // 모든 상품을 찾아서 list에 넣는다.
         List<Product> productList = productRepository.findAll();
-        log.info("상품 몇 개? " + productList.size());
+        log.info("The Number of Products " + productList.size());
 
         // 반환할 양식을 초기화한다.
         List<CampsiteVacancyByMapResponseForm> responseFormList = new ArrayList<>();
@@ -268,7 +268,7 @@ public class ProductServiceImpl implements ProductService {
 
             // 상품 id로 모든 옵션을 찾아서 list에 저장할 것이다.
             List<ProductOption> productOptionList = productOptionRepository.findAllByProductId(product.getId());
-            log.info("옵션 몇 개? " + productOptionList.size());
+            log.info("The Number of Options " + productOptionList.size());
 
             // 첫번째 옵션을 돌면서
             for(ProductOption productOption: productOptionList) {
@@ -283,7 +283,7 @@ public class ProductServiceImpl implements ProductService {
 
                     // 만약 받아온 체크인 날짜와 체크아웃 날짜 사이에 재고가 존재한다면
                     if (options.getDate().isEqual(CheckInDate) || (options.getDate().isAfter(CheckInDate) && options.getDate().isBefore(CheckOutDate))) {
-                        log.info("there is valid date");
+                        log.info("There is valid date");
 
                         // 해당 옵션의 재고 list에 저장할 것이다.
                         stockList.add(options.getCampsiteVacancy());
@@ -300,9 +300,9 @@ public class ProductServiceImpl implements ProductService {
             int vacancies = 0;
             for (int stock : allOptionsStockList) {
                 vacancies += stock;
-                log.info("재고 더하기: " + vacancies);
+                log.info("Add vacancy " + vacancies);
             }
-            log.info("상품 옵션의 총 재고: " + vacancies);
+            log.info("Total vacancies: " + vacancies);
 
             CampsiteVacancyByMapResponseForm responseForm =
                     new CampsiteVacancyByMapResponseForm(product.getId(), vacancies, product.getAddress());
@@ -313,19 +313,17 @@ public class ProductServiceImpl implements ProductService {
 
     // 원하는 기간 중 가장 적은 빈자리 개수를 반환
     private int findMinValue(List<Integer> campsiteVacancyList) {
-        if (campsiteVacancyList.isEmpty()) {
-            throw new IllegalArgumentException("List is empty");
-        }
+        if(!campsiteVacancyList.isEmpty()) {
+            int minCampsiteVacancy = campsiteVacancyList.get(0);
 
-        int min = campsiteVacancyList.get(0);
-
-        for (int i = 1; i < campsiteVacancyList.size(); i++) {
-            int current = campsiteVacancyList.get(i);
-            if (current < min) {
-                min = current;
+            for (int i = 1; i < campsiteVacancyList.size(); i++) {
+                int current = campsiteVacancyList.get(i);
+                if (current < minCampsiteVacancy) {
+                    minCampsiteVacancy = current;
+                }
             }
+            return minCampsiteVacancy;
         }
-
-        return min;
+        return 0;
     }
 }
