@@ -3,6 +3,7 @@ package com.example.demo.domain.playlist.service;
 import com.example.demo.authentication.jwt.JwtTokenUtil;
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.account.repository.AccountRepository;
+import com.example.demo.domain.playlist.controller.form.PlaylistModifyRequestForm;
 import com.example.demo.domain.playlist.controller.form.PlaylistReadResponseForm;
 import com.example.demo.domain.playlist.controller.form.PlaylistRegisterRequestForm;
 import com.example.demo.domain.playlist.entity.Playlist;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -74,14 +76,22 @@ public class PlaylistServiceImpl implements PlaylistService{
     public PlaylistReadResponseForm read(Long id) {
         Playlist playlist = playlistRepository.findWithSongById(id);
 
-        log.info(String.valueOf(playlist.getSongList()));
         return new PlaylistReadResponseForm(playlist, playlist.getSongList());
     }
 
-//    @Transactional
-//    public List<FilePaths> getFilePathList(Long boardId) {
-//        List<FilePaths> savedFilePath = boardRepository.findById(boardId).get().getFilePathList();
-//        List<Long> idList = savedFilePath.stream().map(FilePaths::getFileId).toList();
-//        return savedFilePath;
-//    }
+    @Override
+    public boolean modify(PlaylistModifyRequestForm requestForm) {
+        Optional<Playlist> maybePlaylist = playlistRepository.findById(requestForm.getId());
+
+        if(maybePlaylist.isEmpty()){
+            return false;
+        }
+        Playlist playlist = maybePlaylist.get();
+
+        playlist.setTitle(requestForm.getTitle());
+
+        playlistRepository.save(playlist);
+
+        return true;
+    }
 }
