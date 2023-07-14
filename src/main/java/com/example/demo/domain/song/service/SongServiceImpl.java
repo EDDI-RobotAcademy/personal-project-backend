@@ -4,6 +4,7 @@ import com.example.demo.authentication.jwt.JwtTokenUtil;
 import com.example.demo.domain.account.repository.AccountRepository;
 import com.example.demo.domain.playlist.entity.Playlist;
 import com.example.demo.domain.playlist.repository.PlaylistRepository;
+import com.example.demo.domain.song.controller.form.SongModifyRequestForm;
 import com.example.demo.domain.song.controller.form.SongRegisterRequestForm;
 import com.example.demo.domain.song.entity.Song;
 import com.example.demo.domain.song.repository.SongRepository;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -27,13 +30,14 @@ public class SongServiceImpl implements SongService{
     private String secretKey;
 
     @Override
-    public Song register(SongRegisterRequestForm requestForm, HttpServletRequest request) {
+    public Long register(SongRegisterRequestForm requestForm, HttpServletRequest request) {
 
         final Playlist playlist = playlistRepository.findWithSongById(requestForm.getPlaylistId());
 
         final Song song = new Song(requestForm.getTitle(), requestForm.getSinger(), requestForm.getGenre(), requestForm.getLink(), playlist);
-
-        return songRepository.save(song);
+        songRepository.save(song);
+        log.info(String.valueOf(song.getId()));
+        return song.getId();
     }
 
     @Override
@@ -58,5 +62,24 @@ public class SongServiceImpl implements SongService{
     public Song read(Long id) {
         Song song = songRepository.findById(id).get();
         return song;
+    }
+
+    @Override
+    public boolean modify(SongModifyRequestForm requestForm) {
+        Optional<Song> maybeSong = songRepository.findById(requestForm.getSongId());
+
+        if(maybeSong.isEmpty()){
+            return false;
+        }
+        Song song= maybeSong.get();
+
+        song.setTitle(requestForm.getTitle());
+        song.setSinger(requestForm.getSinger());
+        song.setGenre(requestForm.getGenre());
+        song.setLink(requestForm.getLink());
+
+        songRepository.save(song);
+
+        return true;
     }
 }
