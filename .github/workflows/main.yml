@@ -1,9 +1,8 @@
 name: Deploy
 
 on:
-  push:
-    branches:
-      - hyeongjin-kim
+  repository_dispatch:
+    types: [TEST_FINISH_TRIGGER]
 
 env:
   DOCKER_IMAGE: ghcr.io/${{ github.actor }}/personal-project-backend
