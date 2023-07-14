@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -15,17 +16,17 @@ public class Options {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Getter
-    private Date date;
+    private LocalDate date;
     @Getter
-    private Integer stock;
+    private Integer campsiteVacancy;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_option_id")
     private ProductOption productOption;
 
-    public Options(Date date, Integer stock) {
+    public Options(LocalDate date, Integer campsiteVacancy) {
         this.date = date;
-        this.stock = stock;
+        this.campsiteVacancy = campsiteVacancy;
     }
 }

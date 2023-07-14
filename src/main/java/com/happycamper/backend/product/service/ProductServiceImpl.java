@@ -2,24 +2,25 @@ package com.happycamper.backend.product.service;
 
 import com.happycamper.backend.member.entity.Member;
 import com.happycamper.backend.member.repository.MemberRepository;
+import com.happycamper.backend.product.controller.form.CampsiteVacancyByMapRequestForm;
 import com.happycamper.backend.product.controller.form.CheckProductNameDuplicateRequestForm;
 import com.happycamper.backend.product.controller.form.StockRequestForm;
 import com.happycamper.backend.product.entity.*;
 import com.happycamper.backend.product.repository.*;
 import com.happycamper.backend.product.service.request.ProductOptionRegisterRequest;
 import com.happycamper.backend.product.service.request.ProductRegisterRequest;
+import com.happycamper.backend.product.service.response.CampsiteVacancyByMapResponseForm;
 import com.happycamper.backend.product.service.response.ProductListResponseForm;
 import com.happycamper.backend.product.service.response.ProductReadResponseForm;
 import com.happycamper.backend.product.service.response.StockResponseForm;
+import com.happycamper.backend.utility.transform.TransFormToDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
                 for(int j = 0; j < optionsList.get(i).size(); j++) {
                     Options options = new Options(
                             optionsList.get(i).get(j).getDate(),
-                            optionsList.get(i).get(j).getStock()
+                            optionsList.get(i).get(j).getCampsiteVacancy()
                     );
                     options.setProductOption(createProductOptionList.get(i));
                     optionsList1.add(options);
@@ -175,16 +176,17 @@ public class ProductServiceImpl implements ProductService {
     public StockResponseForm checkStock(StockRequestForm requestForm) {
         String chkin = requestForm.getCheckInDate();
         String chkout = requestForm.getCheckOutDate();
-        Date CheckInDate = transformchkDate(chkin);
-        Date CheckOutDate = transformchkDate(chkout);
+        LocalDate CheckInDate = TransFormToDate.transformToDate(chkin);
+        LocalDate CheckOutDate = TransFormToDate.transformToDate(chkout);
 
-        Long productId = requestForm.getId();
+        Long productId = requestForm.getId( );
 
         List<ProductOption> productOptionList = productOptionRepository.findAllByProductId(productId);
+        log.info("is present? : " + productOptionList.get(0) + productOptionList.get(1));
 
         // 최종적으로 반환할 옵션들의 명칭과 빈자리 개수
         List<String> optionNameList = new ArrayList<>();
-        List<Integer> finalStockList = new ArrayList<>();
+        List<Integer> finalcampsiteVacancyList = new ArrayList<>();
 
         // 사용자가 선택한 상품의 모든 옵션을 돌면서
         for(ProductOption productOption: productOptionList) {
@@ -200,20 +202,21 @@ public class ProductServiceImpl implements ProductService {
 
             // 상품 A의 옵션 A가 가진 options(date-stock) 리스트를 돌면서
             for(Options options: optionsList) {
-
+                log.info("there is options");
                 // 만약 그 date가 사용자가 원하는 date 내에 해당한다면
-                if (options.getDate().after(CheckInDate) && options.getDate().before(CheckOutDate)) {
-
+                if (options.getDate().isEqual(CheckInDate) || (options.getDate().isAfter(CheckInDate) && options.getDate().isBefore(CheckOutDate))) {
+                    log.info("there is valid date");
                     // stockList에 넣는다.
-                    stockList.add(options.getStock());
+                    stockList.add(options.getCampsiteVacancy());
                 }
             }
             // 사용자가 원하는 date 내에 해당하는 빈자리 개수 중 가장 낮은 값을 추출하고
             // 최종적으로 반환할 빈자리 리스트에 넣어준다.
             int min = findMinValue(stockList);
-            finalStockList.add(min);
+            finalcampsiteVacancyList.add(min);
         }
-        StockResponseForm responseForm = new StockResponseForm(optionNameList, finalStockList);
+        StockResponseForm responseForm = new StockResponseForm(optionNameList, finalcampsiteVacancyList);
+        log.info("값이 궁금해: " + responseForm.getOptionNameList() + " " + responseForm.getCampsiteVacancyList());
         return responseForm;
     }
 
@@ -240,31 +243,84 @@ public class ProductServiceImpl implements ProductService {
         return responseFormList;
     }
 
-    // 클라이언트에서 보내주는 날짜를 Date 타입으로 변경
-    public Date transformchkDate (String dateString) {
-        String pattern = "yyyy-MM-dd";
+    @Override
+    public List<CampsiteVacancyByMapResponseForm> checkVacancyByDate(CampsiteVacancyByMapRequestForm requestForm) {
+        // 클라이언트로부터 체크인, 체크아웃 날짜를 받아서 localDate 형식으로 변환
+        String chkin = requestForm.getCheckInDate();
+        String chkout = requestForm.getCheckOutDate();
+        LocalDate CheckInDate = TransFormToDate.transformToDate(chkin);
+        LocalDate CheckOutDate = TransFormToDate.transformToDate(chkout);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
-        try {
-            Date date = dateFormat.parse(dateString);
-            System.out.println(date);
-            return date;
-        } catch (ParseException e) {
-            e.printStackTrace();
+        log.info("받은 날짜: " + CheckInDate + ", " + CheckOutDate);
+
+        // 모든 상품을 찾아서 list에 넣는다.
+        List<Product> productList = productRepository.findAll();
+        log.info("상품 몇 개? " + productList.size());
+
+        // 반환할 양식을 초기화한다.
+        List<CampsiteVacancyByMapResponseForm> responseFormList = new ArrayList<>();
+
+        // 첫번째 상품을 돌면서
+        for(Product product: productList) {
+            // 해당 상품 옵션의 재고를 list에 저장할 것이다.
+            // 옵션 A - 5개 / 옵션 B - 3개 라고 한다면 list는 [5, 3]
+            List<Integer> allOptionsStockList = new ArrayList<>();
+
+            // 상품 id로 모든 옵션을 찾아서 list에 저장할 것이다.
+            List<ProductOption> productOptionList = productOptionRepository.findAllByProductId(product.getId());
+            log.info("옵션 몇 개? " + productOptionList.size());
+
+            // 첫번째 옵션을 돌면서
+            for(ProductOption productOption: productOptionList) {
+                // 해당 옵션의 재고를 list에 저장할 것이다.
+                List<Integer> stockList = new ArrayList<>();
+
+                // 해당 옵션의 id로 모든 재고를 찾아서 list에 저장할 것이다.
+                List<Options> optionsList = optionsRepository.findAllByProductOptionId(productOption.getId());
+
+                // 그 재고 리스트를 돌면서
+                for(Options options: optionsList) {
+
+                    // 만약 받아온 체크인 날짜와 체크아웃 날짜 사이에 재고가 존재한다면
+                    if (options.getDate().isEqual(CheckInDate) || (options.getDate().isAfter(CheckInDate) && options.getDate().isBefore(CheckOutDate))) {
+                        log.info("there is valid date");
+
+                        // 해당 옵션의 재고 list에 저장할 것이다.
+                        stockList.add(options.getCampsiteVacancy());
+                    }
+                }
+                // 첫번째 재고 리스트의 순환이 끝나면
+                // 재고 리스트의 값 중 가장 낮은 값을 min에 넣을 것이다.
+                int min = findMinValue(stockList);
+                // 그 다음 그것을 해당 상품의 옵션 리스트에 넣을 것이다.
+                allOptionsStockList.add(min);
+            }
+            // 옵션에 대한 모든 재고 파악이 끝났다면
+            // 두 옵션에 대한 재고를 더해서 allstock에 저장할 것이다.
+            int vacancies = 0;
+            for (int stock : allOptionsStockList) {
+                vacancies += stock;
+                log.info("재고 더하기: " + vacancies);
+            }
+            log.info("상품 옵션의 총 재고: " + vacancies);
+
+            CampsiteVacancyByMapResponseForm responseForm =
+                    new CampsiteVacancyByMapResponseForm(product.getId(), vacancies, product.getAddress());
+            responseFormList.add(responseForm);
         }
-        return null;
+        return responseFormList;
     }
 
     // 원하는 기간 중 가장 적은 빈자리 개수를 반환
-    private int findMinValue(List<Integer> stocks) {
-        if (stocks.isEmpty()) {
+    private int findMinValue(List<Integer> campsiteVacancyList) {
+        if (campsiteVacancyList.isEmpty()) {
             throw new IllegalArgumentException("List is empty");
         }
 
-        int min = stocks.get(0);
+        int min = campsiteVacancyList.get(0);
 
-        for (int i = 1; i < stocks.size(); i++) {
-            int current = stocks.get(i);
+        for (int i = 1; i < campsiteVacancyList.size(); i++) {
+            int current = campsiteVacancyList.get(i);
             if (current < min) {
                 min = current;
             }
