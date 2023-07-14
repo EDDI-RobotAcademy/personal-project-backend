@@ -16,7 +16,7 @@ public class UserRegisterForm {
 
 
     public UserSignUpRequest toUserSignUpRequest () {
-        return new UserSignUpRequest(email,password,name,nickName);
+        return new UserSignUpRequest(nickName,name,email,password);
     }
 
 }
