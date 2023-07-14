@@ -1,4 +1,4 @@
-package com.example.demo.restaurant.controller.form;
+package com.example.demo.restaurant.controller.form.business;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

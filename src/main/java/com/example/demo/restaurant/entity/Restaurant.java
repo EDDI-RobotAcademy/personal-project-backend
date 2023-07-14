@@ -26,7 +26,10 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     private String restaurantName;
+
+    @Setter
     private String restaurantInfo;
 
     @JsonIgnore

@@ -4,9 +4,10 @@ import com.example.demo.account.entity.Account;
 import com.example.demo.account.repository.AccountRepository;
 import com.example.demo.account.repository.UserTokenRepository;
 import com.example.demo.account.repository.UserTokenRepositoryImpl;
-import com.example.demo.restaurant.controller.form.BusinessRestaurantListResponseForm;
+import com.example.demo.restaurant.controller.form.business.BusinessRestaurantListResponseForm;
 import com.example.demo.restaurant.controller.form.RestaurantListResponseForm;
 import com.example.demo.restaurant.controller.form.RestaurantReadResponseForm;
+import com.example.demo.restaurant.controller.form.business.BusinessRestaurantReadResponseForm;
 import com.example.demo.restaurant.entity.Restaurant;
 import com.example.demo.restaurant.entity.RestaurantImages;
 import com.example.demo.restaurant.repository.RestaurantImagesRepository;
@@ -118,10 +119,51 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         for (Restaurant restaurant: restaurantList ){
             List<RestaurantImages> maybeImages = restaurantImagesRepository.findByRestaurantId(restaurant.getId());
+
             BusinessRestaurantListResponseForm responseForm = new BusinessRestaurantListResponseForm(
-                    restaurant.getRestaurantName(), restaurant.getRestaurantInfo(), maybeImages.get(0).getImageResourcePath());
+                    restaurant, maybeImages.get(0).getImageResourcePath());
             businessRegisterRestaurantList.add(responseForm);
         }
         return businessRegisterRestaurantList;
+    }
+
+    @Override
+    public BusinessRestaurantReadResponseForm businessRead(Long id) {
+        final Optional<Restaurant> maybeRestaurant = restaurantRepository.findById(id);
+
+        if (maybeRestaurant.isEmpty()) {
+            log.info("존재하지 않는 맛집입니다.");
+            return null;
+        }
+        final Restaurant restaurant = maybeRestaurant.get();
+        log.info("restaurant:" + restaurant);
+
+        final List<RestaurantImages> restaurantImagesList = restaurantImagesRepository.findByRestaurantId(restaurant.getId());
+        log.info("productImagesList: " + restaurantImagesList);
+
+        return new BusinessRestaurantReadResponseForm(restaurant, restaurantImagesList);
+    }
+
+    @Override
+    public Restaurant modify(Long id, RestaurantModifyRequest restaurantModifyRequest) {
+        Optional<Restaurant> maybeRestaurant = restaurantRepository.findById(id);
+
+        if (maybeRestaurant.isEmpty()) {
+            log.info("존재하지 않는 맛집입니다.");
+            return null;
+        }
+
+        Restaurant restaurant = maybeRestaurant.get();
+        restaurant.setRestaurantName(restaurantModifyRequest.getRestaurantName());
+        restaurant.setRestaurantInfo(restaurantModifyRequest.getRestaurantInfo());
+
+        return restaurantRepository.save(restaurant);
+    }
+
+    @Override
+    public void delete(Long id) {
+        restaurantImagesRepository.deleteAllByRestaurantId(id);
+        restaurantRepository.deleteById(id);
+
     }
 }
