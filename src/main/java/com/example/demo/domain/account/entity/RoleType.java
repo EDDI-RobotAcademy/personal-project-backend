@@ -1,4 +1,4 @@
-package com.example.demo.account.entity;
+package com.example.demo.domain.account.entity;
 
 public enum RoleType {
     NORMAL,     // 일반 회원

@@ -1,10 +1,11 @@
-package com.example.demo.account.entity;
+package com.example.demo.domain.account.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.demo.domain.playlist.entity.Playlist;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,6 +23,10 @@ public class Account {
     private String nickname;
 
     private RoleType role;
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<Playlist> playlist;
 
     public Account(String email, String password, String nickname) {
         this.email = email;

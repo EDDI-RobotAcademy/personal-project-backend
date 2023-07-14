@@ -1,7 +1,7 @@
 package com.example.demo.authentication.jwt;
 
-import com.example.demo.account.entity.Account;
-import com.example.demo.account.service.AccountService;
+import com.example.demo.domain.account.entity.Account;
+import com.example.demo.domain.account.service.AccountService;
 import com.example.demo.authentication.redis.RedisService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,7 +33,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Cookie[] cookies =  request.getCookies();
-        String token = null;
 
         if(cookies == null){
             filterChain.doFilter(request, response);
@@ -51,7 +49,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 }
 
 //             전송받은 값에서 뒷부분(Jwt Token) 추출
-                token = authorizationHeader.split(" ")[0];
+                String token = authorizationHeader.split(" ")[0];
 
                 if(!(redisService.getValueByToken(token) ==null)){
                     filterChain.doFilter(request, response);

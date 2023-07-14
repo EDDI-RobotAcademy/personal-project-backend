@@ -1,9 +1,10 @@
-package com.example.demo.account.service;
+package com.example.demo.domain.account.service;
 
-import com.example.demo.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.AccountModifyRequestForm;
-import com.example.demo.account.controller.form.AccountRegisterRequestForm;
-import com.example.demo.account.entity.Account;
+import com.example.demo.domain.account.controller.form.AccountLoginRequestForm;
+import com.example.demo.domain.account.controller.form.AccountLoginResponseForm;
+import com.example.demo.domain.account.controller.form.AccountModifyRequestForm;
+import com.example.demo.domain.account.controller.form.AccountRegisterRequestForm;
+import com.example.demo.domain.account.entity.Account;
 import com.example.demo.authentication.jwt.TokenInfo;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -15,7 +16,7 @@ public interface AccountService {
 
     Boolean duplicateCheckNickname(String nickname);
 
-    TokenInfo login(AccountLoginRequestForm requestForm);
+    AccountLoginResponseForm login(AccountLoginRequestForm requestForm);
 
     Account modify(String email, AccountModifyRequestForm requestForm);
 
@@ -24,6 +25,4 @@ public interface AccountService {
     Boolean withdrawal(String userToken);
 
     Account getLoginAccountByEmail(String email);
-
-    Account getLoginAccountById(Long userId);
 }
