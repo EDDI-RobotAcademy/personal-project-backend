@@ -31,9 +31,9 @@ public class BoardController {
         log.info(returnBoardList.toString());
         return returnBoardList;
     }
-//    @PostMapping("/read/{id}")
-//    public Board readBoard (@PathVariable("id") Long id){
-//        log.info("보드 가져와");
-//        return boardService.read(id);
-//    }
+    @PostMapping("/read/{id}")
+    public Board readBoard (@PathVariable("id") Long id){
+        log.info("보드 가져와");
+        return boardService.read(id);
+    }
 }

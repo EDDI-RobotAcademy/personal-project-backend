@@ -28,13 +28,13 @@ public class BoardServiceImpl implements BoardService{
     public List<Board> list() {
         return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
-//
-//    @Override
-//    public Board read(Long id){
-//        Optional<Board> maybeBoard= boardRepository.findById(id);
-//        if(maybeBoard.isPresent()){
-//            return maybeBoard.get();
-//        }
-//        return null;
-//    }
+
+    @Override
+    public Board read(Long id){
+        Optional<Board> maybeBoard= boardRepository.findById(id);
+        if(maybeBoard.isPresent()){
+            return maybeBoard.get();
+        }
+        return null;
+    }
 }

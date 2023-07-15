@@ -12,5 +12,5 @@ public interface BoardService {
 
     List<Board> list();
 
-//    Board read(Long id);
+    Board read(Long id);
 }
