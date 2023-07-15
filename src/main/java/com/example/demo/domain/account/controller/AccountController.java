@@ -88,8 +88,8 @@ public class AccountController {
         return accountService.logout(response);
     }
 
-    @DeleteMapping("/withdrawal")
-    public Boolean withdrawal(HttpServletRequest request){
+    @DeleteMapping("/withdraw")
+    public Boolean withdrawal(HttpServletRequest request, HttpServletResponse response){
         Cookie[] cookies = request.getCookies();
         String email = null;
 
@@ -103,6 +103,13 @@ public class AccountController {
                 redisService.deleteByKey(token);
             }
         }
+
+        Cookie accessCookie = jwtTokenUtil.generateCookie("AccessToken", null, 0);
+        response.addCookie(accessCookie);
+
+        Cookie refreshCookie = jwtTokenUtil.generateCookie("RefreshToken", null, 0);
+        response.addCookie(refreshCookie);
+
         return accountService.withdrawal(email);
     }
 

@@ -2,7 +2,9 @@ package com.example.demo.domain.playlist.repository;
 
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.playlist.entity.Playlist;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -23,4 +25,8 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
     @Query("SELECT p FROM Playlist p LEFT JOIN FETCH p.account where p.account = :account")
     List<Playlist> findPlaylistByAccountId(Account account);
+
+    @Modifying
+    @Transactional
+    void deleteByAccountId(Long accountId);
 }

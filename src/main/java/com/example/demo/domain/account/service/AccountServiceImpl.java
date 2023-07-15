@@ -6,6 +6,7 @@ import com.example.demo.authentication.redis.RedisService;
 import com.example.demo.domain.account.controller.form.*;
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.account.repository.AccountRepository;
+import com.example.demo.domain.playlist.repository.PlaylistRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,6 +26,7 @@ public class AccountServiceImpl implements AccountService{
     final private AccountRepository accountRepository;
     final private RedisService redisService;
     final private BCryptPasswordEncoder encoder;
+    final private PlaylistRepository playlistRepository;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -120,6 +122,11 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public Boolean withdrawal(String email) {
+        Account account = accountRepository.findByEmail(email).get();
+        Long accountId = account.getId();
+        playlistRepository.deleteByAccountId(accountId);
+
+        // 이제 account 레코드를 안전하게 삭제할 수 있습니다.
         accountRepository.deleteByEmail(email);
         return true;
     }
