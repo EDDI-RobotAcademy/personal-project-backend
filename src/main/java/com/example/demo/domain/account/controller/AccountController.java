@@ -1,9 +1,6 @@
 package com.example.demo.domain.account.controller;
 
-import com.example.demo.domain.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.domain.account.controller.form.AccountLoginResponseForm;
-import com.example.demo.domain.account.controller.form.AccountModifyRequestForm;
-import com.example.demo.domain.account.controller.form.AccountRegisterRequestForm;
+import com.example.demo.domain.account.controller.form.*;
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.account.service.AccountService;
 import com.example.demo.authentication.jwt.JwtTokenUtil;
@@ -15,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -50,7 +48,7 @@ public class AccountController {
     public String login(@RequestBody AccountLoginRequestForm requestForm, HttpServletResponse response){
         AccountLoginResponseForm loginResponse = accountService.login(requestForm);
 
-        Cookie accessCookie = jwtTokenUtil.generateCookie("AccessToken", loginResponse.getTokenInfo().getAccessToken(), 60*60);
+        Cookie accessCookie = jwtTokenUtil.generateCookie("AccessToken", loginResponse.getTokenInfo().getAccessToken(), 24*60*60);
         response.addCookie(accessCookie);
 
         Cookie refreshCookie = jwtTokenUtil.generateCookie("RefreshToken", loginResponse.getTokenInfo().getRefreshToken(), 24*60*60);
@@ -118,5 +116,11 @@ public class AccountController {
             }
         }
         return accountService.withdrawal(email);
+    }
+
+    @PostMapping("/password-check")
+    public boolean passwordCheck(@RequestBody AccountPasswordCheckRequestForm requestForm, HttpServletRequest request){
+
+        return accountService.duplicateCheckPassword(requestForm, request);
     }
 }

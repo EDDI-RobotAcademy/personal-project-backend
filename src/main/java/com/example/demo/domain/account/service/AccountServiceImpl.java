@@ -1,14 +1,13 @@
 package com.example.demo.domain.account.service;
 
-import com.example.demo.domain.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.domain.account.controller.form.AccountLoginResponseForm;
-import com.example.demo.domain.account.controller.form.AccountModifyRequestForm;
-import com.example.demo.domain.account.controller.form.AccountRegisterRequestForm;
+import com.example.demo.domain.account.controller.form.*;
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.account.repository.AccountRepository;
 import com.example.demo.authentication.jwt.JwtTokenUtil;
 import com.example.demo.authentication.jwt.TokenInfo;
 import com.example.demo.authentication.redis.RedisService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -118,5 +117,32 @@ public class AccountServiceImpl implements AccountService{
         if(optionalAccount.isEmpty()) return null;
 
         return optionalAccount.get();
+    }
+
+    @Override
+    public boolean duplicateCheckPassword(AccountPasswordCheckRequestForm requestForm, HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String email = null;
+
+        for(Cookie cookie : cookies) {
+            if (cookie.getName().equals("AccessToken")) {
+                String token = cookie.getValue();
+                email = JwtTokenUtil.getEmail(token, secretKey);
+                break;
+            }
+        }
+
+        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+        if(maybeAccount.isEmpty()){
+            return false;
+        }
+        Account account = maybeAccount.get();
+
+        if(!encoder.matches(requestForm.getPassword(), account.getPassword())){
+            log.info("비밀번호 틀림");
+            return false;
+        }
+
+        return true;
     }
 }
