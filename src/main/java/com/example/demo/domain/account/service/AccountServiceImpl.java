@@ -1,11 +1,11 @@
 package com.example.demo.domain.account.service;
 
-import com.example.demo.domain.account.controller.form.*;
-import com.example.demo.domain.account.entity.Account;
-import com.example.demo.domain.account.repository.AccountRepository;
 import com.example.demo.authentication.jwt.JwtTokenUtil;
 import com.example.demo.authentication.jwt.TokenInfo;
 import com.example.demo.authentication.redis.RedisService;
+import com.example.demo.domain.account.controller.form.*;
+import com.example.demo.domain.account.entity.Account;
+import com.example.demo.domain.account.repository.AccountRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -77,7 +77,18 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public Account modify(String email, AccountModifyRequestForm requestForm) {
+    public Account modify(AccountModifyRequestForm requestForm, HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String email = null;
+
+        for(Cookie cookie : cookies) {
+            if (cookie.getName().equals("AccessToken")) {
+                String token = cookie.getValue();
+                email = JwtTokenUtil.getEmail(token, secretKey);
+                break;
+            }
+        }
+
         Optional<Account> maybeAccount = accountRepository.findByEmail(email);
 
         if(maybeAccount.isEmpty()){

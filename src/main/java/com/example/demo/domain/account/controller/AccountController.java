@@ -1,18 +1,16 @@
 package com.example.demo.domain.account.controller;
 
+import com.example.demo.authentication.jwt.JwtTokenUtil;
+import com.example.demo.authentication.redis.RedisService;
 import com.example.demo.domain.account.controller.form.*;
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.account.service.AccountService;
-import com.example.demo.authentication.jwt.JwtTokenUtil;
-import com.example.demo.authentication.jwt.TokenInfo;
-import com.example.demo.authentication.redis.RedisService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -57,19 +55,9 @@ public class AccountController {
         return loginResponse.getNickname();
     }
 
-    @PutMapping("/modify")
+    @PostMapping("/modify")
     public Account modify(@RequestBody AccountModifyRequestForm requestForm, HttpServletRequest request){
-        Cookie[] cookies = request.getCookies();
-        String email = null;
-
-        for(Cookie cookie : cookies) {
-            if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-                break;
-            }
-        }
-        return accountService.modify(email, requestForm);
+        return accountService.modify(requestForm, request);
     }
 
     @PostMapping("/logout")

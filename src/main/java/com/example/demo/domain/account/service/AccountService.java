@@ -2,7 +2,6 @@ package com.example.demo.domain.account.service;
 
 import com.example.demo.domain.account.controller.form.*;
 import com.example.demo.domain.account.entity.Account;
-import com.example.demo.authentication.jwt.TokenInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -16,7 +15,7 @@ public interface AccountService {
 
     AccountLoginResponseForm login(AccountLoginRequestForm requestForm);
 
-    Account modify(String email, AccountModifyRequestForm requestForm);
+    Account modify(AccountModifyRequestForm requestForm, HttpServletRequest request);
 
     Boolean logout(HttpServletResponse response);
 
