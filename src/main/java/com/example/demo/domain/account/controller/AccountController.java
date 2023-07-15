@@ -56,7 +56,7 @@ public class AccountController {
     }
 
     @PostMapping("/modify")
-    public Account modify(@RequestBody AccountModifyRequestForm requestForm, HttpServletRequest request){
+    public boolean modify(@RequestBody AccountModifyRequestForm requestForm, HttpServletRequest request){
         return accountService.modify(requestForm, request);
     }
 

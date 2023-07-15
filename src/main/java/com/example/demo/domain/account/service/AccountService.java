@@ -15,7 +15,7 @@ public interface AccountService {
 
     AccountLoginResponseForm login(AccountLoginRequestForm requestForm);
 
-    Account modify(AccountModifyRequestForm requestForm, HttpServletRequest request);
+    boolean modify(AccountModifyRequestForm requestForm, HttpServletRequest request);
 
     Boolean logout(HttpServletResponse response);
 

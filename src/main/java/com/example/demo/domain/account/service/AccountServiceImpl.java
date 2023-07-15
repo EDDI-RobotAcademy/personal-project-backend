@@ -77,7 +77,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public Account modify(AccountModifyRequestForm requestForm, HttpServletRequest request) {
+    public boolean modify(AccountModifyRequestForm requestForm, HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String email = null;
 
@@ -92,18 +92,22 @@ public class AccountServiceImpl implements AccountService{
         Optional<Account> maybeAccount = accountRepository.findByEmail(email);
 
         if(maybeAccount.isEmpty()){
-            return null;
+            return false;
         }
         Account account = maybeAccount.get();
 
-        if(requestForm.getNickname()!=null){
-            account.setNickname(requestForm.getNickname());
-        }
-        if(requestForm.getPassword()!=null){
-            account.setPassword(encoder.encode(requestForm.getPassword()));
+        if(requestForm.getNickname() == null && requestForm.getPassword() == null){
+            return false;
         }
 
-        return accountRepository.save(account);
+        if(requestForm.getNickname() != null){
+            account.setNickname(requestForm.getNickname());
+        }
+        if(requestForm.getPassword() != null){
+            account.setPassword(encoder.encode(requestForm.getPassword()));
+        }
+        accountRepository.save(account);
+        return true;
     }
 
     @Override
