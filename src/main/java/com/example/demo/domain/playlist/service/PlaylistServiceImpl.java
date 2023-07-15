@@ -94,4 +94,20 @@ public class PlaylistServiceImpl implements PlaylistService{
 
         return true;
     }
+
+    @Override
+    public List<Playlist> listByLoginAccount(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String email = null;
+
+        for(Cookie cookie : cookies) {
+            if (cookie.getName().equals("AccessToken")) {
+                String token = cookie.getValue();
+                email = JwtTokenUtil.getEmail(token, secretKey);
+                break;
+            }
+        }
+
+        return playlistRepository.findPlaylistByAccountId(accountRepository.findByEmail(email).get());
+    }
 }

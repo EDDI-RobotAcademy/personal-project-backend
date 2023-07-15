@@ -18,4 +18,6 @@ public interface PlaylistService {
     PlaylistReadResponseForm read(Long id);
 
     boolean modify(PlaylistModifyRequestForm requestForm);
+
+    List<Playlist> listByLoginAccount(HttpServletRequest request);
 }

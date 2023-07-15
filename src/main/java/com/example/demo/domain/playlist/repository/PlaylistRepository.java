@@ -20,4 +20,7 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
     @Query("SELECT p.id FROM Playlist p where p.account = :account")
     List<Long> findPlaylistIdByAccountId(Account account);
+
+    @Query("SELECT p FROM Playlist p LEFT JOIN FETCH p.account where p.account = :account")
+    List<Playlist> findPlaylistByAccountId(Account account);
 }

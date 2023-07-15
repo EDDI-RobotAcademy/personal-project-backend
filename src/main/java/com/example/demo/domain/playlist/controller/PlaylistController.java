@@ -53,4 +53,9 @@ public class PlaylistController {
         playlistService.modify(requestForm);
         return null;
     }
+
+    @PostMapping("list-by-login-account")
+    public List<Playlist> playlistByLoginAccount(HttpServletRequest request){
+        return playlistService.listByLoginAccount(request);
+    }
 }
