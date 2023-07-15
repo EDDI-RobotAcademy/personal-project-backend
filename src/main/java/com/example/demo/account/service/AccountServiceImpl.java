@@ -3,6 +3,7 @@ package com.example.demo.account.service;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.request.AccessRegisterRequest;
 import com.example.demo.account.controller.request.AccountRegisterRequest;
+import com.example.demo.account.controller.request.MyPageRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.account.entity.AccountRole;
@@ -14,11 +15,14 @@ import com.example.demo.redis.RedisService;
 import com.example.demo.security.jwt.JwtProvider;
 import com.example.demo.security.jwt.subject.TokenResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Slf4j
@@ -30,7 +34,6 @@ public class AccountServiceImpl implements AccountService{
     final private AccountRoleRepository accountRoleRepository;
     final private RoleRepository roleRepository;
     final private PasswordEncoder passwordEncoder;
-    final private ObjectMapper objectMapper;
     final private JwtProvider jwtProvider;
     final private RedisService redisService;
 
@@ -90,7 +93,7 @@ public class AccountServiceImpl implements AccountService{
 
     // 로그인
     @Override
-    public TokenResponse  login(AccountLoginRequestForm form) {
+    public TokenResponse login(AccountLoginRequestForm form) {
         Optional<Account> maybeAccount = accountRepository.findByEmail(form.getEmail());
 
         if (maybeAccount.isPresent()) {
@@ -112,12 +115,32 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public Long findAccountInfoById(String email) {
-        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
-        if (maybeAccount.isPresent()){
-            return maybeAccount.get().getId();
-        }
-        return null;
-    }
+    public Boolean findAccountInfo(MyPageRequestForm form, String accessToken) {
+        Optional<Account> maybeAccount = accountRepository.findByEmail(form.getEmail());
 
+        if (maybeAccount.isPresent()) {
+            Account account = maybeAccount.get();
+
+            try {
+                Claims claims = Jwts.parser()
+                        .setSigningKey("${spring.jwt.key}")
+                        .parseClaimsJws(accessToken)
+                        .getBody();
+                String email = claims.getSubject();
+                log.info("email: " + email);
+                log.info("accessToken: " + accessToken);
+
+                if (email.equals(account.getEmail())) {
+                    // accessToken이 유효하고 계정의 이메일과 일치하는 경우 사용자 정보를 반환합니다.
+                    account.getEmail();
+                    account.getName();
+                    account.getPhoneNumber();
+                    return true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
 }

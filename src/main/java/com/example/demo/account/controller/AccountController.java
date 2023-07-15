@@ -3,6 +3,7 @@ package com.example.demo.account.controller;
 import com.example.demo.account.controller.form.AccessRegisterRequestForm;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
+import com.example.demo.account.controller.request.MyPageRequestForm;
 import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.account.service.AccountService;
 //import com.example.demo.redis.RedisService;
@@ -66,6 +67,12 @@ public class AccountController {
         log.info("인증 성공");
         return jwtProvider.reissueAccessToken(accountResponse);
     }
+    @PostMapping("/myPage")
+    public Boolean profile(MyPageRequestForm form, String accessToken) {
+    //Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported 에러
+        log.info("회원 정보: " + form);
 
+        return accountService.findAccountInfo(form, accessToken);
+    }
 }
 
