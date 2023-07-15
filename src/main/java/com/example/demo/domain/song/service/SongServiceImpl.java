@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -52,8 +53,13 @@ public class SongServiceImpl implements SongService{
                 break;
             }
         }
+        List<Long> counting = playlistRepository.findPlaylistIdByAccountId(accountRepository.findByEmail(email).get());
 
-        int count = songRepository.countSongByPlaylistId(playlistRepository.countPlaylistByAccountId(accountRepository.findByEmail(email).get().getId()));
+        log.info("playlistId = " + counting);
+        int count = 0;
+        for(long i : counting){
+            count += songRepository.countSongByPlaylistId(i);
+        }
         log.info("song count = " + count );
         return count;
     }

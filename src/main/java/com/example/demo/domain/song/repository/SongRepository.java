@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface SongRepository extends JpaRepository<Song, Long> {
-    int countSongByPlaylistId(int countPlaylistByAccountId);
+    int countSongByPlaylistId(long playlistId);
 
     @Query("SELECT s FROM Song s JOIN FETCH s.playlist p JOIN FETCH p.account WHERE s.id = :id")
     Optional<Song> findById(Long id);

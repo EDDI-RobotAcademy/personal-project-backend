@@ -1,10 +1,12 @@
 package com.example.demo.domain.playlist.repository;
 
+import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.playlist.entity.Playlist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+
 
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
@@ -15,4 +17,7 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
     List<Playlist> findAll();
 
     int countPlaylistByAccountId(Long accountId);
+
+    @Query("SELECT p.id FROM Playlist p where p.account = :account")
+    List<Long> findPlaylistIdByAccountId(Account account);
 }
