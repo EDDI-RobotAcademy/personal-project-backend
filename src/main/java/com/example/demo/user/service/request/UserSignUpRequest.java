@@ -8,12 +8,12 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class UserSignUpRequest {
+    final private String uid;
     final private String email;
-    final private String password;
     final private String name;
     final private String nickName;
 
     public User toUser () {
-        return new User(email,password,name,nickName);
+        return new User(uid,email,name,nickName);
     }
 }

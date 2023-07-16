@@ -9,14 +9,14 @@ import lombok.ToString;
 @Getter
 @RequiredArgsConstructor
 public class UserRegisterForm {
+    final private String uid;
     final private String email;
-    final private String password;
     final private String name;
     final private String nickName;
 
 
     public UserSignUpRequest toUserSignUpRequest () {
-        return new UserSignUpRequest(nickName,name,email,password);
+        return new UserSignUpRequest(uid,email,name,nickName);
     }
 
 }

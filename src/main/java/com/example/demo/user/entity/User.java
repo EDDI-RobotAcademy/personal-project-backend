@@ -24,6 +24,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    @Column(name = "uid")
+    private String uid;
+
     @Column(name = "nickName")
     private String nickName;
 
@@ -32,8 +35,6 @@ public class User {
 
     @Column(name = "email",unique = true)
     private String email;
-    @Column(name = "password")
-    private String password;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private UserRole userRole;
@@ -44,10 +45,14 @@ public class User {
         userRole.setUser(this);
     }
 
-    public User(String nickName, String name, String email, String password) {
+    public User(String uid, String email,String name, String nickName ) {
         this.nickName = nickName;
         this.name = name;
         this.email = email;
-        this.password = password;
+        this.uid = uid;
+    }
+    public User(String nickName, String name) {
+        this.nickName = nickName;
+        this.name = name;
     }
 }
