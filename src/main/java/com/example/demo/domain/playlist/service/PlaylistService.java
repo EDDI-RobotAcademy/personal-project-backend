@@ -20,4 +20,6 @@ public interface PlaylistService {
     boolean modify(PlaylistModifyRequestForm requestForm);
 
     List<Playlist> listByLoginAccount(HttpServletRequest request);
+
+    boolean delete(Long playlistId);
 }

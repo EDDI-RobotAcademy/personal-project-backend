@@ -58,4 +58,10 @@ public class PlaylistController {
     public List<Playlist> playlistByLoginAccount(HttpServletRequest request){
         return playlistService.listByLoginAccount(request);
     }
+
+    @DeleteMapping("/{playlistId}")
+    public boolean deleteSong(@PathVariable("playlistId") Long playlistId, HttpServletRequest request){
+        log.info("playlistId : " + playlistId);
+        return playlistService.delete(playlistId);
+    }
 }

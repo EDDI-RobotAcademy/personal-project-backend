@@ -8,6 +8,7 @@ import com.example.demo.domain.playlist.controller.form.PlaylistReadResponseForm
 import com.example.demo.domain.playlist.controller.form.PlaylistRegisterRequestForm;
 import com.example.demo.domain.playlist.entity.Playlist;
 import com.example.demo.domain.playlist.repository.PlaylistRepository;
+import com.example.demo.domain.song.entity.Song;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -109,5 +110,16 @@ public class PlaylistServiceImpl implements PlaylistService{
         }
 
         return playlistRepository.findPlaylistByAccountId(accountRepository.findByEmail(email).get());
+    }
+
+    @Override
+    public boolean delete(Long playlistId) {
+        Optional<Playlist> maybeSong = playlistRepository.findById(playlistId);
+        if(maybeSong.isEmpty()){
+            return false;
+        }
+
+        playlistRepository.deleteById(playlistId);
+        return true;
     }
 }
