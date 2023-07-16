@@ -13,7 +13,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +38,8 @@ public class SongServiceImpl implements SongService{
         final Playlist playlist = playlistRepository.findWithSongById(requestForm.getPlaylistId());
 
         final Song song = new Song(requestForm.getTitle(), requestForm.getSinger(), requestForm.getGenre(), requestForm.getLink(), playlist);
+
+        song.setLyrics(getLyrics(requestForm.getTitle() + " " + requestForm.getSinger()));
         songRepository.save(song);
         log.info(String.valueOf(song.getId()));
         return song.getId();
@@ -98,5 +102,23 @@ public class SongServiceImpl implements SongService{
 
         songRepository.deleteById(songId);
         return true;
+    }
+
+    public String getLyrics(String searchWord) {
+        String url = "http://localhost:8000/get_lyrics?song_title=" + searchWord;
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        String lyrics = null;
+        if (response.hasBody()) {
+            lyrics = response.getBody();
+            if (lyrics != null) {
+                log.info(lyrics);
+            } else {
+                return null;
+            }
+        }
+        lyrics = lyrics.replaceAll("\"", "");
+
+        return lyrics;
     }
 }
