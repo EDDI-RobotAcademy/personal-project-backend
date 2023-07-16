@@ -88,4 +88,15 @@ public class SongServiceImpl implements SongService{
 
         return true;
     }
+
+    @Override
+    public boolean delete(Long songId) {
+        Optional<Song> maybeSong = songRepository.findById(songId);
+        if(maybeSong.isEmpty()){
+            return false;
+        }
+
+        songRepository.deleteById(songId);
+        return true;
+    }
 }

@@ -1,8 +1,5 @@
 package com.example.demo.domain.song.controller;
 
-import com.example.demo.domain.playlist.controller.form.PlaylistModifyRequestForm;
-import com.example.demo.domain.playlist.controller.form.PlaylistReadResponseForm;
-import com.example.demo.domain.playlist.entity.Playlist;
 import com.example.demo.domain.song.controller.form.SongModifyRequestForm;
 import com.example.demo.domain.song.controller.form.SongRegisterRequestForm;
 import com.example.demo.domain.song.entity.Song;
@@ -41,5 +38,11 @@ public class SongController {
 
         songService.modify(requestForm);
         return null;
+    }
+
+    @DeleteMapping("/{songId}")
+    public boolean deleteSong(@PathVariable("songId") Long songId, HttpServletRequest request){
+        log.info("songId : " + songId);
+        return songService.delete(songId);
     }
 }

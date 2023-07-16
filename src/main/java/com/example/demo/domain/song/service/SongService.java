@@ -12,4 +12,6 @@ public interface SongService {
 
     Song read(Long id);
     boolean modify(SongModifyRequestForm requestForm);
+
+    boolean delete(Long songId);
 }
