@@ -2,8 +2,10 @@ package com.example.demo.security.jwt.service;
 
 import com.example.demo.account.entity.Account;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class AccountResponse {
 
     private Long accountId;

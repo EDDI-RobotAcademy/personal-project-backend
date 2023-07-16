@@ -3,7 +3,7 @@ package com.example.demo.account.controller;
 import com.example.demo.account.controller.form.AccessRegisterRequestForm;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
-import com.example.demo.account.controller.request.MyPageRequestForm;
+import com.example.demo.account.controller.form.MyPageRequestForm;
 import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.account.service.AccountService;
 //import com.example.demo.redis.RedisService;
@@ -65,12 +65,13 @@ public class AccountController {
 
         AccountResponse accountResponse = AccountResponse.of(accountDetails.getAccount());
         log.info("인증 성공");
+        log.info("accountResponse: " + accountResponse);
         return jwtProvider.reissueAccessToken(accountResponse);
     }
     @PostMapping("/myPage")
-    public Boolean profile(MyPageRequestForm form, String accessToken) {
-    //Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported 에러
+    public Boolean profile(MyPageRequestForm form, @RequestHeader("Authorization") String accessToken) {
         log.info("회원 정보: " + form);
+        log.info("accessToken 정보: " + accessToken);
 
         return accountService.findAccountInfo(form, accessToken);
     }

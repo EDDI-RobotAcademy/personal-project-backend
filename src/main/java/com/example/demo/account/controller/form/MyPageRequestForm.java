@@ -1,4 +1,4 @@
-package com.example.demo.account.controller.request;
+package com.example.demo.account.controller.form;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,5 +14,6 @@ public class MyPageRequestForm {
     final private String name;
 
     final private String phoneNumber;
+
 
 }
