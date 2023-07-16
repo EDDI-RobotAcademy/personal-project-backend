@@ -6,13 +6,17 @@ import com.example.demo.user.entity.RoleType;
 import com.example.demo.user.entity.User;
 import com.example.demo.user.entity.UserRole;
 import com.example.demo.user.repository.*;
+import com.example.demo.user.service.request.UserLogInRequest;
 import com.example.demo.user.service.request.UserSignInRequest;
 import com.example.demo.user.service.request.UserSignUpRequest;
+import com.example.demo.user.service.request.UserSignValidateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,14 +30,32 @@ public class UserServiceImpl implements UserService {
     final private UserTokenRepository userTokenRepository = UserTokenRepositoryImpl.getInstance();
 
     @Override
-    public Boolean signUp(UserSignUpRequest userSignUpRequest) {
-        final Optional<User> maybeUser = userRepository.findByEmail(userSignUpRequest.getEmail());
-        if (maybeUser.isPresent()) {
-            return false;
+    public User logIn(String uid) {
+        final Optional<User> maybeUser = userRepository.findByUid(uid);
+        if (!maybeUser.isPresent()) {
+            return null;
         }
-        final User user = userRepository.save(userSignUpRequest.toUser());
+        return maybeUser.get();
+    }
 
+    @Override
+    public Boolean signUp(UserSignUpRequest userSignUpRequest) {
+        final User user = userRepository.save(userSignUpRequest.toUser());
         return true;
+    }
+
+    @Override
+    public List<String> SignValidate(UserSignValidateRequest userSignValidateRequest) {
+        final Optional<User> maybeEmail = userRepository.findByEmail(userSignValidateRequest.getEmail());
+        final Optional<User> maybeNickName = userRepository.findByNickName(userSignValidateRequest.getNickName());
+        List<String> maybe = new ArrayList<String>();
+        if (maybeEmail.isPresent()) {
+            maybe.add("email");
+        }
+        if (maybeNickName.isPresent()) {
+            maybe.add("nickName");
+        }
+        return maybe;
     }
 
     @Override
@@ -44,7 +66,7 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         final User user = maybeUser.get();
-        if (user.getPassword().equals(request.getPassword())){
+        if (user.getUid().equals(request.getPassword())){
             final String userToken = UUID.randomUUID().toString();
             userTokenRepository.save(userToken, user.getUserId());
 
