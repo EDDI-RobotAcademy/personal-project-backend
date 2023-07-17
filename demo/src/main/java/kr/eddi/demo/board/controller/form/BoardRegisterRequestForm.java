@@ -14,9 +14,9 @@ public class BoardRegisterRequestForm {
     final private String coordLat;
     final private String coordLng;
     final private String writer;
-    final private String totalAddress;
+
 
     public BoardRegisterRequest toBoardRequest(){
-        return new BoardRegisterRequest(boardTitle,boardInfo,coordLat,coordLng, writer,totalAddress);
+        return new BoardRegisterRequest(boardTitle,boardInfo,coordLat,coordLng, writer);
     }
 }

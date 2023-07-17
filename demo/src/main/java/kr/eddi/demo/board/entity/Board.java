@@ -23,23 +23,23 @@ public class Board {
 
     String coordLat;
     String coordLng;
+
     String writer;
-    String totalAddress;
 
 
-    public Board(String boardTitle, String boardInfo, String coordLat, String coordLng, String writer, String totalAddress) {
+    public Board(String boardTitle, String boardInfo, String coordLat, String coordLng, String writer ) {
         this.boardTitle = boardTitle;
         this.boardInfo = boardInfo;
-        this.coordLat = coordLat;
-        this.coordLng = coordLng;
+        this.coordLat=coordLat;
+        this.coordLng=coordLng;
         this.writer = writer;
-        this.totalAddress= totalAddress;
+
     }
 
+
     @CreationTimestamp
-    private LocalDateTime createDate;//만든 시간 찍이도록 함
+    private LocalDateTime createDate;
 
     @UpdateTimestamp
     private LocalDateTime updateDate;
-
 }
