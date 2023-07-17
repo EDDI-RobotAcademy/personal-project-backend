@@ -33,8 +33,14 @@ public class BoardServiceImpl implements BoardService{
     public Board read(Long id){
         Optional<Board> maybeBoard= boardRepository.findById(id);
         if(maybeBoard.isPresent()){
+
             return maybeBoard.get();
         }
         return null;
+    }
+
+    @Override
+    public void delete(Long id) {
+        boardRepository.deleteById(id);
     }
 }

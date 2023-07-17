@@ -36,4 +36,8 @@ public class BoardController {
         log.info("보드 가져와");
         return boardService.read(id);
     }
+    @DeleteMapping("/{id}")
+    public void deleteBoard(@PathVariable("id") Long id){
+        boardService.delete(id);
+    }
 }

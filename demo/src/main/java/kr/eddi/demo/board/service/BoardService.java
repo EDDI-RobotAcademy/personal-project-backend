@@ -13,4 +13,6 @@ public interface BoardService {
     List<Board> list();
 
     Board read(Long id);
+
+    void delete(Long id);
 }
