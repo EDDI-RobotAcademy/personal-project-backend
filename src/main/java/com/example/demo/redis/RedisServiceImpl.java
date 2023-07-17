@@ -30,8 +30,8 @@ public class RedisServiceImpl implements RedisService{
     }
 
     @Override
-    public String getValues(String token) {
+    public String getValues(String email) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
-        return values.get(token);
+        return values.get(email);
     }
 }

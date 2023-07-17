@@ -9,17 +9,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
 
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
@@ -36,10 +41,6 @@ public class JwtProvider {
     @Value("${spring.jwt.live.rtk}")
     private Long refreshTokenLive;
 
-    @PostConstruct
-    protected void init () {
-        key = Base64.getEncoder().encodeToString(key.getBytes());
-    }
 
     // 로그인 토큰 생성
     public TokenResponse createTokenByLogin(AccountResponse accountResponse) {
@@ -51,7 +52,7 @@ public class JwtProvider {
             // 유효 시간 설정
             String accessToken = createToken(tokenSubject, accessTokenLive);
             String refreshToken = createToken(refreshTokenSubject, refreshTokenLive);
-//            redisDao.setValue(account.getEmail(), refreshToken, Duration.ofMillis(refreshTokenLive));
+
             return new TokenResponse(accessToken, refreshToken); // act, rft 토큰 값 전송
         } catch (JsonProcessingException e) {
             e.printStackTrace(); // 예외 처리
@@ -69,7 +70,7 @@ public class JwtProvider {
                     .setClaims(claims)
                     .setIssuedAt(date)
                     .setExpiration(new Date(date.getTime() + tokenLive))
-                    .signWith(SignatureAlgorithm.HS256, key)
+                    .signWith(SignatureAlgorithm.HS256, key.getBytes())
                     .compact();
         } catch (JsonProcessingException e) {
             e.printStackTrace(); // 예외 처리
@@ -81,7 +82,8 @@ public class JwtProvider {
     public Subject getSubject (String accessToken) throws JsonProcessingException {
         // postman 오류 ->message": "Signed Claims JWSs are not supported.", "status": "UNAUTHORIZED"
         // parseClaimsJwt -> parseClaimsJws 수정
-        String subjectStr = Jwts.parser().setSigningKey(key).parseClaimsJws(accessToken).getBody().getSubject();
+        String subjectStr = Jwts.parser().setSigningKey(key.getBytes()).parseClaimsJws(accessToken).getBody().getSubject();
+        log.info("subjectStr : "+subjectStr);
         // 변경 후 -> "status": 403, "error": "Forbidden" 에러
 
 //        Jws<Header, Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJwt(token);

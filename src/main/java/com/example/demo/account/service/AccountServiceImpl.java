@@ -14,21 +14,19 @@ import com.example.demo.account.repository.RoleRepository;
 import com.example.demo.redis.RedisService;
 import com.example.demo.security.jwt.JwtProvider;
 import com.example.demo.security.jwt.subject.TokenResponse;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AccountServiceImpl implements AccountService{
+public class AccountServiceImpl implements AccountService {
 
     final private AccountRepository accountRepository;
     final private AccountRoleRepository accountRoleRepository;
@@ -116,32 +114,24 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public Boolean findAccountInfo(MyPageRequestForm form, String accessToken) {
-        try {
-            String jwtKey = "${spring.jwt.key}".replace(".", "");
-            accessToken = accessToken.replace("Bearer ", "").trim();
+        log.info("토큰이 있니?: " + accessToken);
+        Jws<Claims> claims = Jwts.parser()
+                                .setSigningKey("${spring.jwt.key}".replace(".", "").getBytes())
+                                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
+        String email = claims.getBody().getSubject();
+        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
 
-            Jws<Claims> jws = Jwts.parserBuilder()
-                    .setSigningKey(jwtKey)
-                    .build()
-                    .parseClaimsJws(accessToken);
+        if (maybeAccount.isPresent()) {
+            Account account = maybeAccount.get();
 
-            String email = jws.getBody().getSubject();
-            Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+            if (email.equals(account.getEmail())) {
+                account.getEmail();
+                account.getName();
+                account.getPhoneNumber();
+                log.info("Email found: " + email);
 
-            if (maybeAccount.isPresent()) {
-                Account account = maybeAccount.get();
-
-                if (email.equals(account.getEmail())) {
-                    account.getEmail();
-                    account.getName();
-                    account.getPhoneNumber();
-                    log.info("Email found: " + email);
-                    return true;
-                }
+                return true;
             }
-        } catch (JwtException e) {
-            // Handle JWT validation exception
-            e.printStackTrace();
         }
         return false;
     }

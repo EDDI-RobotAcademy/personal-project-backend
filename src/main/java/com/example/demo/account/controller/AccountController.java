@@ -64,9 +64,18 @@ public class AccountController {
         }
 
         AccountResponse accountResponse = AccountResponse.of(accountDetails.getAccount());
+        // 인증 성공이 뜨는 절차는 accessToken 을 Authorization 에 넣어주고
+        // Header 에 refreshToken 을 넣어주면 인증 성공이 뜨긴함
+        // 그런데 postman 에는 403 forbidden 에러가 발생
+        // 왜 서버에서는 인증을 성고하지만 postman 에서는 오류가 발생하는지 이해가 안됨
         log.info("인증 성공");
         log.info("accountResponse: " + accountResponse);
         return jwtProvider.reissueAccessToken(accountResponse);
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return "test";
     }
     @PostMapping("/myPage")
     public Boolean profile(MyPageRequestForm form, @RequestHeader("Authorization") String accessToken) {
