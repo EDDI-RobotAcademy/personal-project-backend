@@ -58,8 +58,8 @@ public class NoticeServiceImpl implements NoticeService{
 
     // 게시물 읽기
     @Override
-    public NoticeBoard read(Long noticeId) {
-        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeId(noticeId);
+    public NoticeBoard read(String noticeId) {
+        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeId(Long.valueOf(noticeId));
         if (maybeNoticeBoard.isEmpty()){
             log.info("에러 발생");
             return null;

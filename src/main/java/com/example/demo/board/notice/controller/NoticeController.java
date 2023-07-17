@@ -30,12 +30,12 @@ public class NoticeController {
     }
 
     // 공지사항 게시판 수정
-    @PutMapping("/modify")
-    public Long noticeModify(@RequestBody NoticeModifyForm noticeModifyForm){
+    @PutMapping("/{noticeId}")
+    public NoticeBoard noticeModify(@RequestBody NoticeModifyForm noticeModifyForm){
         log.info("NoticeModify() ");
         NoticeBoard noticeBoard = noticeService.modify(noticeModifyForm.toNoticeBoard());
 
-        return noticeBoard.getNoticeId();
+        return noticeBoard;
     }
 
     // 공지사항 게시물 목록 확인
@@ -49,8 +49,8 @@ public class NoticeController {
     }
 
     // 공지사항 게시물 읽기
-    @GetMapping("/list/{noticeId}")
-    public NoticeBoard noticeRead(@PathVariable Long noticeId){
+    @GetMapping("/{noticeId}")
+    public NoticeBoard noticeRead(@PathVariable String noticeId){
         log.info("NoticeRead() ");
         NoticeBoard readNoticeBoard = noticeService.read(noticeId);
 
