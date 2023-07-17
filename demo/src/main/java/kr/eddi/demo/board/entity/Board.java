@@ -1,9 +1,6 @@
 package kr.eddi.demo.board.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -27,13 +24,16 @@ public class Board {
     String coordLat;
     String coordLng;
     String writer;
+    String totalAddress;
 
-    public Board(String boardTitle, String boardInfo, String coordLat, String coordLng, String writer) {
+
+    public Board(String boardTitle, String boardInfo, String coordLat, String coordLng, String writer, String totalAddress) {
         this.boardTitle = boardTitle;
         this.boardInfo = boardInfo;
         this.coordLat = coordLat;
         this.coordLng = coordLng;
         this.writer = writer;
+        this.totalAddress= totalAddress;
     }
 
     @CreationTimestamp
