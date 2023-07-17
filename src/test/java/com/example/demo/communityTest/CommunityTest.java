@@ -33,7 +33,8 @@ public class CommunityTest {
         final String title = "커뮤니티 제목1";
         final String content = "커뮤니티 내용1";
         final Long accountId = 1L;
-        CommunityRegistForm communityRegistForm = new CommunityRegistForm(title,content,accountId);
+//        CommunityRegistForm communityRegistForm = new CommunityRegistForm(title,content,accountId);
+        CommunityRegistForm communityRegistForm = new CommunityRegistForm(title,content);
         CommunityBoard communityBoard = communityServcie.regist(communityRegistForm.toCommunityBoard());
         long communityId = communityBoard.getCommunityId();
         CommunityBoard DBcommunity = communityRepository.findByCommunityId(communityId).get();

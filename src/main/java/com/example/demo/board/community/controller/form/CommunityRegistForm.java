@@ -11,11 +11,14 @@ import lombok.RequiredArgsConstructor;
 public class CommunityRegistForm {
     final private String title;
     final private String content;
-    final private Long accountId;
+//    final private Long accountId;
 
 
+//    public CommunityBoard toCommunityBoard() {
+//        return new CommunityBoard(title, content,accountId);
+//    }
     public CommunityBoard toCommunityBoard() {
-        return new CommunityBoard(title, content,accountId);
+        return new CommunityBoard(title, content);
     }
 
 

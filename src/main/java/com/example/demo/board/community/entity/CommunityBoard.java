@@ -38,4 +38,9 @@ public class CommunityBoard {
         this.title = title;
         this.content = content;
     }
+
+    public CommunityBoard(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }

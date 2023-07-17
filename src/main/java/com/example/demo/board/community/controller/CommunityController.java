@@ -24,7 +24,7 @@ public class CommunityController {
 
     // 커뮤니티 게시물 등록 기능
     @PostMapping("/regist")
-    public String communityRegist(CommunityRegistForm communityRegistForm){
+    public String communityRegist(@RequestBody CommunityRegistForm communityRegistForm){
         log.info("CommunityRegist() ");
         CommunityBoard communityBoard = communityServcie.regist(communityRegistForm.toCommunityBoard());
         if (communityBoard == null){

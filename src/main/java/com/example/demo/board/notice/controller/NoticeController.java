@@ -20,13 +20,12 @@ public class NoticeController {
 
     // 공지사항 게시물 등록 기능
     @PostMapping("/regist")
-    public String noticeRegist(NoticeRegistForm noticeRegistForm){
+    public String noticeRegist(@RequestBody NoticeRegistForm noticeRegistForm){
         log.info("NoticeRegist() ");
         NoticeBoard noticeBoard = noticeService.regist(noticeRegistForm.toNoticeBoard());
         if (noticeBoard == null){
             return null;
         }
-
         return noticeBoard.getTitle();
     }
 
