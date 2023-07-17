@@ -5,6 +5,7 @@ import com.example.demo.board.entity.FilePaths;
 import com.example.demo.board.entity.MemberBoard;
 import com.example.demo.board.form.RequestRegisterBoardForm;
 import com.example.demo.board.form.ResponseBoardForm;
+import com.example.demo.board.form.ResponseFindKeywordBoardForm;
 import com.example.demo.board.reposiitory.FilePathsRepository;
 import com.example.demo.board.reposiitory.MemberBoardRepository;
 import jakarta.transaction.Transactional;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,4 +66,12 @@ public class MemberBoardServiceImpl implements MemberBoardService {
 
         return responseBoardForm;
     }
+
+    @Override
+    @Transactional
+    public List<MemberBoard> search(String keyword) {
+        List<MemberBoard> findBoards = boardRepository.findByContentContaining(keyword);
+        return findBoards;
+    }
+
 }

@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface MemberBoardRepository extends JpaRepository<MemberBoard, Long> {
     List<MemberBoard> findAll();
+
+    List<MemberBoard> findByContentContaining(String keyword);
 }

@@ -6,6 +6,7 @@ import com.example.demo.board.service.MemberBoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +40,12 @@ public class MemberBoardController {
         log.info("boardRead()");
 
         return boardService.read(boardId);
+    }
+
+    @GetMapping("/search")
+      public List<MemberBoard> findBoardList(@RequestParam("keyword") String keyword){
+        List<MemberBoard>findKeywordBoardList = boardService.search(keyword);
+        return findKeywordBoardList;
     }
 
 
