@@ -13,7 +13,7 @@ public interface PlaylistService {
 
     int countPlaylist(HttpServletRequest request);
 
-    List<Playlist> list();
+    List<PlaylistReadResponseForm> list();
 
     PlaylistReadResponseForm read(Long id);
 

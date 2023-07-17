@@ -11,11 +11,14 @@ import com.example.demo.domain.playlist.repository.PlaylistRepository;
 import com.example.demo.domain.song.entity.Song;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,8 +72,15 @@ public class PlaylistServiceImpl implements PlaylistService{
     }
 
     @Override
-    public List<Playlist> list() {
-        return playlistRepository.findAll();
+    @Transactional
+    public List<PlaylistReadResponseForm> list() {
+        List<Playlist> playlists = playlistRepository.findAll();
+        List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
+        for(Playlist playlist : playlists){
+            PlaylistReadResponseForm responseForm = new PlaylistReadResponseForm(playlist, playlist.getSongList());
+            responseForms.add(responseForm);
+        }
+        return responseForms;
     }
 
     @Override

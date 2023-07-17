@@ -15,7 +15,7 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
     @Query("SELECT DISTINCT p FROM Playlist p LEFT JOIN FETCH p.songList LEFT JOIN FETCH p.account WHERE p.id = :id")
     Playlist findWithSongById(Long id);
 
-    @Query("SELECT p FROM Playlist p JOIN FETCH p.account")
+    @Query("SELECT p FROM Playlist p JOIN FETCH p.account JOIN FETCH p.songList")
     List<Playlist> findAll();
 
     int countPlaylistByAccountId(Long accountId);

@@ -32,12 +32,8 @@ public class PlaylistController {
     }
 
     @PostMapping("/list")
-    public List<Playlist> playList(HttpServletRequest request){
-        List<Playlist> play = playlistService.list();
-        for(Playlist p : play){
-            log.info(p.getTitle());
-        }
-        return play;
+    public List<PlaylistReadResponseForm> playList(HttpServletRequest request){
+        return playlistService.list();
     }
 
     @GetMapping("/{id}")
