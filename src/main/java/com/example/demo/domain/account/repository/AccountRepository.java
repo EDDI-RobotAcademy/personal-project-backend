@@ -15,7 +15,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "delete from account where email = :email", nativeQuery = true)
     void deleteByEmail(String email);
 
     @Query("SELECT DISTINCT a FROM Account a LEFT JOIN FETCH a.playlist WHERE a.email = :email")

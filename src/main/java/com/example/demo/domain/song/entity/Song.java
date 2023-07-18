@@ -28,7 +28,9 @@ public class Song {
     @Setter
     private String link;
 
+    @Lob
     @Setter
+    @Column(name="LYRICS", length=4000)
     private String lyrics;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

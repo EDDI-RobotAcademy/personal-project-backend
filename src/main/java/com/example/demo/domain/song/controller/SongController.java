@@ -1,6 +1,6 @@
 package com.example.demo.domain.song.controller;
 
-import com.example.demo.domain.playlist.controller.form.PlaylistReadResponseForm;
+import com.example.demo.domain.song.controller.form.SongModifyRequestForm;
 import com.example.demo.domain.song.controller.form.SongRegisterRequestForm;
 import com.example.demo.domain.song.entity.Song;
 import com.example.demo.domain.song.service.SongService;
@@ -17,7 +17,7 @@ public class SongController {
     final private SongService songService;
 
     @PostMapping("/register")
-    public Song songRegister (@RequestBody SongRegisterRequestForm requestForm, HttpServletRequest request) {
+    public Long songRegister (@RequestBody SongRegisterRequestForm requestForm, HttpServletRequest request) {
 
         return songService.register(requestForm, request);
     }
@@ -31,5 +31,18 @@ public class SongController {
     public Song readSong(@PathVariable("id") Long id, HttpServletRequest request){
         Song song = songService.read(id);
         return song;
+    }
+
+    @PostMapping("/modify")
+    public Song modifySong(@RequestBody SongModifyRequestForm requestForm, HttpServletRequest request){
+
+        songService.modify(requestForm);
+        return null;
+    }
+
+    @DeleteMapping("/{songId}")
+    public boolean deleteSong(@PathVariable("songId") Long songId, HttpServletRequest request){
+        log.info("songId : " + songId);
+        return songService.delete(songId);
     }
 }

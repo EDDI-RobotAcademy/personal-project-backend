@@ -1,5 +1,6 @@
 package com.example.demo.domain.playlist.service;
 
+import com.example.demo.domain.playlist.controller.form.PlaylistModifyRequestForm;
 import com.example.demo.domain.playlist.controller.form.PlaylistReadResponseForm;
 import com.example.demo.domain.playlist.controller.form.PlaylistRegisterRequestForm;
 import com.example.demo.domain.playlist.entity.Playlist;
@@ -12,7 +13,13 @@ public interface PlaylistService {
 
     int countPlaylist(HttpServletRequest request);
 
-    List<Playlist> list();
+    List<PlaylistReadResponseForm> list();
 
     PlaylistReadResponseForm read(Long id);
+
+    boolean modify(PlaylistModifyRequestForm requestForm);
+
+    List<Playlist> listByLoginAccount(HttpServletRequest request);
+
+    boolean delete(Long playlistId);
 }

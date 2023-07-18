@@ -1,11 +1,8 @@
 package com.example.demo.domain.account.service;
 
-import com.example.demo.domain.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.domain.account.controller.form.AccountLoginResponseForm;
-import com.example.demo.domain.account.controller.form.AccountModifyRequestForm;
-import com.example.demo.domain.account.controller.form.AccountRegisterRequestForm;
+import com.example.demo.domain.account.controller.form.*;
 import com.example.demo.domain.account.entity.Account;
-import com.example.demo.authentication.jwt.TokenInfo;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface AccountService {
@@ -18,11 +15,13 @@ public interface AccountService {
 
     AccountLoginResponseForm login(AccountLoginRequestForm requestForm);
 
-    Account modify(String email, AccountModifyRequestForm requestForm);
+    boolean modify(AccountModifyRequestForm requestForm, HttpServletRequest request);
 
     Boolean logout(HttpServletResponse response);
 
     Boolean withdrawal(String userToken);
 
     Account getLoginAccountByEmail(String email);
+
+    boolean duplicateCheckPassword(AccountPasswordCheckRequestForm requestForm, HttpServletRequest request);
 }

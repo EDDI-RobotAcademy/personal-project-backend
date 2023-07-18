@@ -1,14 +1,16 @@
 package com.example.demo.authentication.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JwtTokenUtil {
     // JWT Token 발급
@@ -21,7 +23,7 @@ public class JwtTokenUtil {
         String accessToken = Jwts.builder()       // 토큰 생성
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))      //  시작 시간 : 현재 시간기준으로 만들어짐
-                .setExpiration(new Date(System.currentTimeMillis() + expireTimeMs))     // 끝나는 시간 : 지금 시간 + 유지할 시간(입력받아옴)
+                .setExpiration(new Date(System.currentTimeMillis() + 60000))     // 끝나는 시간 : 지금 시간 + 유지할 시간(입력받아옴)
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
 
@@ -63,15 +65,29 @@ public class JwtTokenUtil {
     }
 
     // 발급된 Token이 만료 시간이 지났는지 체크
-    public static boolean isExpired(String token, String secretKey) {
-        Date expiredDate = extractClaims(token, secretKey).getExpiration();
+    public static String isExpired(String accessToken, String refreshToken, String secretKey) {
+        accessToken = checkClaims(accessToken, refreshToken, secretKey);
         // Token의 만료 날짜가 지금보다 이전인지 check
-        return expiredDate.before(new Date());
+        return accessToken;
     }
 
     // SecretKey를 사용해 Token Parsing
     public static Claims extractClaims(String token, String secretKey) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+    }
+
+    public static String checkClaims(String accessToken, String refreshToken, String secretKey) {
+        try{
+            Claims claims =Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken).getBody();
+            log.info("try accessToken : " + accessToken);
+        }catch (ExpiredJwtException e){
+            Claims claims =Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshToken).getBody();
+            String email = claims.get("email").toString();
+            accessToken = createAccessToken(email, secretKey, 60000);
+            log.info("catch accessToken : " + accessToken);
+        }
+
+        return accessToken;
     }
 
     public Cookie generateCookie(String name, String value, int time){

@@ -1,14 +1,14 @@
 package com.example.demo.domain.account.service;
 
-import com.example.demo.domain.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.domain.account.controller.form.AccountLoginResponseForm;
-import com.example.demo.domain.account.controller.form.AccountModifyRequestForm;
-import com.example.demo.domain.account.controller.form.AccountRegisterRequestForm;
-import com.example.demo.domain.account.entity.Account;
-import com.example.demo.domain.account.repository.AccountRepository;
 import com.example.demo.authentication.jwt.JwtTokenUtil;
 import com.example.demo.authentication.jwt.TokenInfo;
 import com.example.demo.authentication.redis.RedisService;
+import com.example.demo.domain.account.controller.form.*;
+import com.example.demo.domain.account.entity.Account;
+import com.example.demo.domain.account.repository.AccountRepository;
+import com.example.demo.domain.playlist.repository.PlaylistRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +26,7 @@ public class AccountServiceImpl implements AccountService{
     final private AccountRepository accountRepository;
     final private RedisService redisService;
     final private BCryptPasswordEncoder encoder;
+    final private PlaylistRepository playlistRepository;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -78,22 +79,37 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public Account modify(String email, AccountModifyRequestForm requestForm) {
+    public boolean modify(AccountModifyRequestForm requestForm, HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String email = null;
+
+        for(Cookie cookie : cookies) {
+            if (cookie.getName().equals("AccessToken")) {
+                String token = cookie.getValue();
+                email = JwtTokenUtil.getEmail(token, secretKey);
+                break;
+            }
+        }
+
         Optional<Account> maybeAccount = accountRepository.findByEmail(email);
 
         if(maybeAccount.isEmpty()){
-            return null;
+            return false;
         }
         Account account = maybeAccount.get();
 
-        if(requestForm.getNickname()!=null){
-            account.setNickname(requestForm.getNickname());
-        }
-        if(requestForm.getPassword()!=null){
-            account.setPassword(encoder.encode(requestForm.getPassword()));
+        if(requestForm.getNickname() == null && requestForm.getPassword() == null){
+            return false;
         }
 
-        return accountRepository.save(account);
+        if(requestForm.getNickname() != null){
+            account.setNickname(requestForm.getNickname());
+        }
+        if(requestForm.getPassword() != null){
+            account.setPassword(encoder.encode(requestForm.getPassword()));
+        }
+        accountRepository.save(account);
+        return true;
     }
 
     @Override
@@ -106,6 +122,11 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public Boolean withdrawal(String email) {
+        Account account = accountRepository.findByEmail(email).get();
+        Long accountId = account.getId();
+        playlistRepository.deleteByAccountId(accountId);
+
+        // 이제 account 레코드를 안전하게 삭제할 수 있습니다.
         accountRepository.deleteByEmail(email);
         return true;
     }
@@ -118,5 +139,32 @@ public class AccountServiceImpl implements AccountService{
         if(optionalAccount.isEmpty()) return null;
 
         return optionalAccount.get();
+    }
+
+    @Override
+    public boolean duplicateCheckPassword(AccountPasswordCheckRequestForm requestForm, HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String email = null;
+
+        for(Cookie cookie : cookies) {
+            if (cookie.getName().equals("AccessToken")) {
+                String token = cookie.getValue();
+                email = JwtTokenUtil.getEmail(token, secretKey);
+                break;
+            }
+        }
+
+        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+        if(maybeAccount.isEmpty()){
+            return false;
+        }
+        Account account = maybeAccount.get();
+
+        if(!encoder.matches(requestForm.getPassword(), account.getPassword())){
+            log.info("비밀번호 틀림");
+            return false;
+        }
+
+        return true;
     }
 }
