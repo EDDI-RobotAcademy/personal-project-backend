@@ -9,11 +9,9 @@ import com.happycamper.backend.product.entity.*;
 import com.happycamper.backend.product.repository.*;
 import com.happycamper.backend.product.service.request.ProductOptionRegisterRequest;
 import com.happycamper.backend.product.service.request.ProductRegisterRequest;
-import com.happycamper.backend.product.service.response.CampsiteVacancyByMapResponseForm;
-import com.happycamper.backend.product.service.response.ProductListResponseForm;
-import com.happycamper.backend.product.service.response.ProductReadResponseForm;
-import com.happycamper.backend.product.service.response.StockResponseForm;
-import com.happycamper.backend.utility.transform.TransFormToDate;
+import com.happycamper.backend.product.service.response.*;
+import com.happycamper.backend.utility.number.NumberUtils;
+import com.happycamper.backend.utility.transform.TransformToDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -117,16 +115,27 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(String email, Long id) {
 
-        List<ProductOption> productOptionList = productOptionRepository.findAllByProductId(id);
-        for(ProductOption productOption : productOptionList) {
-            optionsRepository.deleteAllByProductOptionId(productOption.getId());
+        Optional<Member> maybeMember = memberRepository.findByEmail(email);
+
+        if(maybeMember.isPresent()) {
+            Optional<Product> maybeProduct = productRepository.findProductById(id);
+            Member memberByProduct = maybeProduct.get().getMember();
+            if(memberByProduct.getId().equals(maybeMember.get().getId())) {
+                List<ProductOption> productOptionList = productOptionRepository.findAllByProductId(id);
+                for(ProductOption productOption : productOptionList) {
+                    optionsRepository.deleteAllByProductOptionId(productOption.getId());
+                }
+                productOptionRepository.deleteAllByProductId(id);
+                productImageRepository.deleteAllByProductId(id);
+                productMainImageRepository.deleteByProductId(id);
+                productRepository.deleteById(id);
+            }
+            else {
+                log.info("Cannot delete");
+            }
         }
-        productOptionRepository.deleteAllByProductId(id);
-        productImageRepository.deleteAllByProductId(id);
-        productMainImageRepository.deleteByProductId(id);
-        productRepository.deleteById(id);
     }
 
     @Override
@@ -136,7 +145,15 @@ public class ProductServiceImpl implements ProductService {
         List<ProductListResponseForm> responseFormList = new ArrayList<>();
 
         for(Product product : productList) {
-            ProductOption productOption = productOptionRepository.findMinPriceOptionByProductId(product.getId());
+            List<ProductOption> productOptionList = productOptionRepository.findAllByProductId(product.getId());
+
+            List<Integer> optionPriceList = new ArrayList<>();
+
+            for(ProductOption productOption: productOptionList) {
+                optionPriceList.add(productOption.getOptionPrice());
+            }
+            int minPrice = NumberUtils.findMinValue(optionPriceList);
+
             Optional<ProductMainImage> productMainImage = productMainImageRepository.findById(product.getId());
 
             if(productMainImage.isPresent()) {
@@ -145,7 +162,7 @@ public class ProductServiceImpl implements ProductService {
                         product.getProductName(),
                         product.getCategory(),
                         productMainImage.get().getMainImageName(),
-                        productOption.getOptionPrice());
+                        minPrice);
                 responseFormList.add(responseForm);
             }
         }
@@ -166,18 +183,26 @@ public class ProductServiceImpl implements ProductService {
         // 2. 상품 Id로 상품 옵션 리스트 찾기
         List<ProductOption> productOptionList = productOptionRepository.findAllByProductId(product.getId());
 
+        List<ProductOptionResponseForm> responseFormList = new ArrayList<>();
+
+        for(ProductOption productOption: productOptionList) {
+            ProductOptionResponseForm responseForm =
+                    new ProductOptionResponseForm(productOption.getId(), productOption.getOptionName(), productOption.getOptionPrice());
+            responseFormList.add(responseForm);
+        }
+
         // 3. 상품 이미지 모두 찾아서 리스트에 담기
         List<ProductImage> productImagesList = productImageRepository.findAllByProductId(product.getId());
 
-        return new ProductReadResponseForm(product, productOptionList,  productImagesList);
+        return new ProductReadResponseForm(product, responseFormList,  productImagesList);
     }
 
     @Override
     public StockResponseForm checkStock(StockRequestForm requestForm) {
         String chkin = requestForm.getCheckInDate();
         String chkout = requestForm.getCheckOutDate();
-        LocalDate CheckInDate = TransFormToDate.transformToDate(chkin);
-        LocalDate CheckOutDate = TransFormToDate.transformToDate(chkout);
+        LocalDate CheckInDate = TransformToDate.transformToDate(chkin);
+        LocalDate CheckOutDate = TransformToDate.transformToDate(chkout);
 
         Long productId = requestForm.getId( );
 
@@ -212,7 +237,7 @@ public class ProductServiceImpl implements ProductService {
             }
             // 사용자가 원하는 date 내에 해당하는 빈자리 개수 중 가장 낮은 값을 추출하고
             // 최종적으로 반환할 빈자리 리스트에 넣어준다.
-            int min = findMinValue(stockList);
+            int min = NumberUtils.findMinValue(stockList);
             finalcampsiteVacancyList.add(min);
         }
         StockResponseForm responseForm = new StockResponseForm(optionNameList, finalcampsiteVacancyList);
@@ -227,7 +252,15 @@ public class ProductServiceImpl implements ProductService {
         List<ProductListResponseForm> responseFormList = new ArrayList<>();
 
         for(Product product : productList) {
-            ProductOption productOption = productOptionRepository.findMinPriceOptionByProductId(product.getId());
+            List<ProductOption> productOptionList = productOptionRepository.findAllByProductId(product.getId());
+
+            List<Integer> optionPriceList = new ArrayList<>();
+
+            for(ProductOption productOption: productOptionList) {
+                optionPriceList.add(productOption.getOptionPrice());
+            }
+            int minPrice = NumberUtils.findMinValue(optionPriceList);
+
             Optional<ProductMainImage> productMainImage = productMainImageRepository.findById(product.getId());
             
             if(productMainImage.isPresent()) {
@@ -236,7 +269,7 @@ public class ProductServiceImpl implements ProductService {
                         product.getProductName(),
                         product.getCategory(),
                         productMainImage.get().getMainImageName(),
-                        productOption.getOptionPrice());
+                        minPrice);
                 responseFormList.add(responseForm);
             }
         }
@@ -248,14 +281,14 @@ public class ProductServiceImpl implements ProductService {
         // 클라이언트로부터 체크인, 체크아웃 날짜를 받아서 localDate 형식으로 변환
         String chkin = requestForm.getCheckInDate();
         String chkout = requestForm.getCheckOutDate();
-        LocalDate CheckInDate = TransFormToDate.transformToDate(chkin);
-        LocalDate CheckOutDate = TransFormToDate.transformToDate(chkout);
+        LocalDate CheckInDate = TransformToDate.transformToDate(chkin);
+        LocalDate CheckOutDate = TransformToDate.transformToDate(chkout);
 
-        log.info("받은 날짜: " + CheckInDate + ", " + CheckOutDate);
+        log.info("Period: " + CheckInDate + " ~ " + CheckOutDate);
 
         // 모든 상품을 찾아서 list에 넣는다.
         List<Product> productList = productRepository.findAll();
-        log.info("상품 몇 개? " + productList.size());
+        log.info("The Number of Products " + productList.size());
 
         // 반환할 양식을 초기화한다.
         List<CampsiteVacancyByMapResponseForm> responseFormList = new ArrayList<>();
@@ -268,7 +301,7 @@ public class ProductServiceImpl implements ProductService {
 
             // 상품 id로 모든 옵션을 찾아서 list에 저장할 것이다.
             List<ProductOption> productOptionList = productOptionRepository.findAllByProductId(product.getId());
-            log.info("옵션 몇 개? " + productOptionList.size());
+            log.info("The Number of Options " + productOptionList.size());
 
             // 첫번째 옵션을 돌면서
             for(ProductOption productOption: productOptionList) {
@@ -283,7 +316,7 @@ public class ProductServiceImpl implements ProductService {
 
                     // 만약 받아온 체크인 날짜와 체크아웃 날짜 사이에 재고가 존재한다면
                     if (options.getDate().isEqual(CheckInDate) || (options.getDate().isAfter(CheckInDate) && options.getDate().isBefore(CheckOutDate))) {
-                        log.info("there is valid date");
+                        log.info("There is valid date");
 
                         // 해당 옵션의 재고 list에 저장할 것이다.
                         stockList.add(options.getCampsiteVacancy());
@@ -291,7 +324,7 @@ public class ProductServiceImpl implements ProductService {
                 }
                 // 첫번째 재고 리스트의 순환이 끝나면
                 // 재고 리스트의 값 중 가장 낮은 값을 min에 넣을 것이다.
-                int min = findMinValue(stockList);
+                int min = NumberUtils.findMinValue(stockList);
                 // 그 다음 그것을 해당 상품의 옵션 리스트에 넣을 것이다.
                 allOptionsStockList.add(min);
             }
@@ -300,9 +333,9 @@ public class ProductServiceImpl implements ProductService {
             int vacancies = 0;
             for (int stock : allOptionsStockList) {
                 vacancies += stock;
-                log.info("재고 더하기: " + vacancies);
+                log.info("Add vacancy " + vacancies);
             }
-            log.info("상품 옵션의 총 재고: " + vacancies);
+            log.info("Total vacancies: " + vacancies);
 
             CampsiteVacancyByMapResponseForm responseForm =
                     new CampsiteVacancyByMapResponseForm(product.getId(), vacancies, product.getAddress());
@@ -311,21 +344,57 @@ public class ProductServiceImpl implements ProductService {
         return responseFormList;
     }
 
-    // 원하는 기간 중 가장 적은 빈자리 개수를 반환
-    private int findMinValue(List<Integer> campsiteVacancyList) {
-        if (campsiteVacancyList.isEmpty()) {
-            throw new IllegalArgumentException("List is empty");
-        }
+    @Override
+    public MyProductListResponseForm myList(String email) {
 
-        int min = campsiteVacancyList.get(0);
+        // 판매자 계정 찾기
+        Optional<Member> maybeMember = memberRepository.findByEmail(email);
+        if(maybeMember.isPresent()) {
+            Member member = maybeMember.get();
 
-        for (int i = 1; i < campsiteVacancyList.size(); i++) {
-            int current = campsiteVacancyList.get(i);
-            if (current < min) {
-                min = current;
+            // 판매자 계정으로 등록된 상품 찾기
+            Optional<Product> maybeProduct = productRepository.findByMember(member);
+            if(maybeProduct.isPresent()) {
+                Product product = maybeProduct.get();
+                System.out.println("product is present");
+
+                List<ProductOptionWithVacancyResponseForm> responseFormList = new ArrayList<>();
+                List<ProductOptionResponseForm> responseFormList1 = new ArrayList<>();
+
+                // 해당 상품의 옵션 리스트를 모두 찾기
+                List<ProductOption> productOptionList = productOptionRepository.findAllByProductId(product.getId());
+
+                System.out.println("productOptionList is present");
+                for(ProductOption productOption: productOptionList) {
+
+                    ProductOptionResponseForm productOptionResponseForm =
+                            new ProductOptionResponseForm(productOption.getId(), productOption.getOptionName(), productOption.getOptionPrice());
+
+                    // 해당 옵션의 빈자리 리스트 찾기
+                    List<Options> optionsList = optionsRepository.findAllByProductOptionId(productOption.getId());
+
+                    System.out.println("optionsList is present");
+                    for(Options options: optionsList) {
+                        List<LocalDate> dateList = new ArrayList<>();
+                        List<Integer> campsiteVacancyList = new ArrayList<>();
+
+                        dateList.add(options.getDate());
+                        campsiteVacancyList.add(options.getCampsiteVacancy());
+                        ProductOptionWithVacancyResponseForm responseForm =
+                                new ProductOptionWithVacancyResponseForm(
+                                        productOption.getId(),
+                                        dateList, campsiteVacancyList);
+                        responseFormList.add(responseForm);
+                    }
+                    responseFormList1.add(productOptionResponseForm);
+                }
+
+                ProductMainImage productMainImage = productMainImageRepository.findByProductId(product.getId());
+                List<ProductImage> productImagesList = productImageRepository.findAllByProductId(product.getId());
+
+                return new MyProductListResponseForm(product, responseFormList1, responseFormList, productMainImage, productImagesList);
             }
         }
-
-        return min;
+        return null;
     }
 }
