@@ -18,23 +18,30 @@ public class MemberController {
 
     final private MemberService memberService;
 
-    @PostMapping("/cheke-id")
-    public Boolean checkId(@RequestBody MemberIdCheckForm memberIdCheckForm) {
-        log.info("check id duplication: "+ memberIdCheckForm.getMemberId());
+    @GetMapping("/cheke-id/{memberId}")
+    public Boolean checkId(@PathVariable("memberId") String memberId) {
+        log.info("check id duplication: "+ memberId);
 
-        return memberService.checkIdDuplication(memberIdCheckForm.getMemberId());
+        return memberService.checkIdDuplication(memberId);
+    }
+
+    @GetMapping("/check-email/{email}")
+    public Boolean checkEmail(@PathVariable("email") String email) {
+        log.info("check email duplication: "+ email);
+
+        return memberService.checkEmailDuplication(email);
     }
 
     @PostMapping("/sign-up")
-    public Boolean signIn(@RequestBody MemberSignUpForm memberSignUpForm) {
+    public Boolean signUp (@RequestBody MemberSignUpForm memberSignUpForm) {
         log.info("sign Up()");
 
         return memberService.memberSignUp(memberSignUpForm);
     }
 
-    @PostMapping("/sign-In")
+    @PostMapping("/sign-in")
     public MemberLoginRespnseForm signIn(@RequestBody MemberBasicForm memberSignInForm) {
-        log.info("sign In()");
+        log.info("sign in()");
 
         return memberService.memberSignIn(memberSignInForm);
     }

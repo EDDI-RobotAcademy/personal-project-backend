@@ -10,6 +10,7 @@ import kh.project.demo.library.member.entity.MemberState;
 import kh.project.demo.library.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -28,6 +29,18 @@ public class MemberServiceImpl implements MemberService{
 
         if (maybeMember.isPresent()) {
             return false;
+
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public Boolean checkEmailDuplication(String email){
+        Optional<Member> maybeMember = memberRepository.findByEmail(email);
+
+        if (maybeMember.isPresent()) {
+            return false;
         } else {
             return true;
         }
@@ -35,13 +48,27 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public Boolean memberSignUp(MemberSignUpForm memberSignUpForm) {
-        memberRepository.save(memberSignUpForm.toMember());
+        Optional<Member> maybeMemberId = memberRepository.findByMemberId(memberSignUpForm.getMemberId());
+        if ( maybeMemberId.isPresent() ) {
+            log.info("존재하는 회원 아이디입니다.");
+            return false;
+        }
+
+        Optional<Member> maybeMemberEmail = memberRepository.findByEmail(memberSignUpForm.getEmail());
+        if ( maybeMemberEmail.isPresent() ) {
+            log.info("존재하는 회원 이메일 입니다.");
+            return false;
+        }
+
+        String encodePassword = new BCryptPasswordEncoder().encode(memberSignUpForm.getMemberPw());
+
+        memberRepository.save(memberSignUpForm.toMember(encodePassword));
         return true;
     }
 
     @Override
     public MemberLoginRespnseForm memberSignIn(MemberBasicForm memberSignInForm){
-        final Optional<Member> maybeMember = memberRepository.findByMemberId(memberSignInForm.getUserId());
+        final Optional<Member> maybeMember = memberRepository.findByMemberId(memberSignInForm.getMemberId());
 
         if (maybeMember.isEmpty()) {
             log.info("로그인 실패!");
@@ -51,7 +78,7 @@ public class MemberServiceImpl implements MemberService{
         Member member = maybeMember.get();
 
         if (member.getMemberState().equals(MemberState.OK)) {
-            if (member.getMemberPw().equals(memberSignInForm.getUserPw())) {
+            if (member.getMemberPw().equals(memberSignInForm.getMemberPw())) {
                 log.info("로그인 성공!");
                 return new MemberLoginRespnseForm(UUID.randomUUID());
             }
@@ -66,7 +93,7 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public boolean memberDelete(MemberBasicForm memberDeleteForm){
-        final Optional<Member> mayMember = memberRepository.findByMemberId(memberDeleteForm.getUserId());
+        final Optional<Member> mayMember = memberRepository.findByMemberId(memberDeleteForm.getMemberId());
 
         if (mayMember.isPresent()) {
             memberRepository.delete(mayMember.get());

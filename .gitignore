@@ -39,3 +39,5 @@ out/
 ### 보안 설정 ###
 github.properties
 email.properties
+application.yml
+security.properties
