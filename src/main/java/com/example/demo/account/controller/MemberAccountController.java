@@ -1,5 +1,7 @@
 package com.example.demo.account.controller;
 
+import com.example.demo.account.controller.form.AccountLoginRequestForm;
+import com.example.demo.account.controller.form.AccountLoginResponseForm;
 import com.example.demo.account.controller.form.AccountRegisterForm;
 import com.example.demo.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +24,9 @@ public class MemberAccountController {
         log.info("signUp(): " + form);
 
         return accountService.signUp(form.toAccountRegisterRequest());
+    }
+    @PostMapping("/sign-in")
+    public AccountLoginResponseForm accountLogin (@RequestBody AccountLoginRequestForm requestForm) {
+        return accountService.login(requestForm);
     }
 }

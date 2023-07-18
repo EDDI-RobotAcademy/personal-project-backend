@@ -36,4 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 
+### 보안 ###
 application.yaml
+aws.properties
+redis.properties

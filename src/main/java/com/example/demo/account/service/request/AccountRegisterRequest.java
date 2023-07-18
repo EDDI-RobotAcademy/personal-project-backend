@@ -1,6 +1,7 @@
 package com.example.demo.account.service.request;
 
-import com.example.demo.account.entity.MemberAccount;
+import com.example.demo.account.entity.Account;
+import com.example.demo.account.entity.RoleType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -9,8 +10,9 @@ import lombok.RequiredArgsConstructor;
 public class AccountRegisterRequest {
     final private String email;
     final private String password;
+//    final private RoleType roleType;
 
-    public MemberAccount toAccount() {
-        return new MemberAccount(email, password);
+    public Account toAccount() {
+        return new Account(email, password);
     }
 }
