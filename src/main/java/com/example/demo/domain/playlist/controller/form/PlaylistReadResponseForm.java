@@ -12,4 +12,5 @@ import java.util.List;
 public class PlaylistReadResponseForm {
     final private Playlist playlist;
     final private List<Song> songList;
+    final private int likeCount;
 }

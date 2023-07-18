@@ -12,10 +12,10 @@ import java.util.List;
 
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
-    @Query("SELECT DISTINCT p FROM Playlist p LEFT JOIN FETCH p.songList LEFT JOIN FETCH p.account WHERE p.id = :id")
+    @Query("SELECT DISTINCT p FROM Playlist p LEFT JOIN FETCH p.songList LEFT JOIN FETCH p.account LEFT JOIN FETCH p.likers WHERE p.id = :id")
     Playlist findWithSongById(Long id);
 
-    @Query("SELECT p FROM Playlist p JOIN FETCH p.account JOIN FETCH p.songList")
+    @Query("SELECT p FROM Playlist p JOIN FETCH p.account JOIN FETCH p.songList LEFT JOIN FETCH p.likers")
     List<Playlist> findAll();
 
     int countPlaylistByAccountId(Long accountId);
@@ -23,7 +23,7 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
     @Query("SELECT p.id FROM Playlist p where p.account = :account")
     List<Long> findPlaylistIdByAccountId(Account account);
 
-    @Query("SELECT p FROM Playlist p LEFT JOIN FETCH p.account where p.account = :account")
+    @Query("SELECT p FROM Playlist p LEFT JOIN FETCH p.account LEFT JOIN FETCH p.likers where p.account = :account")
     List<Playlist> findPlaylistByAccountId(Account account);
 
     @Modifying

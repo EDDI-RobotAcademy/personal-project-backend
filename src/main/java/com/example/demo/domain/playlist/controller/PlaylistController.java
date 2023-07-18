@@ -60,4 +60,19 @@ public class PlaylistController {
         log.info("playlistId : " + playlistId);
         return playlistService.delete(playlistId);
     }
+
+    @PostMapping("check-liked/{playlistId}")
+    public boolean checkLikedPlaylist(@PathVariable("playlistId") Long playlistId, HttpServletRequest request){
+        return playlistService.isPlaylistLiked(playlistId, request);
+    }
+
+    @PostMapping("/like-playlist/{playlistId}")
+    public int likePlaylist (@PathVariable("playlistId") Long playlistId, HttpServletRequest request) {
+        return playlistService.likePlaylist(playlistId, request);
+    }
+
+    @PostMapping("/unlike-playlist/{playlistId}")
+    public int unLikePlaylist (@PathVariable("playlistId") Long playlistId, HttpServletRequest request) {
+        return playlistService.unlikePlaylist(playlistId, request);
+    }
 }

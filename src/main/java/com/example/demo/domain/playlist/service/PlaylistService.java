@@ -22,4 +22,10 @@ public interface PlaylistService {
     List<Playlist> listByLoginAccount(HttpServletRequest request);
 
     boolean delete(Long playlistId);
+
+    int likePlaylist(Long playlistId, HttpServletRequest request);
+
+    int unlikePlaylist(Long playlistId, HttpServletRequest request);
+
+    Boolean isPlaylistLiked(Long playlistId, HttpServletRequest request);
 }
