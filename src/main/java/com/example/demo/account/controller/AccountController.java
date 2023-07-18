@@ -4,6 +4,7 @@ import com.example.demo.account.controller.form.AccessRegisterRequestForm;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.controller.form.MyPageRequestForm;
+import com.example.demo.account.entity.Account;
 import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.account.service.AccountService;
 //import com.example.demo.redis.RedisService;
@@ -17,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -78,13 +81,9 @@ public class AccountController {
     }
 
     @PostMapping("/myPage")
-    public Boolean profile(MyPageRequestForm form, @RequestHeader("Authorization") String accessToken) {
-        log.info("accessToken 정보: " + accessToken);
-        log.info("회원 정보: " + form.getEmail());
-        log.info("이름 정보: " + form.getName());
-        log.info("휴대폰 정보: " + form.getPhoneNumber());
+    public String profile(MyPageRequestForm form, @RequestHeader("Authorization") String accessToken) {
 
-        return accountService.findAccountInfo(form, accessToken);
+        return String.valueOf(accountService.findAccountInfo(form, accessToken));
     }
 }
 

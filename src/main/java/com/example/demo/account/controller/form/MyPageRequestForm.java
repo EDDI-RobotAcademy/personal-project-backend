@@ -14,4 +14,6 @@ public class MyPageRequestForm {
 
     private String phoneNumber;
 
+//    private AccountProfile accountProfile;
+
 }

@@ -1,10 +1,12 @@
 package com.example.demo.account.service;
 
+import com.example.demo.account.repository.ProfileRepository;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
+import com.example.demo.account.controller.form.MyPageRequestForm;
 import com.example.demo.account.controller.request.AccessRegisterRequest;
 import com.example.demo.account.controller.request.AccountRegisterRequest;
-import com.example.demo.account.controller.form.MyPageRequestForm;
 import com.example.demo.account.entity.Account;
+import com.example.demo.account.entity.Profile;
 import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.account.entity.AccountRole;
 import com.example.demo.account.entity.Role;
@@ -31,6 +33,7 @@ public class AccountServiceImpl implements AccountService {
     final private AccountRepository accountRepository;
     final private AccountRoleRepository accountRoleRepository;
     final private RoleRepository roleRepository;
+    final private ProfileRepository profileRepository;
     final private PasswordEncoder passwordEncoder;
     final private JwtProvider jwtProvider;
     final private RedisService redisService;
@@ -113,11 +116,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Boolean findAccountInfo(MyPageRequestForm form, String accessToken) {
+    public Profile findAccountInfo(MyPageRequestForm form, String accessToken) {
         SecretKey key = jwtProvider.getKey();
 
         Jws<Claims> claims = Jwts.parser().setSigningKey(key)
-                        .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
+                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
         String email = claims.getBody().getSubject();
         email = email.substring(email.indexOf("\"email\":\"") + 9, email.indexOf("\",\"types\""));
 
@@ -130,8 +133,10 @@ public class AccountServiceImpl implements AccountService {
             form.setPhoneNumber(account.getPhoneNumber());
             log.info("form에 정보가 들어갔니?: " + form);
 
-            return true;
+            Profile profile = new Profile(form.getEmail(), form.getName(), form.getPhoneNumber(), account);
+
+            return profileRepository.save(profile);
         }
-        return false;
+        return null;
     }
 }
