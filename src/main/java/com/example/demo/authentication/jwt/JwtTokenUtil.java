@@ -23,13 +23,14 @@ public class JwtTokenUtil {
         String accessToken = Jwts.builder()       // 토큰 생성
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))      //  시작 시간 : 현재 시간기준으로 만들어짐
-                .setExpiration(new Date(System.currentTimeMillis() + 60000))     // 끝나는 시간 : 지금 시간 + 유지할 시간(입력받아옴)
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))     // 끝나는 시간 : 지금 시간 + 유지할 시간(입력받아옴)
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
                 .setClaims(claims)
+                .setSubject("refreshToken")
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
@@ -83,7 +84,7 @@ public class JwtTokenUtil {
         }catch (ExpiredJwtException e){
             Claims claims =Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshToken).getBody();
             String email = claims.get("email").toString();
-            accessToken = createAccessToken(email, secretKey, 60000);
+            accessToken = createAccessToken(email, secretKey, 86400000);
             log.info("catch accessToken : " + accessToken);
         }
 
