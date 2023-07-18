@@ -7,35 +7,31 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @NoArgsConstructor
 public class Board {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String boardTitle;
+    private String boardTitle;
+    private String boardInfo;
 
-    String boardInfo;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "marker_id")
+    private Marker marker;
 
-    String coordLat;
-    String coordLng;
+    private String writer;
 
-    String writer;
-
-
-    public Board(String boardTitle, String boardInfo, String coordLat, String coordLng, String writer ) {
+    public Board(String boardTitle, String boardInfo, String coordLat, String coordLng, String writer) {
         this.boardTitle = boardTitle;
         this.boardInfo = boardInfo;
-        this.coordLat=coordLat;
-        this.coordLng=coordLng;
+        this.marker = new Marker(coordLat, coordLng);
         this.writer = writer;
-
     }
 
+    // Getter와 Setter (생략 가능)
 
     @CreationTimestamp
     private LocalDateTime createDate;
