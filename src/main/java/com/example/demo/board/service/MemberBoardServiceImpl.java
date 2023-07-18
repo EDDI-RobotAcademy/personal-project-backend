@@ -3,9 +3,9 @@ package com.example.demo.board.service;
 
 import com.example.demo.board.entity.FilePaths;
 import com.example.demo.board.entity.MemberBoard;
+import com.example.demo.board.form.RequestModifyBoardForm;
 import com.example.demo.board.form.RequestRegisterBoardForm;
 import com.example.demo.board.form.ResponseBoardForm;
-import com.example.demo.board.form.ResponseFindKeywordBoardForm;
 import com.example.demo.board.reposiitory.FilePathsRepository;
 import com.example.demo.board.reposiitory.MemberBoardRepository;
 import jakarta.transaction.Transactional;
@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,4 +73,28 @@ public class MemberBoardServiceImpl implements MemberBoardService {
         return findBoards;
     }
 
+    @Override
+    @Transactional
+    public MemberBoard modify(RequestModifyBoardForm requestForm, Long boardId) {
+        Optional<MemberBoard> maybeMemberBoard = boardRepository.findById(boardId);
+
+        if (maybeMemberBoard.isEmpty()) {
+            log.info("정보가 없습니다!");
+            return null;
+        }
+        MemberBoard memberBoard = maybeMemberBoard.get();
+        memberBoard.setContent(requestForm.getContent());
+        memberBoard.setTitle(requestForm.getTitle());
+
+
+        filePathsRepository.deleteAll(memberBoard.getFilePathList());
+
+        List<FilePaths> filePathList = requestForm.getAwsFileList();
+        for (FilePaths filePaths : filePathList){
+            String imagePath = filePaths.getImagePath();
+            FilePaths imageFilePath = new FilePaths(imagePath, memberBoard);
+            filePathsRepository.save(imageFilePath);
+        }
+        return boardRepository.save(memberBoard);
+    }
 }

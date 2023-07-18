@@ -1,10 +1,9 @@
 package com.example.demo.board.service;
 
-import com.example.demo.board.entity.FilePaths;
 import com.example.demo.board.entity.MemberBoard;
+import com.example.demo.board.form.RequestModifyBoardForm;
 import com.example.demo.board.form.RequestRegisterBoardForm;
 import com.example.demo.board.form.ResponseBoardForm;
-import com.example.demo.board.form.ResponseFindKeywordBoardForm;
 
 import java.util.List;
 
@@ -15,5 +14,7 @@ public interface MemberBoardService {
     MemberBoard register(RequestRegisterBoardForm requestForm);
 
     ResponseBoardForm read(Long boardId);
+
+    MemberBoard modify(RequestModifyBoardForm requestForm, Long boardId);
 
 }

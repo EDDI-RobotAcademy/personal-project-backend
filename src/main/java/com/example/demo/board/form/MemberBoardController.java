@@ -47,6 +47,13 @@ public class MemberBoardController {
         List<MemberBoard>findKeywordBoardList = boardService.search(keyword);
         return findKeywordBoardList;
     }
+    @PutMapping("/{boardId}")
+    public MemberBoard modifyBoard (@PathVariable("boardId") Long boardId,
+                                 @RequestBody RequestModifyBoardForm requestBoardForm) {
+        log.info("modifyBoard(): " + requestBoardForm + ", id: " + boardId);
+
+        return boardService.modify(requestBoardForm, boardId);
+    }
 
 
 }
