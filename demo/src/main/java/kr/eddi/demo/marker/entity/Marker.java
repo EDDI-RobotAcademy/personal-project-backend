@@ -1,4 +1,4 @@
-package kr.eddi.demo.board.entity;
+package kr.eddi.demo.marker.entity;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
