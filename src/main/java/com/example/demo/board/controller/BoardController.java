@@ -2,13 +2,17 @@ package com.example.demo.board.controller;
 
 import com.example.demo.board.controller.form.RequestBoardForm;
 import com.example.demo.board.entity.Board;
+import com.example.demo.board.repository.BoardRepository;
 import com.example.demo.board.service.BoardService;
 import com.example.demo.board.service.request.BoardRegisterRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @Slf4j
@@ -17,6 +21,7 @@ import java.util.List;
 @RequestMapping("/board")
 public class BoardController {
     final private BoardService boardService;
+    final private BoardRepository boardRepository;
     @GetMapping("/list")
     public List<Board> boardList() {
         log.info("boardList()");

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -25,36 +27,37 @@ public class Board {
     @Setter
     private String content;
     @Setter
-    private Integer likeCount;
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private Integer likeCount = 0;
     @Setter
-    private Integer readCount;
-
-    public Board addReadCount(Integer readCount) {
-        this.readCount = readCount+1;
-        return this;
-    }
-
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    @Generated(GenerationTime.ALWAYS)
+    private Integer readCount = 0;
     @Setter
+    @Column(name = "reply_count", nullable = false, columnDefinition = "int default 0")
+    @Generated(GenerationTime.ALWAYS)
     private Integer replyCount;
-//    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
-//    private Set<BoardCategory> boardCategories = new HashSet<>();
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     @CreationTimestamp
     private LocalDateTime createDate;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     @UpdateTimestamp
     private LocalDateTime modifyDate;
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private BoardCategory category;
 
-    public Board(String writer, String title, String content, Integer likeCount, Integer readCount, Integer replyCount) {
+    public Board(String writer, String title, String content, Integer likeCount, Integer readCount, Integer replyCount, BoardCategory category) {
         this.writer = writer;
         this.title = title;
         this.content = content;
         this.likeCount = likeCount;
         this.readCount = readCount;
         this.replyCount = replyCount;
+        this.category = category;
     }
+
     public Board(String writer, String title, String content) {
         this.writer = writer;
         this.title = title;
