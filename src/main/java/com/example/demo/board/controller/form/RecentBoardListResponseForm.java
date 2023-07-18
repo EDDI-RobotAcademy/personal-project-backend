@@ -3,20 +3,18 @@ package com.example.demo.board.controller.form;
 import com.example.demo.board.entity.BoardCategory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 
 @Getter
+@Slf4j
 @RequiredArgsConstructor
-public class ReadBoardResponseForm {
+public class RecentBoardListResponseForm {
 
+    final private Long boardId;
     final private String title;
     final private String writer;
-    final private String content;
+    final private BoardCategory category;
     final private Date createDate;
-    final private Date updateDate;
-    final private BoardCategory boardCategory;
-    final private int views;
-    final private int likeCount;
-    final private int commentCount;
 }

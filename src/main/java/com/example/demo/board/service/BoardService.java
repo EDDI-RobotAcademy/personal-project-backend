@@ -21,4 +21,12 @@ public interface BoardService {
     List<SearchBoardListResponseForm> searchBoards(String searchKeyword);
 
     List<RelatedBoardResponseForm> getRelatedBoardList(Long boardId);
+
+    List<RecentBoardListResponseForm> getRecentBoardList();
+
+    Boolean likeBoard(Long boardId, Long accountId);
+
+    Boolean unlikeBoard(Long boardId, Long accountId);
+
+    Boolean isBoardLiked(Long boardId, Long accountId);
 }
