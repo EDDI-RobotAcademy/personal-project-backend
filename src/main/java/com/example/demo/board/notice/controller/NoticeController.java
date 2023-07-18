@@ -59,8 +59,8 @@ public class NoticeController {
 
 
     // 공지사항 게시물 삭제
-    @DeleteMapping("/delete")
-    public boolean noticeDelete(@RequestParam("noticeId") Long noticeId){
+    @DeleteMapping("/{noticeId}")
+    public boolean noticeDelete(@RequestParam("noticeId") String noticeId){
         log.info("NoticeDelete() ");
         boolean resultDeleteNotice = noticeService.delete(noticeId);
 

@@ -73,8 +73,8 @@ public class NoticeServiceImpl implements NoticeService{
 
     // 공지사항 게시물 삭제
     @Override
-    public Boolean delete(Long noticeId) {
-        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeId(noticeId);
+    public Boolean delete(String noticeId) {
+        Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeId(Long.valueOf(noticeId));
         if (maybeNoticeBoard.isEmpty()){
             log.info("에러 발생");
             return false;

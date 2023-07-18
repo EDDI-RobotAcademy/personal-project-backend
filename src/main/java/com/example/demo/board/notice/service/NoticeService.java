@@ -14,7 +14,7 @@ public interface NoticeService {
 
     NoticeBoard modify(NoticeBoard noticeBoard);
 
-    Boolean delete(Long noticeId);
+    Boolean delete(String noticeId);
 
     NoticeBoard read(String noticeId);
 }
