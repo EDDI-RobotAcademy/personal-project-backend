@@ -26,7 +26,6 @@ public class AccountController {
 
     final private AccountService accountService;
     final private JwtProvider jwtProvider;
-//    final private RedisService redisService;
 
     @PostMapping("/sign-up")
     public Boolean signUp(@RequestBody AccountRegisterRequestForm form) {
@@ -77,10 +76,13 @@ public class AccountController {
     public String test() {
         return "test";
     }
+
     @PostMapping("/myPage")
     public Boolean profile(MyPageRequestForm form, @RequestHeader("Authorization") String accessToken) {
-        log.info("회원 정보: " + form);
         log.info("accessToken 정보: " + accessToken);
+        log.info("회원 정보: " + form.getEmail());
+        log.info("이름 정보: " + form.getName());
+        log.info("휴대폰 정보: " + form.getPhoneNumber());
 
         return accountService.findAccountInfo(form, accessToken);
     }

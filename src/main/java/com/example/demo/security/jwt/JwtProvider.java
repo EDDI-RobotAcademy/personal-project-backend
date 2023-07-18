@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -32,15 +33,17 @@ public class JwtProvider {
     final private RedisService redisService;
     final private ObjectMapper objectMapper;
 
-    @Value("${spring.jwt.key}")
-    private String key;
+
+    private SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    public SecretKey getKey() {
+        return key;
+    }
 
     @Value("${spring.jwt.live.atk}")
     private Long accessTokenLive;
 
     @Value("${spring.jwt.live.rtk}")
     private Long refreshTokenLive;
-
 
     // 로그인 토큰 생성
     public TokenResponse createTokenByLogin(AccountResponse accountResponse) {
@@ -70,7 +73,7 @@ public class JwtProvider {
                     .setClaims(claims)
                     .setIssuedAt(date)
                     .setExpiration(new Date(date.getTime() + tokenLive))
-                    .signWith(SignatureAlgorithm.HS256, key.getBytes())
+                    .signWith(SignatureAlgorithm.HS256, key)
                     .compact();
         } catch (JsonProcessingException e) {
             e.printStackTrace(); // 예외 처리
@@ -82,7 +85,7 @@ public class JwtProvider {
     public Subject getSubject (String accessToken) throws JsonProcessingException {
         // postman 오류 ->message": "Signed Claims JWSs are not supported.", "status": "UNAUTHORIZED"
         // parseClaimsJwt -> parseClaimsJws 수정
-        String subjectStr = Jwts.parser().setSigningKey(key.getBytes()).parseClaimsJws(accessToken).getBody().getSubject();
+        String subjectStr = Jwts.parser().setSigningKey(key).parseClaimsJws(accessToken).getBody().getSubject();
         log.info("subjectStr : "+subjectStr);
         // 변경 후 -> "status": 403, "error": "Forbidden" 에러
 

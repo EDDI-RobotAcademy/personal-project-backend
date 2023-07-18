@@ -1,19 +1,17 @@
 package com.example.demo.account.controller.form;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
+@Setter
 @ToString
 @RequiredArgsConstructor
 public class MyPageRequestForm {
 
-    final private String email;
+    private String email;
 
-    final private String name;
+    private String name;
 
-    final private String phoneNumber;
-
+    private String phoneNumber;
 
 }
