@@ -7,10 +7,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class NoticeModifyForm {
+    final private Long noticeId;
     final private String title;
     final private String content;
 
     public NoticeBoard toNoticeBoard() {
-        return new NoticeBoard(title,content);
+        return new NoticeBoard(noticeId,title,content);
     }
 }

@@ -35,6 +35,7 @@ public class NoticeServiceImpl implements NoticeService{
     @Override
     public NoticeBoard modify(NoticeBoard noticeBoard) {
         Optional<NoticeBoard> maybeNoticeBoard = noticeRepository.findByNoticeId(noticeBoard.getNoticeId());
+        log.info(String.valueOf(noticeBoard.getNoticeId()));
         if(maybeNoticeBoard.isEmpty()){
             log.info("에러 발생");
             return null;
@@ -47,7 +48,9 @@ public class NoticeServiceImpl implements NoticeService{
         getNoticeBoard.setTitle(noticeBoard.getTitle());
         getNoticeBoard.setContent(noticeBoard.getContent());
 
-        return noticeRepository.save(getNoticeBoard);
+        noticeRepository.save(getNoticeBoard);
+
+        return getNoticeBoard;
     }
 
     // 공지사항 게시물 목록 확인
