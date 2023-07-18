@@ -3,38 +3,35 @@ package com.example.demo.account.service;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.request.AccessRegisterRequest;
 import com.example.demo.account.controller.request.AccountRegisterRequest;
+import com.example.demo.account.controller.form.MyPageRequestForm;
 import com.example.demo.account.entity.Account;
+import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.account.entity.AccountRole;
 import com.example.demo.account.entity.Role;
-import com.example.demo.account.entity.RoleType;
 import com.example.demo.account.repository.AccountRepository;
 import com.example.demo.account.repository.AccountRoleRepository;
 import com.example.demo.account.repository.RoleRepository;
 import com.example.demo.redis.RedisService;
 import com.example.demo.security.jwt.JwtProvider;
-import com.example.demo.security.jwt.exception.BadRequestException;
 import com.example.demo.security.jwt.subject.TokenResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AccountServiceImpl implements AccountService{
+public class AccountServiceImpl implements AccountService {
 
     final private AccountRepository accountRepository;
     final private AccountRoleRepository accountRoleRepository;
     final private RoleRepository roleRepository;
     final private PasswordEncoder passwordEncoder;
-    final private ObjectMapper objectMapper;
     final private JwtProvider jwtProvider;
     final private RedisService redisService;
 
@@ -67,7 +64,11 @@ public class AccountServiceImpl implements AccountService{
             return false;
         }
 
-        final Account account = accountRepository.save(request.toAccount());
+        Account account = request.toAccount();
+        String password = passwordEncoder.encode(request.getPassword());
+        account.setPassword(password);
+        accountRepository.save(account);
+
         final Role role = roleRepository.findByRoleType(request.getRoleType()).get();
         final AccountRole accountRole = new AccountRole(account, role);
 
@@ -90,13 +91,13 @@ public class AccountServiceImpl implements AccountService{
 
     // 로그인
     @Override
-    public TokenResponse  login(AccountLoginRequestForm form) {
+    public TokenResponse login(AccountLoginRequestForm form) {
         Optional<Account> maybeAccount = accountRepository.findByEmail(form.getEmail());
 
         if (maybeAccount.isPresent()) {
             if (passwordEncoder.matches(form.getPassword(), maybeAccount.get().getPassword())) {
                 Account account = maybeAccount.get();
-                TokenResponse tokenResponse = jwtProvider.createTokenByLogin(account);
+                TokenResponse tokenResponse = jwtProvider.createTokenByLogin(AccountResponse.of(account));
 
                 String accessToken = tokenResponse.getAccessToken();
                 String refreshToken = tokenResponse.getRefreshToken();
@@ -112,12 +113,26 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public Long findAccountInfoById(String email) {
+    public Boolean findAccountInfo(MyPageRequestForm form, String accessToken) {
+        log.info("토큰이 있니?: " + accessToken);
+        Jws<Claims> claims = Jwts.parser()
+                                .setSigningKey("${spring.jwt.key}".replace(".", "").getBytes())
+                                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
+        String email = claims.getBody().getSubject();
         Optional<Account> maybeAccount = accountRepository.findByEmail(email);
-        if (maybeAccount.isPresent()){
-            return maybeAccount.get().getId();
-        }
-        return null;
-    }
 
+        if (maybeAccount.isPresent()) {
+            Account account = maybeAccount.get();
+
+            if (email.equals(account.getEmail())) {
+                account.getEmail();
+                account.getName();
+                account.getPhoneNumber();
+                log.info("Email found: " + email);
+
+                return true;
+            }
+        }
+        return false;
+    }
 }

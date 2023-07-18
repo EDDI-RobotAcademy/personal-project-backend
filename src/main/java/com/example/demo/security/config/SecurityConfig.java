@@ -37,22 +37,25 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public AuthenticationManager authenticationManager(
-//            AuthenticationConfiguration authenticationConfiguration
-//    ) throws Exception {
-//        return authenticationConfiguration.getAuthenticationManager();
-//    }
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration
+    ) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
-                .exceptionHandling()
+                .exceptionHandling() // 예외 처리
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .requestMatchers(HttpMethod.GET,"/account/check-email/**").permitAll()
+                .requestMatchers("/account/reissue").permitAll()
+                .requestMatchers("/account/myPage").permitAll()
                 .requestMatchers("/account/sign-up").permitAll()
                 .requestMatchers("/account/log-in").permitAll()
                 .and()
@@ -64,3 +67,4 @@ public class SecurityConfig {
         }
 }
 
+//requestMatchers

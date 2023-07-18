@@ -1,6 +1,6 @@
 package com.example.demo.security.jwt;
 
-import com.example.demo.account.entity.Account;
+import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.redis.RedisService;
 import com.example.demo.security.jwt.subject.Subject;
 import com.example.demo.security.jwt.subject.TokenResponse;
@@ -9,14 +9,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
@@ -33,19 +41,18 @@ public class JwtProvider {
     @Value("${spring.jwt.live.rtk}")
     private Long refreshTokenLive;
 
-    @PostConstruct
-    protected void init () {
-        key = Base64.getEncoder().encodeToString(key.getBytes());
-    }
 
-
-    public TokenResponse createTokenByLogin(Account account) {
+    // 로그인 토큰 생성
+    public TokenResponse createTokenByLogin(AccountResponse accountResponse) {
         try {
-            Subject tokenSubject = Subject.accessToken(account.getId(), account.getEmail());
-            Subject refreshTokenSubject = Subject.refreshToken(account.getId(), account.getEmail());
+            // access 토큰 생성
+            Subject tokenSubject = Subject.accessToken(accountResponse.getAccountId(), accountResponse.getEmail());
+            // refresh 토큰 생성
+            Subject refreshTokenSubject = Subject.refreshToken(accountResponse.getAccountId(), accountResponse.getEmail());
+            // 유효 시간 설정
             String accessToken = createToken(tokenSubject, accessTokenLive);
             String refreshToken = createToken(refreshTokenSubject, refreshTokenLive);
-//            redisDao.setValue(account.getEmail(), refreshToken, Duration.ofMillis(refreshTokenLive));
+
             return new TokenResponse(accessToken, refreshToken); // act, rft 토큰 값 전송
         } catch (JsonProcessingException e) {
             e.printStackTrace(); // 예외 처리
@@ -53,6 +60,7 @@ public class JwtProvider {
         }
     }
 
+    // 토큰 생성
     private String createToken(Subject subject, Long tokenLive) throws JsonProcessingException {
         try {
             String subjectStr = objectMapper.writeValueAsString(subject);
@@ -62,7 +70,7 @@ public class JwtProvider {
                     .setClaims(claims)
                     .setIssuedAt(date)
                     .setExpiration(new Date(date.getTime() + tokenLive))
-                    .signWith(SignatureAlgorithm.HS256, key)
+                    .signWith(SignatureAlgorithm.HS256, key.getBytes())
                     .compact();
         } catch (JsonProcessingException e) {
             e.printStackTrace(); // 예외 처리
@@ -70,20 +78,26 @@ public class JwtProvider {
         }
     }
 
-    // jwt 의 payload 에 있는 유저 정보를 Subject 로 꺼낸다.
+    // 토큰에서 인증 정보 조회
     public Subject getSubject (String accessToken) throws JsonProcessingException {
-        String subjectStr = Jwts.parser().setSigningKey(key).parseClaimsJwt(accessToken).getBody().getSubject();
+        // postman 오류 ->message": "Signed Claims JWSs are not supported.", "status": "UNAUTHORIZED"
+        // parseClaimsJwt -> parseClaimsJws 수정
+        String subjectStr = Jwts.parser().setSigningKey(key.getBytes()).parseClaimsJws(accessToken).getBody().getSubject();
+        log.info("subjectStr : "+subjectStr);
+        // 변경 후 -> "status": 403, "error": "Forbidden" 에러
+
+//        Jws<Header, Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJwt(token);
 
         return objectMapper.readValue(subjectStr, Subject.class);
     }
 
-//    public TokenResponse reissueAccessToken(Account account) throws JsonProcessingException {
-//        String refreshTokenRedis = redisDao.getValues(account.getEmail());
-//
-//        if (Objects.isNull(refreshTokenRedis)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "인증 정보가 만료되었습니다.");
-//        Subject accessTokenSubject = Subject.accessToken(account.getId(), account.getEmail());
-//        String accessToken = createToken(accessTokenSubject, accessTokenLive);
-//
-//        return new TokenResponse(accessToken, null);
-//    }
+    public TokenResponse reissueAccessToken(AccountResponse accountResponse) throws JsonProcessingException {
+        String refreshTokenRedis = redisService.getValues(accountResponse.getEmail());
+
+        if (Objects.isNull(refreshTokenRedis)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "인증 정보가 만료되었습니다.");
+        Subject accessTokenSubject = Subject.accessToken(accountResponse.getAccountId(), accountResponse.getEmail());
+        String accessToken = createToken(accessTokenSubject, accessTokenLive);
+
+        return new TokenResponse(accessToken, null);
+    }
 }
