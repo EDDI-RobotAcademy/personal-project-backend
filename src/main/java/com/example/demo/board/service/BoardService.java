@@ -29,4 +29,12 @@ public interface BoardService {
     Boolean unlikeBoard(Long boardId, Long accountId);
 
     Boolean isBoardLiked(Long boardId, Long accountId);
+
+    List<MyBoardsResponseForm> getMyBoardList(Long accountId);
+
+    void modify(Long boardId, BoardModifyRequestForm requestForm);
+
+    void delete(Long boardId);
+
+    List<MyLikedBoardsResponseForm> getMyLikedBoardList(Long accountId);
 }

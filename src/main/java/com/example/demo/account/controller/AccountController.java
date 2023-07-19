@@ -1,8 +1,7 @@
 package com.example.demo.account.controller;
 
-import com.example.demo.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.AccountCommunicationRequestForm;
-import com.example.demo.account.controller.form.AccountRegisterForm;
+import com.example.demo.account.controller.form.*;
+import com.example.demo.account.entity.Account;
 import com.example.demo.account.service.AccountService;
 import com.example.demo.redis.service.RedisService;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +30,14 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public AccountCommunicationRequestForm accountLogin (@RequestBody AccountLoginRequestForm requestForm) {
-        Long accountId = accountService.login(requestForm);
-        if (accountId != null) {
+    public AccountLoginResponseForm accountLogin (@RequestBody AccountLoginRequestForm requestForm) {
+        Account account = accountService.login(requestForm);
+        if (account != null) {
             UUID userToken = UUID.randomUUID();
 
-            redisService.setKeyAndValue(userToken.toString(), accountId);
+            redisService.setKeyAndValue(userToken.toString(), account.getAccountId());
 
-            return new AccountCommunicationRequestForm(userToken.toString());
+            return new AccountLoginResponseForm(userToken.toString(), account.getNickname());
         }
         return null;
     }
@@ -52,5 +51,37 @@ public class AccountController {
     @GetMapping("/check-nickname-duplicate/{nickname}")
     public Boolean checkNickname(@PathVariable("nickname") String nickname) {
         return accountService.checkDuplicateNickname(nickname);
+    }
+
+    @GetMapping("/{userToken}/account-info")
+    public AccountInfoResponseForm getAccountInfo(@PathVariable("userToken") String userToken) {
+        Long accountId = redisService.getValueByKey(userToken);
+        return accountService.getAccountInfo(accountId);
+    }
+
+    @GetMapping("/{userToken}/check-password")
+    public Boolean checkPassword(@PathVariable("userToken") String userToken, @RequestParam("password") String password) {
+        Long accountId = redisService.getValueByKey(userToken);
+        return accountService.checkPassword(accountId, password);
+    }
+
+    @PutMapping("/{userToken}/change-nickname")
+    public void changeNickname(@PathVariable("userToken") String userToken, @RequestBody ChangeNicknameRequestForm requestForm) {
+        Long accountId = redisService.getValueByKey(userToken);
+        String newNickname = requestForm.getNewNickname();
+        accountService.changeNickname(accountId, newNickname);
+    }
+
+    @PutMapping("/{userToken}/change-password")
+    public Boolean changePassword(@PathVariable("userToken") String userToken, @RequestBody ChangePasswordRequestForm requestForm) {
+        Long accountId = redisService.getValueByKey(userToken);
+        return accountService.changePassword(accountId, requestForm);
+    }
+
+    @DeleteMapping("/{userToken}/delete-account")
+    public void deleteAccount(@PathVariable("userToken") String userToken) {
+        Long accountId = redisService.getValueByKey(userToken);
+        accountService.deleteAccount(accountId);
+        redisService.deleteByKey(userToken);
     }
 }

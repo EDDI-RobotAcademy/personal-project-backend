@@ -4,6 +4,7 @@ import com.example.demo.board.entity.Board;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,7 +21,9 @@ public class Account {
     private Long accountId;
 
     private String email;
+    @Setter
     private String password;
+    @Setter
     private String nickname;
 
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)

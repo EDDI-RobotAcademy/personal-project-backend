@@ -15,10 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -182,5 +179,52 @@ public class BoardServiceImpl implements BoardService{
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<MyBoardsResponseForm> getMyBoardList(Long accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+        List<MyBoardsResponseForm> responseList = new ArrayList<>();
+        List<Board> foundBoardList = boardRepository.findAllByAccount(account);
+
+        for (Board board: foundBoardList) {
+            responseList.add(new MyBoardsResponseForm(board));
+        }
+        return responseList;
+    }
+
+    @Override
+    public void modify(Long boardId, BoardModifyRequestForm requestForm) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Board not found"));
+
+        board.setTitle(requestForm.getTitle());
+        board.setContent(requestForm.getContent().replace("\n", "<br>"));
+
+        boardRepository.save(board);
+    }
+
+    @Override
+    public void delete(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Board not found"));
+
+        boardRepository.delete(board);
+    }
+
+    @Override
+    public List<MyLikedBoardsResponseForm> getMyLikedBoardList(Long accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+        List<MyLikedBoardsResponseForm> responseList = new ArrayList<>();
+        Set<Board> foundBoardSet = account.getLikedBoards();
+
+        for (Board board: foundBoardSet) {
+            responseList.add(new MyLikedBoardsResponseForm(board));
+        }
+        return responseList;
     }
 }
