@@ -2,10 +2,7 @@ package kr.eddi.demo.board.repository;
 
 import kr.eddi.demo.board.entity.Board;
 
-import kr.eddi.demo.board.entity.Marker;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board,Long> {
 }

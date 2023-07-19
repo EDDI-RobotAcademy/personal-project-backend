@@ -1,14 +1,17 @@
 package kr.eddi.demo.board.entity;
 
 import jakarta.persistence.*;
+import kr.eddi.demo.marker.entity.Marker;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Board {
     @Id

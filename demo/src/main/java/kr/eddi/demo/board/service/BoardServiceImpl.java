@@ -1,8 +1,10 @@
 package kr.eddi.demo.board.service;
 
+import kr.eddi.demo.board.controller.form.BoardModifyRequest;
 import kr.eddi.demo.board.controller.form.BoardRegisterRequestForm;
 import kr.eddi.demo.board.entity.Board;
 import kr.eddi.demo.board.repository.BoardRepository;
+import kr.eddi.demo.board.service.reqeust.BoardRegisterRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -42,5 +44,17 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public void delete(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    @Override
+    public Board modify(Long id, BoardModifyRequest request) {
+        Optional<Board> maybeBoard = boardRepository.findById(id);
+        if(maybeBoard.isEmpty()){
+            return null;
+        }
+        Board board = maybeBoard.get();
+        board.setBoardTitle(request.getBoardTitle());
+        board.setBoardInfo(request.getBoardInfo());
+        return boardRepository.save(board);
     }
 }
