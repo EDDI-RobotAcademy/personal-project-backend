@@ -5,6 +5,7 @@ import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.account.controller.form.MyPageRequestForm;
 import com.example.demo.account.entity.Account;
+import com.example.demo.account.entity.Profile;
 import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.account.service.AccountService;
 //import com.example.demo.redis.RedisService;
@@ -81,11 +82,10 @@ public class AccountController {
     }
 
     @PostMapping("/myPage")
-    public String profile(@RequestBody MyPageRequestForm form, @RequestHeader("Authorization") String accessToken) {
-        log.info("폼: " + form);
+    public Profile profile(@RequestHeader("Authorization") String accessToken) {
         log.info("토큰: " + accessToken);
 
-        return String.valueOf(accountService.findAccountInfo(form, accessToken));
+        return accountService.findAccountInfo(accessToken);
     }
 }
 

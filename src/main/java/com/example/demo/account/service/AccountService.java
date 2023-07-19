@@ -16,5 +16,6 @@ public interface AccountService {
 
     TokenResponse login(AccountLoginRequestForm form);
 
-    Profile findAccountInfo(MyPageRequestForm form, String accessToken);
+    Profile findAccountInfo(String accessToken);
+
 }

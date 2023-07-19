@@ -115,28 +115,30 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
+
     @Override
-    public Profile findAccountInfo(MyPageRequestForm form, String accessToken) {
+    public Profile findAccountInfo(String accessToken) {
         log.info("accessToken: " + accessToken);
         SecretKey key = jwtProvider.getKey();
         log.info("키값: " + key);
 
         Jws<Claims> claims = Jwts.parser().setSigningKey(key)
-                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
+                                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
+
         String email = claims.getBody().getSubject();
         email = email.substring(email.indexOf("\"email\":\"") + 9, email.indexOf("\",\"types\""));
 
         Optional<Account> maybeAccount = accountRepository.findByEmail(email);
         if (maybeAccount.isPresent()) {
             Account account = maybeAccount.get();
-            log.info("account: " + account);
+            MyPageRequestForm form = new MyPageRequestForm();
             form.setEmail(account.getEmail());
             form.setName(account.getName());
             form.setPhoneNumber(account.getPhoneNumber());
             log.info("form에 정보가 들어갔니?: " + form);
 
-            Profile profile = new Profile(form.getEmail(), form.getName(), form.getPhoneNumber(), account);
-
+            Profile profile = new Profile(form.getEmail(), form.getName(), form.getPhoneNumber());
+            log.info("profile: " + profile);
             return profileRepository.save(profile);
         }
         return null;

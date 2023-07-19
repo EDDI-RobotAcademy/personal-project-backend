@@ -30,9 +30,6 @@ public class Account {
     @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
     private AccountRole accountRole;
 
-    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
-    private Profile profile;
-
     public void setEmail(String email) {
         this.email = email;
     }

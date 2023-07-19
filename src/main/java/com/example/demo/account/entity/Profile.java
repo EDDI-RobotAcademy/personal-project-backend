@@ -21,14 +21,14 @@ public class Profile {
 
     private String phoneNumber;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
-    private Account account;
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "account_id")
+//    private Account account;
 
-    public Profile(String email, String name, String phoneNumber, Account account) {
+    public Profile(String email, String name, String phoneNumber) {
         this.email = email;
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.account = account;
+//        this.account = account;
     }
 }
