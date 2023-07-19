@@ -117,7 +117,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Profile findAccountInfo(MyPageRequestForm form, String accessToken) {
+        log.info("accessToken: " + accessToken);
         SecretKey key = jwtProvider.getKey();
+        log.info("키값: " + key);
 
         Jws<Claims> claims = Jwts.parser().setSigningKey(key)
                 .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));

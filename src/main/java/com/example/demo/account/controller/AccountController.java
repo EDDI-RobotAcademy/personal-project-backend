@@ -81,7 +81,9 @@ public class AccountController {
     }
 
     @PostMapping("/myPage")
-    public String profile(MyPageRequestForm form, @RequestHeader("Authorization") String accessToken) {
+    public String profile(@RequestBody MyPageRequestForm form, @RequestHeader("Authorization") String accessToken) {
+        log.info("폼: " + form);
+        log.info("토큰: " + accessToken);
 
         return String.valueOf(accountService.findAccountInfo(form, accessToken));
     }

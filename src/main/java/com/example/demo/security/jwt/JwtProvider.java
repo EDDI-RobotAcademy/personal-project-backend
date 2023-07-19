@@ -36,6 +36,7 @@ public class JwtProvider {
 
     private SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     public SecretKey getKey() {
+        log.info("Provider 키값: " + key);
         return key;
     }
 
