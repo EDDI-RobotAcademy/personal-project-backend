@@ -17,4 +17,5 @@ public interface MemberBoardService {
 
     MemberBoard modify(RequestModifyBoardForm requestForm, Long boardId);
 
+    boolean delete(Long boardId);
 }

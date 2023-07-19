@@ -36,7 +36,7 @@ public class MemberBoard {
     @UpdateTimestamp
     private LocalDateTime updateDate;
 
-    @OneToMany(mappedBy = "memberBoard", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "memberBoard", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JsonIgnore
     private List<FilePaths> filePathList;
 

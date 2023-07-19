@@ -18,7 +18,7 @@ public class FilePaths {
     private String imagePath;
 
     @JoinColumn(name="board_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private MemberBoard memberBoard;
     public FilePaths(String imagePath){
         this.imagePath = imagePath;

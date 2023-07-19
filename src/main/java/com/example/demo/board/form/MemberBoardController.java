@@ -55,5 +55,12 @@ public class MemberBoardController {
         return boardService.modify(requestBoardForm, boardId);
     }
 
+    @DeleteMapping("/{boardId}")
+    public Boolean deleteBoard (@PathVariable("boardId") Long boardId){
+        log.info("deleteBoard() id: " + boardId);
+        return boardService.delete(boardId);
+
+    }
+
 
 }

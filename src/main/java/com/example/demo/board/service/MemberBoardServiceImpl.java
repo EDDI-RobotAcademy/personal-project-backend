@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,5 +97,19 @@ public class MemberBoardServiceImpl implements MemberBoardService {
             filePathsRepository.save(imageFilePath);
         }
         return boardRepository.save(memberBoard);
+    }
+
+    @Override
+    @Transactional
+    public boolean delete(Long boardId) {
+        Optional<MemberBoard> maybeBoard = boardRepository.findById(boardId);
+        if(maybeBoard.isEmpty()) {
+            return false;
+        }
+        MemberBoard finedBoard = maybeBoard.get();
+        filePathsRepository.deleteAll(finedBoard.getFilePathList());
+        boardRepository.deleteById(boardId);
+
+        return true;
     }
 }
