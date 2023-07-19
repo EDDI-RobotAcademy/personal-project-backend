@@ -29,10 +29,8 @@ public class MemberServiceImpl implements MemberService{
 
         if (maybeMember.isPresent()) {
             return false;
-
-        } else {
-            return true;
         }
+        return true;
     }
 
     @Override
@@ -41,9 +39,8 @@ public class MemberServiceImpl implements MemberService{
 
         if (maybeMember.isPresent()) {
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 
     @Override
@@ -131,7 +128,6 @@ public class MemberServiceImpl implements MemberService{
                 log.info("계정이 정지 되었습니다.");
                 return true;
             }
-
             log.info("관리자가 아닌 사용자는 계정을 정지할 수 없습니다.");
             return false;
         }
@@ -140,4 +136,15 @@ public class MemberServiceImpl implements MemberService{
         return false;
     }
 
+    @Override
+    public Integer inquiryLimitsBook(String userId){
+        Optional<Member> maybeMember = memberRepository.findByMemberId(userId);
+
+        if(maybeMember.isEmpty()) {
+            log.info("존재하지 않는 회원입니다.");
+            return null;
+        }
+        Member member = maybeMember.get();
+        return member.getAvailableAmount();
+    }
 }

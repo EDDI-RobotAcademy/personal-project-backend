@@ -1,7 +1,6 @@
 package kh.project.demo.library.libraryService.controller.form.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import kh.project.demo.library.book.entity.BookState;
 import kh.project.demo.library.libraryService.entity.Rental;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,11 +14,10 @@ import java.time.LocalDateTime;
 public class RentalBookForm {
 
     private Long bookNumber; // 대여 책
-    private Long memberNumber; // 회원
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime rentalDate = LocalDateTime.now(); // 대여 일자
 
-    public Rental toRentalBook() {
+    public Rental toRentalBook(Long memberNumber) {
         return Rental.builder()
                 .bookNumber(bookNumber)
                 .memberNumber(memberNumber)
@@ -27,7 +25,7 @@ public class RentalBookForm {
                 .extensionDate(null)
                 .returnDate(null)
                 .overdueDate(null)
-                .bookState(BookState.BookRental)
                 .build();
     }
+
 }
