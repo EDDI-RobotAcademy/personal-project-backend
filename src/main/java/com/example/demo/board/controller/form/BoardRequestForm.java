@@ -11,13 +11,15 @@ public class BoardRequestForm {
 
     final private String title;
 
-    final private String writer;
+    private String writer;
 
     final private String content;
 
-    final private Account account;
-
     public Board toBoard() {
-        return new Board(title, writer, content, account);
+        return new Board(title, writer, content);
+    }
+
+    public void setWriter(String writer) {
+        this.writer = writer;
     }
 }

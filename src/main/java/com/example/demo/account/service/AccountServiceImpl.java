@@ -118,10 +118,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Profile findAccountInfo(String accessToken) {
-        log.info("accessToken: " + accessToken);
         SecretKey key = jwtProvider.getKey();
-        log.info("키값: " + key);
-
         Jws<Claims> claims = Jwts.parser().setSigningKey(key)
                                 .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
 
@@ -135,10 +132,8 @@ public class AccountServiceImpl implements AccountService {
             form.setEmail(account.getEmail());
             form.setName(account.getName());
             form.setPhoneNumber(account.getPhoneNumber());
-            log.info("form에 정보가 들어갔니?: " + form);
 
             Profile profile = new Profile(form.getEmail(), form.getName(), form.getPhoneNumber());
-            log.info("profile: " + profile);
             return profileRepository.save(profile);
         }
         return null;

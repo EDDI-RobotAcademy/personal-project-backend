@@ -25,8 +25,10 @@ public class BoardController {
     }
 
     @PostMapping("/register")
-    public Board registerBoard(@RequestBody BoardRequestForm form) {
+    public Board registerBoard(@RequestBody BoardRequestForm form, @RequestHeader("Authorization") String accessToken) {
+        log.info("form: " + form);
+        log.info("accessToken: " + accessToken);
 
-        return boardService.register(form.toBoard());
+        return boardService.register(accessToken, form.toBoard());
     }
 }

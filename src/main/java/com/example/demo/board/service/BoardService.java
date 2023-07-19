@@ -7,5 +7,5 @@ import java.util.List;
 public interface BoardService {
     List<Board> list();
 
-    Board register(Board board);
+    Board register(String accessToken, Board board);
 }

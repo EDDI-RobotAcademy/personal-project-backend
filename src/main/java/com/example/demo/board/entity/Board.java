@@ -20,8 +20,9 @@ import java.time.LocalDateTime;
 public class Board {
 
     @Id
+    @Column(name = "board_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long boardId;
+    private Long id;
 
     private String title;
 
@@ -33,11 +34,10 @@ public class Board {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    public Board(String title, String writer, String content, Account account) {
+    public Board(String title, String writer, String content) {
         this.title = title;
         this.writer = writer;
         this.content = content;
-        this.account = account;
     }
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
