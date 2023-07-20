@@ -22,7 +22,6 @@ public class PlaylistController {
 
     @PostMapping("/register")
     public Playlist playlistRegister (@RequestBody PlaylistRegisterRequestForm requestForm, HttpServletRequest request) {
-        log.info(requestForm.getTitle());
         return playlistService.register(requestForm, request);
     }
 
@@ -38,26 +37,21 @@ public class PlaylistController {
 
     @GetMapping("/{id}")
     public PlaylistReadResponseForm readPlayList(@PathVariable("id") Long id, HttpServletRequest request){
-        PlaylistReadResponseForm responseForm = playlistService.read(id);
-        return responseForm;
+        return playlistService.read(id);
     }
 
     @PostMapping("/modify")
     public Playlist modifyPlaylist(@RequestBody PlaylistModifyRequestForm requestForm, HttpServletRequest request){
-        log.info(String.valueOf(requestForm.getId()));
-        log.info(requestForm.getTitle());
-        playlistService.modify(requestForm);
-        return null;
+        return playlistService.modify(requestForm);
     }
 
     @PostMapping("list-by-login-account")
-    public List<Playlist> playlistByLoginAccount(HttpServletRequest request){
+    public List<PlaylistReadResponseForm> playlistByLoginAccount(HttpServletRequest request){
         return playlistService.listByLoginAccount(request);
     }
 
     @DeleteMapping("/{playlistId}")
     public boolean deleteSong(@PathVariable("playlistId") Long playlistId, HttpServletRequest request){
-        log.info("playlistId : " + playlistId);
         return playlistService.delete(playlistId);
     }
 
