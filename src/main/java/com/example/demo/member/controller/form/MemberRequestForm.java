@@ -16,11 +16,11 @@ public class MemberRequestForm {
 
     final private String email;
     final private String password;
-    final private String nickName;
+    final private String nickname;
     final private RoleType roleType;
 
     public Member toMember() {
-        return new Member(email, password, nickName);
+        return new Member(email, password, nickname);
     }
 
     public MemberRole toMemberRole(Member member){

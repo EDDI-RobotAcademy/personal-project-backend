@@ -23,9 +23,9 @@ public class MemberController {
         return memberService.register(memberRequestForm);
 
     }
-    @GetMapping("/check-nickName/{nickName}")
-    public boolean checkNickName(@PathVariable("nickName") String nickName) {
-            return memberService.checkNickName(nickName);
+    @GetMapping("/check-nickName/{nickname}")
+    public boolean checkNickname(@PathVariable("nickname") String nickname) {
+            return memberService.checkNickname(nickname);
     }
 
     @PostMapping("/login")
