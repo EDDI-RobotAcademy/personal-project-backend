@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @NoArgsConstructor
 public class Member {
@@ -19,7 +21,7 @@ public class Member {
     @Getter
     private String password;
     @Getter
-    private String nickName;
+    private String nickname;
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
     private MemberRole memberRole;
@@ -28,11 +30,15 @@ public class Member {
     @Setter
     private String userToken;
 
-    public Member(String email, String password, String nickName) {
+    public Member(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
-        this.nickName = nickName;
+        this.nickname = nickname;
     }
 
-
+    public Member(String email, String nickname) {
+        this.email = email;
+        this.nickname = nickname;
+        this.userToken = UUID.randomUUID().toString();
+    }
 }

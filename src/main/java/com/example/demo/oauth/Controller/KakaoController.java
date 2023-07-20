@@ -39,8 +39,8 @@ public class KakaoController {
 
     }
 
-    @RequestMapping(value="/login/oauth2/code/kakao")
-    public RedirectView kakaoCallback(@RequestParam String code, HttpSession session) {
+    @GetMapping("/klogin")
+    public HashMap<String, Object> kakaoCallback(@RequestParam String code, HttpSession session) {
         System.out.println("kakao callback 컨트롤러 접근");
         System.out.println(code);
 
@@ -64,10 +64,9 @@ public class KakaoController {
             session.setAttribute("access_token", access_token);
         }
 
-        redirectView.addStaticAttribute("email", userInfo.get("email"));
-        redirectView.setUrl("http://localhost:8080");
 
-        return redirectView;
+
+        return userInfo;
     }
 }
 

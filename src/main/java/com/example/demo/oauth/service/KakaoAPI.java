@@ -1,5 +1,8 @@
 package com.example.demo.oauth.service;
 
+import com.example.demo.board.entity.MemberBoard;
+import com.example.demo.member.controller.form.MemberLoginResponseForm;
+import com.example.demo.member.service.MemberService;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,9 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 @PropertySource("classpath:kakao.properties")
 public class KakaoAPI {
+
+    final private MemberService memberService;
+
     @Value("${kakao.client-id}")
     private String clientId;
     @Value("${kakao.redirect-uri}")
@@ -91,6 +97,7 @@ public class KakaoAPI {
         String reqUrl = "https://kapi.kakao.com/v2/user/me";
 
 
+
         //access_token을 이용하여 사용자 정보 조회
         try {
             URL url = new URL(reqUrl);
@@ -129,14 +136,19 @@ public class KakaoAPI {
                     email = "kk" + element.getAsJsonObject().get("id").getAsString();;
                 }
             }
+            String nickname = element.getAsJsonObject().get("properties").getAsJsonObject().get("nickname").getAsString();
+            String userToken = memberService.signUpKakao(email, nickname).getUserToken();
 
-            userInfo.put("email", email);
-            log.info(userInfo.get("email").toString());
+            userInfo.put("nickname", nickname);
+            userInfo.put("userToken", userToken);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return userInfo;
     }
+
+
 }
 

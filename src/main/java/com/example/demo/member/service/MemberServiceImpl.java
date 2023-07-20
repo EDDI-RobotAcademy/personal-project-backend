@@ -5,6 +5,7 @@ import com.example.demo.member.controller.form.MemberRequestForm;
 import com.example.demo.member.entity.Member;
 import com.example.demo.member.entity.MemberRole;
 import com.example.demo.member.entity.Role;
+import com.example.demo.member.entity.RoleType;
 import com.example.demo.member.repository.MemberRepository;
 import com.example.demo.member.repository.MemberRoleRepository;
 import com.example.demo.member.repository.RoleRepository;
@@ -44,9 +45,9 @@ public class MemberServiceImpl implements MemberService{
 
 
     @Override
-    public Boolean checkNickName(String nickName) {
-        final Optional<Member> presentNickName = memberRepository.findByNickName(nickName);
-        if(presentNickName.isPresent()){
+    public Boolean checkNickname(String nickname) {
+        final Optional<Member> presentNickname = memberRepository.findByNickname(nickname);
+        if(presentNickname.isPresent()){
             return false;
         }
         return true;
@@ -64,8 +65,36 @@ public class MemberServiceImpl implements MemberService{
             redisService.setKeyAndValue(userToken, member.getId());
 
             final Role role = memberRoleRepository.findRoleInfoMember(member);
-            return new MemberLoginResponseForm(userToken, role.getRoleType().name(),member.getNickName());
+            return new MemberLoginResponseForm(userToken, role.getRoleType().name(),member.getNickname());
         }
         return null;
     }
+    @Override
+    public Boolean checkEmail(String email) {
+        final Optional<Member> presentEmail = memberRepository.findByEmail(email);
+        if(presentEmail.isPresent()){
+            return false;
+        }
+        return true;
+    }
+    @Override
+    public Member signUpKakao(String email, String nickname) {
+        Optional<Member> isMember = memberRepository.findByEmail(email);
+
+        if(isMember.isEmpty()){
+            Member member = new Member(email, nickname);
+            Member savedMember = memberRepository.save(member);
+            final Role role = roleRepository.findByRoleType(RoleType.valueOf("NORMAL")).get();
+            final MemberRole memberRole = new MemberRole(member, role);
+            memberRoleRepository.save(memberRole);
+
+            final Role userRole = memberRoleRepository.findRoleInfoMember(member);
+
+            return savedMember;
+        }
+
+        return isMember.get();
+    }
+
+
 }
