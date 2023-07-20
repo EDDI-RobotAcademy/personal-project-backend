@@ -9,16 +9,16 @@ import com.example.demo.domain.playlist.controller.form.PlaylistRegisterRequestF
 import com.example.demo.domain.playlist.entity.Playlist;
 import com.example.demo.domain.playlist.repository.PlaylistRepository;
 import com.example.demo.domain.song.entity.Song;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,24 +26,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PlaylistServiceImpl implements PlaylistService{
 
-    @Value("${jwt.secret}")
-    private String secretKey;
-
     final private PlaylistRepository playlistRepository;
 
     final private AccountRepository accountRepository;
+
+    final private JwtTokenUtil jwtTokenUtil;
     @Override
     public Playlist register(PlaylistRegisterRequestForm requestForm, HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String email = null;
-
-        for(Cookie cookie : cookies) {
-            if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-                break;
-            }
-        }
+        String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findWithPlaylistByEmail(email);
 
@@ -54,16 +44,7 @@ public class PlaylistServiceImpl implements PlaylistService{
 
     @Override
     public int countPlaylist(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String email = null;
-
-        for(Cookie cookie : cookies) {
-            if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-                break;
-            }
-        }
+        String email = jwtTokenUtil.getEmailFromCookie(request);
 
         int count = playlistRepository.countPlaylistByAccountId(accountRepository.findByEmail(email).get().getId());
         log.info("playlist count = " + count );
@@ -74,7 +55,7 @@ public class PlaylistServiceImpl implements PlaylistService{
     @Transactional
     public List<PlaylistReadResponseForm> list() {
         List<Playlist> playlists = playlistRepository.findAll();
-        
+
         List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
         for(Playlist playlist : playlists){
             PlaylistReadResponseForm responseForm = new PlaylistReadResponseForm(playlist, playlist.getSongList(), playlist.getLikers().size());
@@ -94,35 +75,31 @@ public class PlaylistServiceImpl implements PlaylistService{
     }
 
     @Override
-    public boolean modify(PlaylistModifyRequestForm requestForm) {
+    public Playlist modify(PlaylistModifyRequestForm requestForm) {
         Optional<Playlist> maybePlaylist = playlistRepository.findById(requestForm.getId());
 
         if(maybePlaylist.isEmpty()){
-            return false;
+            return null;
         }
         Playlist playlist = maybePlaylist.get();
 
         playlist.setTitle(requestForm.getTitle());
 
-        playlistRepository.save(playlist);
-
-        return true;
+        return playlistRepository.save(playlist);
     }
 
     @Override
-    public List<Playlist> listByLoginAccount(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String email = null;
+    public List<PlaylistReadResponseForm> listByLoginAccount(HttpServletRequest request) {
+        String email = jwtTokenUtil.getEmailFromCookie(request);
 
-        for(Cookie cookie : cookies) {
-            if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-                break;
-            }
+        List<Playlist> playlists = playlistRepository.findPlaylistByAccountId(accountRepository.findByEmail(email).get());
+
+        List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
+        for (Playlist playlist : playlists) {
+            PlaylistReadResponseForm responseForm = new PlaylistReadResponseForm(playlist, playlist.getSongList(), playlist.getLikers().size());
+            responseForms.add(responseForm);
         }
-
-        return playlistRepository.findPlaylistByAccountId(accountRepository.findByEmail(email).get());
+        return responseForms;
     }
 
     @Override
@@ -141,15 +118,7 @@ public class PlaylistServiceImpl implements PlaylistService{
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
 
-        Cookie[] cookies = request.getCookies();
-        String email = null;
-        for(Cookie cookie : cookies) {
-            if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-                break;
-            }
-        }
+        String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
@@ -170,16 +139,7 @@ public class PlaylistServiceImpl implements PlaylistService{
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
 
-        Cookie[] cookies = request.getCookies();
-        String email = null;
-
-        for(Cookie cookie : cookies) {
-            if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-                break;
-            }
-        }
+        String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
@@ -201,16 +161,7 @@ public class PlaylistServiceImpl implements PlaylistService{
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
 
-        Cookie[] cookies = request.getCookies();
-        String email = null;
-
-        for(Cookie cookie : cookies) {
-            if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-                break;
-            }
-        }
+        String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));

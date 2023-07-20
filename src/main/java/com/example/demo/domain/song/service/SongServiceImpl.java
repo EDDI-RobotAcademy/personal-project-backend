@@ -8,6 +8,7 @@ import com.example.demo.domain.song.controller.form.SongModifyRequestForm;
 import com.example.demo.domain.song.controller.form.SongRegisterRequestForm;
 import com.example.demo.domain.song.entity.Song;
 import com.example.demo.domain.song.repository.SongRepository;
+import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +29,7 @@ public class SongServiceImpl implements SongService{
     final private PlaylistRepository playlistRepository;
     final private SongRepository songRepository;
     final private AccountRepository accountRepository;
-
-    @Value("${jwt.secret}")
-    private String secretKey;
+    final private JwtTokenUtil jwtTokenUtil;
 
     @Override
     public Long register(SongRegisterRequestForm requestForm, HttpServletRequest request) {
@@ -47,16 +46,7 @@ public class SongServiceImpl implements SongService{
 
     @Override
     public int countSong(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String email = null;
-
-        for(Cookie cookie : cookies) {
-            if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-                break;
-            }
-        }
+        String email = jwtTokenUtil.getEmailFromCookie(request);
         List<Long> counting = playlistRepository.findPlaylistIdByAccountId(accountRepository.findByEmail(email).get());
 
         log.info("playlistId = " + counting);
