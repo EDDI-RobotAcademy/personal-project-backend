@@ -1,6 +1,7 @@
 package com.example.demo.board.service;
 
 import com.example.demo.board.controller.form.RequestBoardForm;
+import com.example.demo.board.dto.BoardDto;
 import com.example.demo.board.dto.BoardResponseDto;
 import com.example.demo.board.entity.Board;
 import com.example.demo.board.repository.BoardRepository;
@@ -19,13 +20,14 @@ public interface BoardService {
     Board register(Board registerBoard);
 
     Board read(Long boardId);
+    void updateReadCount(Long boardId,Integer readCount);
     void delete(Long boardId);
     Board modify(Long boardId, RequestBoardForm requestBoardForm);
-
+    List<Board> search(String keyword);
 
 //    BoardResponseDto findByBoardId(Long boardId);
-    Board findById(Long boardId);
-
-    Page<Board>boardList(Pageable pageable);
-     Page<Board> boardSearchList(String searchKeyword, Pageable pageable);
+//    Board findById(Long boardId);
+//
+//    Page<Board>boardList(Pageable pageable);
+//     Page<Board> boardSearchList(String searchKeyword, Pageable pageable);
 }

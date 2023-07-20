@@ -11,8 +11,6 @@ import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -31,11 +29,10 @@ public class Board {
     private Integer likeCount = 0;
     @Setter
     @Column(columnDefinition = "integer default 0", nullable = false)
-    @Generated(GenerationTime.ALWAYS)
-    private Integer readCount = 0;
+    private Integer readCount;
     @Setter
-    @Column(name = "reply_count", nullable = false, columnDefinition = "int default 0")
     @Generated(GenerationTime.ALWAYS)
+    @Column(name = "reply_count", nullable = false, columnDefinition = "int default 0")
     private Integer replyCount;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     @CreationTimestamp
@@ -43,24 +40,27 @@ public class Board {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     @UpdateTimestamp
     private LocalDateTime modifyDate;
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private BoardCategory category;
+    @Enumerated(EnumType.STRING)
+    private BoardCategory boardCategory;
 
-    public Board(String writer, String title, String content, Integer likeCount, Integer readCount, Integer replyCount, BoardCategory category) {
+    public Board(String writer, String title, String content, Integer likeCount, Integer readCount, Integer replyCount, BoardCategory boardCategory) {
         this.writer = writer;
         this.title = title;
         this.content = content;
         this.likeCount = likeCount;
         this.readCount = readCount;
         this.replyCount = replyCount;
-        this.category = category;
+        this.boardCategory = boardCategory;
     }
 
-    public Board(String writer, String title, String content) {
+    public Board(String writer, String title, String content, BoardCategory boardCategory) {
         this.writer = writer;
         this.title = title;
         this.content = content;
+        this.boardCategory = boardCategory;
+    }
+
+    public void updateReadCount(Integer readCount) {
+        this.readCount = readCount;
     }
 }

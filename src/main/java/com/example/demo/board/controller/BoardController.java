@@ -1,17 +1,14 @@
 package com.example.demo.board.controller;
 
+import org.springframework.ui.Model;
 import com.example.demo.board.controller.form.RequestBoardForm;
+import com.example.demo.board.dto.BoardDto;
 import com.example.demo.board.entity.Board;
 import com.example.demo.board.repository.BoardRepository;
 import com.example.demo.board.service.BoardService;
 import com.example.demo.board.service.request.BoardRegisterRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -38,6 +35,25 @@ public class BoardController {
         log.info("boardRead()");
         return boardService.read(boardId);
     }
+
+//    @PutMapping("/read-count/{boardId}")
+//    public void updateReadCount(@PathVariable("boardId") Long boardId) {
+//        log.info("updateReadCount()");
+//        boardService.updateReadCount();
+//    }
+
+    @GetMapping("/read-count/{boardId}")
+    public String boardContent(@PathVariable("boardId") Long boardId, Model model) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found with id: " + boardId));
+        Integer readCount = board.getReadCount() + 1;
+
+        boardService.updateReadCount(boardId, readCount);
+
+        model.addAttribute("board", board);
+        return "redirect:/key-we-board-page/read/" + boardId;
+    }
+
+
     @DeleteMapping("/{boardId}")
     public void deleteBoard(@PathVariable("boardId") Long boardId) {
         log.info("modifyBoard()");
@@ -48,5 +64,10 @@ public class BoardController {
     public Board modifyBoard(@PathVariable("boardId")Long boardId, @RequestBody RequestBoardForm requestBoardForm) {
         log.info("modifyBoard(): " + requestBoardForm + ", id" + boardId);
         return boardService.modify(boardId, requestBoardForm);
+    }
+    @GetMapping("/search")
+    public List<Board> searchBoard(@RequestParam("boardId") String keyword) {
+        List<Board> searchBoardList = boardService.search(keyword);
+        return searchBoardList;
     }
 }
