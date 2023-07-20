@@ -4,8 +4,10 @@ import com.example.demo.account.entity.Account;
 import com.example.demo.board.entity.Board;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Getter
+@ToString
 @RequiredArgsConstructor
 public class BoardRequestForm {
 

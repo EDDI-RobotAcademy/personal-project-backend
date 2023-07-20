@@ -30,13 +30,12 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public List<Board> list() {
 
-        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
+        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 
     // 게시글 등록
     @Override
     public Board register(String accessToken, Board board) {
-        log.info("accessToken: " + accessToken);
         SecretKey key = jwtProvider.getKey();
         Jws<Claims> claims = Jwts.parser().setSigningKey(key)
                 .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
@@ -47,10 +46,8 @@ public class BoardServiceImpl implements BoardService{
 
         if (maybeAccount.isPresent()) {
             Account account = maybeAccount.get();
-            BoardRequestForm form = new BoardRequestForm(board.getTitle(), board.getContent());
-            form.setWriter(account.getName());
-            log.info("이름: " + account.getName());
-            log.info("form: " + form);
+            board.setWriter(account.getName());
+
         }
         return boardRepository.save(board);
     }
