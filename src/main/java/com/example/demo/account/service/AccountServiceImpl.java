@@ -1,8 +1,8 @@
 package com.example.demo.account.service;
 
+import com.example.demo.account.controller.response.MyPageResponse;
 import com.example.demo.account.repository.ProfileRepository;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.MyPageRequestForm;
 import com.example.demo.account.controller.request.AccessRegisterRequest;
 import com.example.demo.account.controller.request.AccountRegisterRequest;
 import com.example.demo.account.entity.Account;
@@ -115,12 +115,11 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
-
     @Override
-    public Profile findAccountInfo(String accessToken) {
+    public MyPageResponse findAccountInfo(String accessToken) {
         SecretKey key = jwtProvider.getKey();
         Jws<Claims> claims = Jwts.parser().setSigningKey(key)
-                                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
+                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
 
         String email = claims.getBody().getSubject();
         email = email.substring(email.indexOf("\"email\":\"") + 9, email.indexOf("\",\"types\""));
@@ -128,14 +127,21 @@ public class AccountServiceImpl implements AccountService {
         Optional<Account> maybeAccount = accountRepository.findByEmail(email);
         if (maybeAccount.isPresent()) {
             Account account = maybeAccount.get();
-            MyPageRequestForm form = new MyPageRequestForm();
-            form.setEmail(account.getEmail());
-            form.setName(account.getName());
-            form.setPhoneNumber(account.getPhoneNumber());
+            log.info("account: " + account);
+            Optional<Profile> maybeProfile = profileRepository.findByAccount(account);
+            if (maybeProfile.isPresent()) {
+                Profile profile = maybeProfile.get();
+                MyPageResponse response = new MyPageResponse(profile.getEmail(), profile.getName(), profile.getPhoneNumber());
+                return response;
+            }
+            // 기존에 연결된 profile 이 없다면 새로운 profile 을 생성하여 반환
+            Profile profile = new Profile();
+            MyPageResponse response = new MyPageResponse(profile.getEmail(), profile.getName(), profile.getPhoneNumber());
+            log.info("form: " + response);
 
-            Profile profile = new Profile(form.getEmail(), form.getName(), form.getPhoneNumber());
-            return profileRepository.save(profile);
+            return response;
         }
         return null;
     }
+
 }

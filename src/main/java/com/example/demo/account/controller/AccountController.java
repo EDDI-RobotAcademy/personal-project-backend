@@ -3,12 +3,9 @@ package com.example.demo.account.controller;
 import com.example.demo.account.controller.form.AccessRegisterRequestForm;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
-import com.example.demo.account.controller.form.MyPageRequestForm;
-import com.example.demo.account.entity.Account;
-import com.example.demo.account.entity.Profile;
+import com.example.demo.account.controller.response.MyPageResponse;
 import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.account.service.AccountService;
-//import com.example.demo.redis.RedisService;
 import com.example.demo.security.jwt.JwtProvider;
 import com.example.demo.security.jwt.service.AccountDetails;
 import com.example.demo.security.jwt.subject.TokenResponse;
@@ -19,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -62,16 +57,10 @@ public class AccountController {
     @PostMapping("/reissue")
     public TokenResponse reissue(@AuthenticationPrincipal AccountDetails accountDetails) throws JsonProcessingException {
         if (accountDetails == null) {
-            log.info("인증 실패");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증 실패");
         }
 
         AccountResponse accountResponse = AccountResponse.of(accountDetails.getAccount());
-        // 인증 성공이 뜨는 절차는 accessToken 을 Authorization 에 넣어주고
-        // Header 에 refreshToken 을 넣어주면 인증 성공이 뜨긴함
-        // 그런데 postman 에는 403 forbidden 에러가 발생
-        // 왜 서버에서는 인증을 성고하지만 postman 에서는 오류가 발생하는지 이해가 안됨
-        log.info("인증 성공");
         log.info("accountResponse: " + accountResponse);
         return jwtProvider.reissueAccessToken(accountResponse);
     }
@@ -82,7 +71,7 @@ public class AccountController {
     }
 
     @PostMapping("/myPage")
-    public Profile profile(@RequestHeader("Authorization") String accessToken) {
+    public MyPageResponse profile(@RequestHeader("Authorization") String accessToken) {
         log.info("토큰: " + accessToken);
 
         return accountService.findAccountInfo(accessToken);

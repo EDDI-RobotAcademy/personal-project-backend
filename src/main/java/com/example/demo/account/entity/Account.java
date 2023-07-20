@@ -5,7 +5,6 @@ import lombok.*;
 
 @Entity
 @Getter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Account {
 
