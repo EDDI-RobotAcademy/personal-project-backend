@@ -24,7 +24,7 @@ public class MemberBoard {
     private Long boardId;
     @Setter
     private String title;
-    private String nickName;
+    private String nickname;
     @Setter
     private String content;
 
@@ -40,9 +40,9 @@ public class MemberBoard {
     @JsonIgnore
     private List<FilePaths> filePathList;
 
-    public MemberBoard(String title, String nickName, String content, List<FilePaths> filePathList) {
+    public MemberBoard(String title, String nickname, String content, List<FilePaths> filePathList) {
         this.title = title;
-        this.nickName = nickName;
+        this.nickname = nickname;
         this.content = content;
         this.filePathList = filePathList;
     }

@@ -14,12 +14,12 @@ import java.util.List;
 public class RequestRegisterBoardForm {
 
         final private String title;
-        final private String nickName;
+        final private String nickname;
         final private String content;
         final private List<FilePaths> awsFileList;
 
         public MemberBoard toMemberBoard() {
-            return new MemberBoard(title, nickName, content, awsFileList);
+            return new MemberBoard(title, nickname, content, awsFileList);
         }
 
 }
