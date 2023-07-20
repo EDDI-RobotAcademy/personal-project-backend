@@ -135,13 +135,14 @@ public class AccountServiceImpl implements AccountService {
                 return response;
             }
             // 기존에 연결된 profile 이 없다면 새로운 profile 을 생성하여 반환
-            Profile profile = new Profile();
-            MyPageResponse response = new MyPageResponse(profile.getEmail(), profile.getName(), profile.getPhoneNumber());
+            MyPageResponse response = new MyPageResponse(account.getEmail(), account.getName(), account.getPhoneNumber());
+            Profile profile = new Profile(response.getEmail(), response.getName(), response.getPhoneNumber());
+            profile.setAccount(account);
+            profileRepository.save(profile);
             log.info("form: " + response);
 
             return response;
         }
         return null;
     }
-
 }
