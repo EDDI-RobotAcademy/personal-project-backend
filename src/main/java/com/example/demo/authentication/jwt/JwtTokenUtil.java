@@ -5,14 +5,22 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Slf4j
 @Component
+@PropertySource("classpath:jwt.properties")
 public class JwtTokenUtil {
+
+    @Value("${jwt.secret}")
+    private String secretKey;
+
     // JWT Token 발급
     public static TokenInfo createToken(String email, String key, long expireTimeMs) {
         // Claim = Jwt Token에 들어갈 정보
@@ -98,5 +106,19 @@ public class JwtTokenUtil {
         cookie.setHttpOnly(true);
 
         return cookie;
+    }
+
+    public String getEmailFromCookie(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        String email = null;
+
+        for(Cookie cookie : cookies) {
+            if (cookie.getName().equals("AccessToken")) {
+                String token = cookie.getValue();
+                email = JwtTokenUtil.getEmail(token, secretKey);
+                break;
+            }
+        }
+        return email;
     }
 }

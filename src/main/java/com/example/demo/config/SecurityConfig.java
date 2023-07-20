@@ -1,15 +1,15 @@
 package com.example.demo.config;
 
-import com.example.demo.domain.account.entity.RoleType;
-import com.example.demo.domain.account.service.AccountService;
 import com.example.demo.authentication.jwt.JwtTokenFilter;
 import com.example.demo.authentication.jwt.JwtTokenUtil;
 import com.example.demo.authentication.redis.RedisService;
+import com.example.demo.domain.account.entity.RoleType;
+import com.example.demo.domain.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@PropertySource("classpath:jwt.properties")
 public class SecurityConfig {
 
     private final AccountService accountService;
