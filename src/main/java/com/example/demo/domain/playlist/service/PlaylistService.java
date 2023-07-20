@@ -17,9 +17,9 @@ public interface PlaylistService {
 
     PlaylistReadResponseForm read(Long id);
 
-    boolean modify(PlaylistModifyRequestForm requestForm);
+    Playlist modify(PlaylistModifyRequestForm requestForm);
 
-    List<Playlist> listByLoginAccount(HttpServletRequest request);
+    List<PlaylistReadResponseForm> listByLoginAccount(HttpServletRequest request);
 
     boolean delete(Long playlistId);
 
