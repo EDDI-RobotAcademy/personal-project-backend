@@ -30,7 +30,7 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public List<Board> list() {
 
-        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
     }
 
     // 게시글 등록
@@ -50,5 +50,14 @@ public class BoardServiceImpl implements BoardService{
 
         }
         return boardRepository.save(board);
+    }
+
+    @Override
+    public Board read(Long boardId) {
+        Optional<Board> maybeBoard = boardRepository.findById(boardId);
+        if (maybeBoard.isEmpty()) {
+            return null;
+        }
+        return maybeBoard.get();
     }
 }

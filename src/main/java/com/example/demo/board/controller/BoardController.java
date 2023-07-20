@@ -29,4 +29,11 @@ public class BoardController {
 
         return boardService.register(accessToken, form.toBoard());
     }
+
+    @GetMapping("/{boardId}")
+    public Board read(@PathVariable("boardId") Long boardId) {
+        log.info("read");
+
+        return boardService.read(boardId);
+    }
 }

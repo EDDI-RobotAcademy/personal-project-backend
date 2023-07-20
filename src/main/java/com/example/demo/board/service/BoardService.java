@@ -8,4 +8,6 @@ public interface BoardService {
     List<Board> list();
 
     Board register(String accessToken, Board board);
+
+    Board read(Long boardId);
 }
