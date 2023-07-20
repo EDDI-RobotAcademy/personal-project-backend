@@ -1,11 +1,13 @@
 package com.example.demo.authentication.jwt;
 
+import com.example.demo.authentication.redis.RedisService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -15,8 +17,11 @@ import java.util.Date;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 @PropertySource("classpath:jwt.properties")
 public class JwtTokenUtil {
+
+    final private RedisService redisService;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -120,5 +125,24 @@ public class JwtTokenUtil {
             }
         }
         return email;
+    }
+
+    public void deleteLoginInfo(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        for(Cookie cookie : cookies){
+            if(cookie.getName().equals("AccessToken")){
+                String token = cookie.getValue();
+
+                Date exp = JwtTokenUtil.getExp(token, secretKey);
+                Date date = new Date();
+
+                redisService.registBlackList(token, exp.getTime()-date.getTime());
+            }
+            if(cookie.getName().equals("RefreshToken")){
+                String token = cookie.getValue();
+                redisService.deleteByKey(token);
+            }
+        }
     }
 }

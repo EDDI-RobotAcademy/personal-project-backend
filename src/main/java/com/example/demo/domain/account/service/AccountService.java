@@ -24,6 +24,4 @@ public interface AccountService {
     Account getLoginAccountByEmail(String email);
 
     boolean duplicateCheckPassword(AccountPasswordCheckRequestForm requestForm, HttpServletRequest request);
-
-    void deleteLoginInfo(HttpServletRequest request);
 }

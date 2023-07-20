@@ -153,24 +153,4 @@ public class AccountServiceImpl implements AccountService{
 
         return true;
     }
-
-    @Override
-    public void deleteLoginInfo(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-
-        for(Cookie cookie : cookies){
-            if(cookie.getName().equals("AccessToken")){
-                String token = cookie.getValue();
-
-                Date exp = JwtTokenUtil.getExp(token, secretKey);
-                Date date = new Date();
-
-                redisService.registBlackList(token, exp.getTime()-date.getTime());
-            }
-            if(cookie.getName().equals("RefreshToken")){
-                String token = cookie.getValue();
-                redisService.deleteByKey(token);
-            }
-        }
-    }
 }

@@ -54,10 +54,8 @@ public class AccountController {
 
     @PostMapping("/logout")
     public Boolean logout(HttpServletRequest request, HttpServletResponse response){
-
-        accountService.deleteLoginInfo(request);
-
-
+        jwtTokenUtil.deleteLoginInfo(request);
+        
         Cookie accessCookie = jwtTokenUtil.generateCookie("AccessToken", null, 0);
         response.addCookie(accessCookie);
 
