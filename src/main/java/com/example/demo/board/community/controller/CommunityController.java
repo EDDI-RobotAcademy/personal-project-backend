@@ -45,8 +45,8 @@ public class CommunityController {
     }
 
     // 커뮤니티 게시물 상세 정보 확인
-    @GetMapping("/list/{communityNumber}")
-    public CommunityBoard communityRead(@PathVariable Long communityId){
+    @GetMapping("/{communityId}")
+    public CommunityBoard communityRead(@PathVariable String communityId){
         log.info("CommunityRead() ");
         CommunityBoard readCommunityBoard = communityServcie.read(communityId);
 
@@ -54,7 +54,7 @@ public class CommunityController {
     }
 
     // 커뮤니티 게시판 수정 기능
-    @PutMapping("/modify")
+    @PutMapping("/{communityId}")
     public Long communityModify(@RequestBody CommunityModifyForm communityModifyForm){
         log.info("CommunityModify() ");
         CommunityBoard communityBoard = communityServcie.modify(communityModifyForm.toCommunityBoard());
@@ -63,8 +63,8 @@ public class CommunityController {
     }
 
     //커뮤니티 게시판 삭제 기능
-    @DeleteMapping("/delete")
-    public boolean communityDelete(@RequestParam("communityId") Long communityId){
+    @DeleteMapping("/{communityId}")
+    public boolean communityDelete(@RequestParam("communityId") String communityId){
         log.info("CommunityDelete() ");
         boolean resultDeleteCommunity = communityServcie.delete(communityId);
 

@@ -51,8 +51,8 @@ public class CommunityServiceImpl implements CommunityServcie {
 
     // 커뮤니티 게시판 삭제
     @Override
-    public Boolean delete(Long communityId) {
-        Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityId(communityId);
+    public Boolean delete(String communityId) {
+        Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityId(Long.valueOf(communityId));
         if (maybeCommunityBoard.isEmpty()){
             log.info("에러 발생");
             return false;
@@ -65,8 +65,8 @@ public class CommunityServiceImpl implements CommunityServcie {
 
     // 커뮤니티 게시판 상세 정보
     @Override
-    public CommunityBoard read(Long communityId) {
-        Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityId(communityId);
+    public CommunityBoard read(String communityId) {
+        Optional<CommunityBoard> maybeCommunityBoard = communityRepository.findByCommunityId(Long.valueOf(communityId));
         if (maybeCommunityBoard.isEmpty()){
             log.info("에러 발생");
             return null;
