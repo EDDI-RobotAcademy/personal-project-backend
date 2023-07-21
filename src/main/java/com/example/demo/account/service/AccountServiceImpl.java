@@ -105,9 +105,6 @@ public class AccountServiceImpl implements AccountService {
                 String accessToken = tokenResponse.getAccessToken();
                 String refreshToken = tokenResponse.getRefreshToken();
                 form.setEmail(accessToken, refreshToken);
-
-                log.info("accessToken: " + accessToken);
-                log.info("refreshToken: " + refreshToken);
                 redisService.setKeyAndValue(refreshToken, account.getEmail());
                 return tokenResponse;
             }
@@ -139,7 +136,6 @@ public class AccountServiceImpl implements AccountService {
             Profile profile = new Profile(response.getEmail(), response.getName(), response.getPhoneNumber());
             profile.setAccount(account);
             profileRepository.save(profile);
-            log.info("form: " + response);
 
             return response;
         }
