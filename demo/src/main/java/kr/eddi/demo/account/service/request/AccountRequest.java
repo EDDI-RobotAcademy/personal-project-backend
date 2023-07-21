@@ -11,9 +11,10 @@ public class AccountRequest {
     final private String password;
     final private String memberType;
     final private String nickname;
+    final private String totalAddress;
 
     public Account toAccount () {
-        return new Account(email, password, memberType, nickname);
+        return new Account(email, password, memberType, nickname, totalAddress);
     }
 
 }
