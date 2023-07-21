@@ -15,5 +15,5 @@ public interface BoardService {
 
     BoardReadResponse read(Long boardId);
 
-
+    void delete(Long boardId, String accessToken);
 }

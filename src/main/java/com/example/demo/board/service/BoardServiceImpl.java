@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BoardServiceImpl implements BoardService{
+public class BoardServiceImpl implements BoardService {
 
     final private BoardRepository boardRepository;
     final private AccountRepository accountRepository;
@@ -77,5 +77,34 @@ public class BoardServiceImpl implements BoardService{
         BoardReadResponse response = new BoardReadResponse(board.getBoardId(), board.getTitle(), board.getWriter(), board.getContent(), board.getCreatedData());
 
         return response;
+    }
+
+    @Override
+    public void delete(Long boardId, String accessToken) throws RuntimeException {
+        SecretKey key = jwtProvider.getKey();
+        Jws<Claims> claims = Jwts.parser().setSigningKey(key)
+                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
+
+        String email = claims.getBody().getSubject();
+        email = email.substring(email.indexOf("\"email\":\"") + 9, email.indexOf("\",\"types\""));
+        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+
+        Long accountId = maybeAccount.get().getId();
+        log.info("아이디값확인: " + accountId);
+
+        Optional<Board> maybeBoard = boardRepository.findById(boardId);
+        if (maybeBoard.isPresent()) {
+            Board board = maybeBoard.get();
+
+            if (board.getAccount() != null && board.getAccount().getId().equals(accountId)) {
+                log.info("권한확인: " + board.getAccount().getId().equals(accountId));
+                // 삭제 권한이 있는 경우, 게시물 삭제
+                boardRepository.deleteById(boardId);
+            } else {
+                throw new RuntimeException("삭제 권한이 없습니다.");
+            }
+        } else {
+            throw new RuntimeException("삭제할 게시물을 찾을 수 없습니다.");
+        }
     }
 }

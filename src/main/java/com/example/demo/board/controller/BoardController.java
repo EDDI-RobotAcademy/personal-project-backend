@@ -39,4 +39,11 @@ public class BoardController {
 
         return boardService.read(boardId);
     }
+
+    @DeleteMapping("/{boardId}")
+    public void deleteBoard(@PathVariable("boardId") Long boardId,@RequestHeader("Authorization") String accessToken) {
+        log.info("Delete");
+
+        boardService.delete(boardId, accessToken);
+    }
 }
