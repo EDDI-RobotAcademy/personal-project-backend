@@ -5,6 +5,7 @@ import com.example.demo.board.entity.MemberBoard;
 import com.example.demo.board.service.MemberBoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -56,9 +57,10 @@ public class MemberBoardController {
     }
 
     @DeleteMapping("/{boardId}")
-    public Boolean deleteBoard (@PathVariable("boardId") Long boardId){
+    public Boolean deleteBoard (@PathVariable("boardId") Long boardId, @RequestHeader HttpHeaders headers){
         log.info("deleteBoard() id: " + boardId);
-        return boardService.delete(boardId);
+        return boardService.delete(boardId, headers);
+
 
     }
 

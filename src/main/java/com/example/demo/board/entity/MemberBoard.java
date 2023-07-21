@@ -42,7 +42,7 @@ public class MemberBoard {
     @JsonIgnore
     private List<FilePaths> filePathList;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Member member;
 
     @OneToMany(mappedBy = "memberBoard", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
