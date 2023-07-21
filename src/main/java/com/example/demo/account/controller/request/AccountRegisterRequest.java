@@ -2,8 +2,7 @@ package com.example.demo.account.controller.request;
 
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.entity.RoleType;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Getter
 @RequiredArgsConstructor

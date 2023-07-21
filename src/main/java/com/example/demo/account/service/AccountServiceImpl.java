@@ -1,10 +1,12 @@
 package com.example.demo.account.service;
 
+import com.example.demo.account.controller.response.MyPageResponse;
+import com.example.demo.account.repository.ProfileRepository;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.request.AccessRegisterRequest;
 import com.example.demo.account.controller.request.AccountRegisterRequest;
-import com.example.demo.account.controller.form.MyPageRequestForm;
 import com.example.demo.account.entity.Account;
+import com.example.demo.account.entity.Profile;
 import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.account.entity.AccountRole;
 import com.example.demo.account.entity.Role;
@@ -20,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
+import javax.crypto.SecretKey;
 import java.util.Optional;
 
 @Slf4j
@@ -31,6 +33,7 @@ public class AccountServiceImpl implements AccountService {
     final private AccountRepository accountRepository;
     final private AccountRoleRepository accountRoleRepository;
     final private RoleRepository roleRepository;
+    final private ProfileRepository profileRepository;
     final private PasswordEncoder passwordEncoder;
     final private JwtProvider jwtProvider;
     final private RedisService redisService;
@@ -113,26 +116,33 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Boolean findAccountInfo(MyPageRequestForm form, String accessToken) {
-        log.info("토큰이 있니?: " + accessToken);
-        Jws<Claims> claims = Jwts.parser()
-                                .setSigningKey("${spring.jwt.key}".replace(".", "").getBytes())
-                                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
-        String email = claims.getBody().getSubject();
-        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+    public MyPageResponse findAccountInfo(String accessToken) {
+        SecretKey key = jwtProvider.getKey();
+        Jws<Claims> claims = Jwts.parser().setSigningKey(key)
+                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
 
+        String email = claims.getBody().getSubject();
+        email = email.substring(email.indexOf("\"email\":\"") + 9, email.indexOf("\",\"types\""));
+
+        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
         if (maybeAccount.isPresent()) {
             Account account = maybeAccount.get();
-
-            if (email.equals(account.getEmail())) {
-                account.getEmail();
-                account.getName();
-                account.getPhoneNumber();
-                log.info("Email found: " + email);
-
-                return true;
+            log.info("account: " + account);
+            Optional<Profile> maybeProfile = profileRepository.findByAccount(account);
+            if (maybeProfile.isPresent()) {
+                Profile profile = maybeProfile.get();
+                MyPageResponse response = new MyPageResponse(profile.getEmail(), profile.getName(), profile.getPhoneNumber());
+                return response;
             }
+            // 기존에 연결된 profile 이 없다면 새로운 profile 을 생성하여 반환
+            MyPageResponse response = new MyPageResponse(account.getEmail(), account.getName(), account.getPhoneNumber());
+            Profile profile = new Profile(response.getEmail(), response.getName(), response.getPhoneNumber());
+            profile.setAccount(account);
+            profileRepository.save(profile);
+            log.info("form: " + response);
+
+            return response;
         }
-        return false;
+        return null;
     }
 }
