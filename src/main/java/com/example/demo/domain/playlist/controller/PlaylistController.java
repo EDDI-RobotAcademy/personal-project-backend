@@ -8,6 +8,7 @@ import com.example.demo.domain.playlist.service.PlaylistService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -68,5 +69,10 @@ public class PlaylistController {
     @PostMapping("/unlike-playlist/{playlistId}")
     public int unLikePlaylist (@PathVariable("playlistId") Long playlistId, HttpServletRequest request) {
         return playlistService.unlikePlaylist(playlistId, request);
+    }
+
+    @PostMapping("/slice-list/{page}")
+    public List<PlaylistReadResponseForm> slicePlaylist(@PathVariable("page") int page, HttpServletRequest request){
+        return playlistService.pagingPlaylist(page, request);
     }
 }

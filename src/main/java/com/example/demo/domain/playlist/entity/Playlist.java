@@ -19,7 +19,8 @@ public class Playlist {
     @Setter
     private String title;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JsonIgnore
     @JoinColumn(name = "account_id")
     private Account account;
 
@@ -47,5 +48,9 @@ public class Playlist {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void removeFromLikers(Account liker) {
+        likers.remove(liker);
     }
 }

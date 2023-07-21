@@ -13,12 +13,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -49,6 +49,22 @@ public class PlaylistServiceImpl implements PlaylistService{
         int count = playlistRepository.countPlaylistByAccountId(accountRepository.findByEmail(email).get().getId());
         log.info("playlist count = " + count );
         return count;
+    }
+
+    @Override
+    @Transactional
+    public List<PlaylistReadResponseForm> pagingPlaylist(int page, HttpServletRequest request) {
+        Slice<Playlist> playlists = playlistRepository.slicePlaylist(PageRequest.of(page-1,2));
+
+        List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
+        for(Playlist playlist : playlists){
+            PlaylistReadResponseForm responseForm = new PlaylistReadResponseForm(playlist, playlist.getSongList(), playlist.getLikers().size());
+            responseForms.add(responseForm);
+        }
+        for (Playlist playlist : playlists.getContent()) {
+            System.out.println(playlist.getTitle());
+        }
+        return responseForms;
     }
 
     @Override
@@ -103,10 +119,23 @@ public class PlaylistServiceImpl implements PlaylistService{
     }
 
     @Override
+    @Transactional
     public boolean delete(Long playlistId) {
-        Optional<Playlist> maybeSong = playlistRepository.findById(playlistId);
-        if(maybeSong.isEmpty()){
+        Optional<Playlist> maybePlaylist = playlistRepository.findById(playlistId);
+        if(maybePlaylist.isEmpty()){
             return false;
+        }
+        Playlist playlist = maybePlaylist.get();
+        //Account 클래스에서 removeFromLikedPlaylists 메소드 호출 - likedPlaylists 컬렉션에서 제거
+        for (Account account : playlist.getLikers()) {
+            account.removeFromLikedPlaylists(playlist);
+//            accountRepository.save(account);
+        }
+
+        //Playlist 클래스에서 removeFromLikers 메소드 호출 - likers 컬렉션에서 제거
+        for (Account liker : new HashSet<>(playlist.getLikers())) {
+            playlist.removeFromLikers(liker);
+//            playlistRepository.save(playlist);
         }
 
         playlistRepository.deleteById(playlistId);

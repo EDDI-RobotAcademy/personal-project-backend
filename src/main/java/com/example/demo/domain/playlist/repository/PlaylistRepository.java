@@ -3,6 +3,8 @@ package com.example.demo.domain.playlist.repository;
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.playlist.entity.Playlist;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,6 +20,9 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
     List<Playlist> findAll();
 
     int countPlaylistByAccountId(Long accountId);
+
+    @Query("SELECT p FROM Playlist p JOIN FETCH p.account JOIN FETCH p.songList LEFT JOIN FETCH p.likers")
+    Slice<Playlist> slicePlaylist(Pageable pageable);
 
     @Query("SELECT p.id FROM Playlist p where p.account = :account")
     List<Long> findPlaylistIdByAccountId(Account account);
