@@ -1,7 +1,10 @@
 package com.example.demo.restaurant.controller;
 
 import com.example.demo.account.service.AccountService;
-import com.example.demo.restaurant.controller.form.*;
+import com.example.demo.restaurant.controller.form.RestaurantListResponseForm;
+import com.example.demo.restaurant.controller.form.RestaurantModifyForm;
+import com.example.demo.restaurant.controller.form.RestaurantReadResponseForm;
+import com.example.demo.restaurant.controller.form.RestaurantRegisterForm;
 import com.example.demo.restaurant.controller.form.business.BusinessRestaurantListRequestForm;
 import com.example.demo.restaurant.controller.form.business.BusinessRestaurantListResponseForm;
 import com.example.demo.restaurant.controller.form.business.BusinessRestaurantReadResponseForm;
@@ -9,9 +12,7 @@ import com.example.demo.restaurant.entity.Restaurant;
 import com.example.demo.restaurant.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -37,18 +38,13 @@ public class RestaurantController {
     }
 
     // 사업자 회원 - 음식점 등록
-    @PostMapping(value = "/register",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,
-                        MediaType.APPLICATION_JSON_VALUE})
-    public Boolean registerRestaurant (@RequestPart(value = "aboutRestaurant") RestaurantRegisterForm registerForm,
-                                       @RequestPart(value = "restaurantImg") List<MultipartFile> restaurantImg) {
-
+    @PostMapping("/register")
+    public Boolean registerRestaurant (@RequestBody RestaurantRegisterForm registerForm) {
         log.info("registerRestaurant()");
-        if (accountService.lookup(registerForm.getUserToken()) != BUSINESS) {
-            return false;
-        }
 
-        return restaurantService.register(registerForm.toRestaurantRegisterRequest(), restaurantImg);
+        final List<String> imageUrls = registerForm.getImageUrls();
+
+        return restaurantService.register(registerForm.toRestaurantRegisterRequest(), imageUrls);
     }
 
     // 맛집 상세 페이지
@@ -84,7 +80,7 @@ public class RestaurantController {
                                         @RequestBody RestaurantModifyForm modifyForm) {
         log.info("modifyProduct()");
 
-        return restaurantService.modify(id, modifyForm.toRestaurantModifyRequest());
+        return restaurantService.modify(id, modifyForm);
     }
 
     // 사업자 회원 - 맛집 삭제

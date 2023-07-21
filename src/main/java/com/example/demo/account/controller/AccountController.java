@@ -1,6 +1,7 @@
 package com.example.demo.account.controller;
 
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
+import com.example.demo.account.controller.form.ReturnEmailRequestForm;
 import com.example.demo.account.controller.form.business.BusinessAccountRegisterForm;
 import com.example.demo.account.controller.form.business.BusinessCheckRequestForm;
 import com.example.demo.account.controller.form.normal.NormalAccountRegisterForm;
@@ -60,5 +61,17 @@ public class AccountController {
 
         Boolean isBusinessMan= accountService.businessCheck(businessId);
         return isBusinessMan;
+    }
+
+    // 이메일 반환
+    @PostMapping("/return-email")
+    public String returnEmail(@RequestBody ReturnEmailRequestForm requestForm) {
+        log.info("returnEmail()");
+
+        String userToken = requestForm.getUserToken();
+        String returnEmail = accountService.returnEmail(userToken);
+        log.info("returnEmail: " + returnEmail);
+
+        return returnEmail;
     }
 }

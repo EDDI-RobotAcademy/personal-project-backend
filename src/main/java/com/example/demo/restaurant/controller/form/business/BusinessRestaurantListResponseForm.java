@@ -2,8 +2,6 @@ package com.example.demo.restaurant.controller.form.business;
 
 import com.example.demo.restaurant.entity.Restaurant;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 @Getter
 public class BusinessRestaurantListResponseForm {
