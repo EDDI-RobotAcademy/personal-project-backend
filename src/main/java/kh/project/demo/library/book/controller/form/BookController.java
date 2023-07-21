@@ -8,6 +8,7 @@ import kh.project.demo.library.book.service.BookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,21 +24,33 @@ public class BookController {
 
     // 도서 등록
     @PostMapping("/register-book")
-    public Book registerBook(@RequestBody RegisterBookForm requestForm) {
-        return bookService.register(requestForm);
+    public Book registerBook(@RequestBody RegisterBookForm requestForm,
+                             @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails != null) {
+            String userId = userDetails.getUsername();
+            return bookService.register(requestForm, userId);
+        }
+
+        return null;
     }
 
     // 도서 수정
-    @PutMapping("/{bookNumber}")
+    @PutMapping("/modify-book/{bookNumber}")
     public Book modifyBook (@PathVariable("bookNumber") Long bookNumber,
-                            @RequestBody ModifyBookForm modifyBookForm) {
+                            @RequestBody ModifyBookForm modifyBookForm,
+                            @AuthenticationPrincipal UserDetails userDetails) {
         log.info("modifyBook(): "+ modifyBookForm +", id: "+bookNumber);
 
-        return bookService.modify(bookNumber, modifyBookForm);
+        if(userDetails != null) {
+            String userId = userDetails.getUsername();
+            return bookService.modify(bookNumber, modifyBookForm, userId);
+        }
+        return null;
     }
 
     // 도서 삭제
-    @DeleteMapping("/{bookNumber}")
+    @DeleteMapping("/delete-book/{bookNumber}")
     public boolean deleteBook (@PathVariable("bookNumber") Long bookNumber) {
         log.info("deleteBook()");
         return bookService.delete(bookNumber);
@@ -58,11 +71,20 @@ public class BookController {
     }
 
     // 분야별 도서 요청
-    @GetMapping("/{categorizationSymbol}")
+    @GetMapping("/category-book/{categorizationSymbol}")
     public List<Book> categoryBook(
             @PathVariable("categorizationSymbol") KoreanDecimalClassification categorizationSymbol) {
         log.info("분야별 도서 요청 !");
         return bookService.listByfield(categorizationSymbol);
+    }
+
+    // 전체 도서 요청
+    @GetMapping("/whole-book")
+    public List<Book> wholeBook() {
+        log.info("전체 도서 목록 요청 !");
+
+        List<Book> returnedBookList = bookService.list();
+        return returnedBookList;
     }
 
 }
