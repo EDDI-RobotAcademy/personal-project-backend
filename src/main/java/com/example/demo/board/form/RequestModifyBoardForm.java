@@ -18,6 +18,7 @@ public class RequestModifyBoardForm {
     final private String nickname;
     final private String content;
     final private List<FilePaths> awsFileList;
+    final private String userToken;
 
     public MemberBoard toMemberBoard() {
         return new MemberBoard(title, nickname, content, awsFileList);

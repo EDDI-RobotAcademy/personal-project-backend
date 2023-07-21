@@ -84,26 +84,31 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     @Override
     @Transactional
     public MemberBoard modify(RequestModifyBoardForm requestForm, Long boardId) {
-        Optional<MemberBoard> maybeMemberBoard = boardRepository.findById(boardId);
-
-        if (maybeMemberBoard.isEmpty()) {
-            log.info("정보가 없습니다!");
+        Optional<Member> isMember = memberRepository.findByUserToken(requestForm.getUserToken());
+        log.info("Dsdf",requestForm.getUserToken());
+        if(isMember.isEmpty()){
+            log.info("회원이 아닙니다.");
             return null;
         }
-        MemberBoard memberBoard = maybeMemberBoard.get();
-        memberBoard.setContent(requestForm.getContent());
-        memberBoard.setTitle(requestForm.getTitle());
+            Optional<MemberBoard> maybeMemberBoard = boardRepository.findById(boardId);
+            if (maybeMemberBoard.isEmpty()) {
+                log.info("정보가 없습니다!");
+                return null;
+            }
+            MemberBoard memberBoard = maybeMemberBoard.get();
+            memberBoard.setContent(requestForm.getContent());
+            memberBoard.setTitle(requestForm.getTitle());
 
 
-        filePathsRepository.deleteAll(memberBoard.getFilePathList());
+            filePathsRepository.deleteAll(memberBoard.getFilePathList());
 
-        List<FilePaths> filePathList = requestForm.getAwsFileList();
-        for (FilePaths filePaths : filePathList){
-            String imagePath = filePaths.getImagePath();
-            FilePaths imageFilePath = new FilePaths(imagePath, memberBoard);
-            filePathsRepository.save(imageFilePath);
-        }
-        return boardRepository.save(memberBoard);
+            List<FilePaths> filePathList = requestForm.getAwsFileList();
+            for (FilePaths filePaths : filePathList){
+                String imagePath = filePaths.getImagePath();
+                FilePaths imageFilePath = new FilePaths(imagePath, memberBoard);
+                filePathsRepository.save(imageFilePath);
+            }
+            return boardRepository.save(memberBoard);
     }
 
     @Override
