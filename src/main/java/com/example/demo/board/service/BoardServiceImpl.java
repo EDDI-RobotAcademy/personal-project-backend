@@ -61,7 +61,7 @@ public class BoardServiceImpl implements BoardService{
             board.setAccount(account);
             boardRepository.save(board);
 
-            BoardResponse response = new BoardResponse(board.getTitle(), board.getWriter(), board.getContent());
+            BoardResponse response = new BoardResponse(board.getBoardId(), board.getTitle(), board.getWriter(), board.getContent());
             return response;
         }
         return null;

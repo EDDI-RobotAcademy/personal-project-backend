@@ -12,6 +12,8 @@ import lombok.ToString;
 @AllArgsConstructor
 public class BoardResponse {
 
+    private Long boardId;
+
     private String title;
 
     private String writer;
