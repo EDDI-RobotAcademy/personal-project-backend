@@ -1,15 +1,23 @@
 package com.example.demo.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.demo.user.entity.User;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class UserDTO {
+    private Long userId;
+    private String email;
     private String nickName;
     private String Name;
-    private String email;
-    private String password;
+    private String uid;
+
+    public UserDTO(User user) {
+        this.userId = user.getUserId();
+        this.nickName = user.getNickName();
+        this.Name = user.getName();
+        this.email = user.getEmail();
+        this.uid = user.getUid();
+    }
 }
