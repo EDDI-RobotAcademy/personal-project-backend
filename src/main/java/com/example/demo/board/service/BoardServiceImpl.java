@@ -12,12 +12,13 @@ import com.example.demo.board.repository.BoardRepository;
 import com.example.demo.security.jwt.JwtProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.crypto.SecretKey;
 import java.util.List;
@@ -88,9 +89,7 @@ public class BoardServiceImpl implements BoardService {
         String email = claims.getBody().getSubject();
         email = email.substring(email.indexOf("\"email\":\"") + 9, email.indexOf("\",\"types\""));
         Optional<Account> maybeAccount = accountRepository.findByEmail(email);
-
         Long accountId = maybeAccount.get().getId();
-        log.info("아이디값확인: " + accountId);
 
         Optional<Board> maybeBoard = boardRepository.findById(boardId);
         if (maybeBoard.isPresent()) {
@@ -98,7 +97,6 @@ public class BoardServiceImpl implements BoardService {
 
             if (board.getAccount() != null && board.getAccount().getId().equals(accountId)) {
                 log.info("권한확인: " + board.getAccount().getId().equals(accountId));
-                // 삭제 권한이 있는 경우, 게시물 삭제
                 boardRepository.deleteById(boardId);
             } else {
                 throw new RuntimeException("삭제 권한이 없습니다.");
@@ -106,5 +104,34 @@ public class BoardServiceImpl implements BoardService {
         } else {
             throw new RuntimeException("삭제할 게시물을 찾을 수 없습니다.");
         }
+    }
+
+    @Override
+    public BoardResponse modify(Long boardId, BoardRequestForm form, String accessToken) {
+        SecretKey key = jwtProvider.getKey();
+        Jws<Claims> claims = Jwts.parser().setSigningKey(key)
+                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
+
+        String email = claims.getBody().getSubject();
+        email = email.substring(email.indexOf("\"email\":\"") + 9, email.indexOf("\",\"types\""));
+        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+        Long accountId = maybeAccount.get().getId();
+
+        Optional<Board> maybeBoard = boardRepository.findById(boardId);
+        if (maybeBoard.isPresent()) {
+            Board board = maybeBoard.get();
+
+            if (board.getAccount() != null && board.getAccount().getId().equals(accountId)) {
+                log.info("권한확인: " + board.getAccount().getId().equals(accountId));
+
+                board.setTitle(form.getTitle());
+                board.setContent(form.getContent());
+                boardRepository.save(board);
+
+                BoardResponse response = new BoardResponse(board.getBoardId(), board.getTitle(), board.getWriter(), board.getContent());
+                return response;
+            }
+        }
+        throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
     }
 }

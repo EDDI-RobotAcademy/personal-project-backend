@@ -22,8 +22,6 @@ public class BoardController {
 
     @GetMapping("/list")
     public List<BoardListResponse> boardList () {
-        log.info("boardList");
-
         return boardService.list();
     }
 
@@ -35,15 +33,16 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     public BoardReadResponse read(@PathVariable("boardId") Long boardId) {
-        log.info("read");
-
         return boardService.read(boardId);
     }
 
     @DeleteMapping("/{boardId}")
     public void deleteBoard(@PathVariable("boardId") Long boardId,@RequestHeader("Authorization") String accessToken) {
-        log.info("Delete");
-
         boardService.delete(boardId, accessToken);
+    }
+
+    @PutMapping("/{boardId}")
+    public BoardResponse modify(@PathVariable("boardId") Long boardId, @RequestBody BoardRequestForm form, @RequestHeader("Authorization") String accessToken) {
+        return boardService.modify(boardId, form, accessToken);
     }
 }
