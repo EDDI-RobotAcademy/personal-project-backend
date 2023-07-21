@@ -8,6 +8,9 @@ import com.example.demo.board.form.RequestRegisterBoardForm;
 import com.example.demo.board.form.ResponseBoardForm;
 import com.example.demo.board.reposiitory.FilePathsRepository;
 import com.example.demo.board.reposiitory.MemberBoardRepository;
+import com.example.demo.member.entity.Member;
+import com.example.demo.member.repository.MemberRepository;
+import com.example.demo.member.service.MemberService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +29,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
 
     final private MemberBoardRepository boardRepository;
     final private FilePathsRepository filePathsRepository;
+    final private MemberRepository memberRepository;
 
     @Override
     @Transactional
@@ -36,18 +40,21 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     @Override
     public MemberBoard register(RequestRegisterBoardForm requestForm) {
         log.info(String.valueOf(requestForm));
-        List<FilePaths> filePathList = requestForm.getAwsFileList();
-        MemberBoard savedBoard = boardRepository.save(requestForm.toMemberBoard());
-
-
-        log.info(requestForm.getAwsFileList().toString());
-
-        for (FilePaths filePaths : filePathList){
-            String imagePath = filePaths.getImagePath();
-            FilePaths imageFilePath = new FilePaths(imagePath, savedBoard);
-            filePathsRepository.save(imageFilePath);
-
+        Optional<Member> isMember = memberRepository.findByUserToken(requestForm.getUserToken());
+        if(isMember.isEmpty()){
+            log.info("회원이 아닙니다.");
+            return null;
         }
+            List<FilePaths> filePathList = requestForm.getAwsFileList();
+            MemberBoard savedBoard = boardRepository.save(requestForm.toMemberBoard());
+
+            log.info(requestForm.getAwsFileList().toString());
+
+            for (FilePaths filePaths : filePathList){
+                String imagePath = filePaths.getImagePath();
+                FilePaths imageFilePath = new FilePaths(imagePath, savedBoard);
+                filePathsRepository.save(imageFilePath);
+            }
         return savedBoard;
     }
 
