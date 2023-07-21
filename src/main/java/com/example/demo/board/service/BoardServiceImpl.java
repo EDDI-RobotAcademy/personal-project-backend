@@ -39,7 +39,7 @@ public class BoardServiceImpl implements BoardService{
         List<Board> boards = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
 
         return boards.stream()
-                .map(board -> new BoardListResponse(board.getTitle(), board.getWriter(), board.getCreatedData()))
+                .map(board -> new BoardListResponse(board.getBoardId(), board.getTitle(), board.getWriter(), board.getCreatedData()))
                 .collect(Collectors.toList());
     }
 
@@ -74,7 +74,7 @@ public class BoardServiceImpl implements BoardService{
             return null;
         }
         Board board = maybeBoard.get();
-        BoardReadResponse response = new BoardReadResponse(board.getTitle(), board.getWriter(), board.getContent(), board.getCreatedData());
+        BoardReadResponse response = new BoardReadResponse(board.getBoardId(), board.getTitle(), board.getWriter(), board.getContent(), board.getCreatedData());
 
         return response;
     }

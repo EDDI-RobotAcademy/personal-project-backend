@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BoardReadResponse {
 
+    private Long boardiId;
+
     private String title;
 
     private String writer;
