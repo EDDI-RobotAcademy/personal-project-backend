@@ -35,7 +35,9 @@ public class MemberServiceImpl implements MemberService{
             log.debug("이미 등록된 회원이라 가입할 수 없습니다.");
             return false;
         }
-        final Member member = requestForm.toMember();
+        String userToken = UUID.randomUUID().toString();
+
+        final Member member = requestForm.toMember(userToken);
         memberRepository.save(member);
         final Role role = roleRepository.findByRoleType(requestForm.getRoleType()).get();
         final MemberRole memberRole = new MemberRole(member, role);
@@ -61,7 +63,7 @@ public class MemberServiceImpl implements MemberService{
         }
         final Member member = maybeMember.get();
         if(member.getPassword().equals(request.getPassword())){
-            final String userToken = UUID.randomUUID().toString();
+            final String userToken = member.getUserToken();
             redisService.setKeyAndValue(userToken, member.getId());
 
             final Role role = memberRoleRepository.findRoleInfoMember(member);

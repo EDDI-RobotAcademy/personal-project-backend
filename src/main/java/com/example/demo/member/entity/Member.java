@@ -38,10 +38,11 @@ public class Member {
     @Setter
     private String userToken;
 
-    public Member(String email, String password, String nickname) {
+    public Member(String email, String password, String nickname, String userToken) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.userToken = userToken;
     }
 
     public Member(String email, String nickname) {
