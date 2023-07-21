@@ -2,6 +2,7 @@ package com.example.demo.board.form;
 
 import com.example.demo.board.entity.FilePaths;
 import com.example.demo.board.entity.MemberBoard;
+import com.example.demo.member.entity.Member;
 import lombok.*;
 
 import java.util.List;
@@ -17,8 +18,8 @@ public class RequestRegisterBoardForm {
         private List<FilePaths> awsFileList;
         private String userToken;
 
-        public MemberBoard toMemberBoard() {
-            return new MemberBoard(title, nickname, content, awsFileList);
+        public MemberBoard toMemberBoard(Member member) {
+            return new MemberBoard(title, nickname, content, awsFileList, member);
         }
 
 }

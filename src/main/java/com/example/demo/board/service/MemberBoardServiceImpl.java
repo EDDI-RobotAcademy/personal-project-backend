@@ -10,14 +10,14 @@ import com.example.demo.board.reposiitory.FilePathsRepository;
 import com.example.demo.board.reposiitory.MemberBoardRepository;
 import com.example.demo.member.entity.Member;
 import com.example.demo.member.repository.MemberRepository;
-import com.example.demo.member.service.MemberService;
+import com.example.demo.comment.entity.Comment;
+import com.example.demo.comment.repository.CommentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +30,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     final private MemberBoardRepository boardRepository;
     final private FilePathsRepository filePathsRepository;
     final private MemberRepository memberRepository;
+    final private CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -45,8 +46,9 @@ public class MemberBoardServiceImpl implements MemberBoardService {
             log.info("회원이 아닙니다.");
             return null;
         }
+            Member savedMember = isMember.get();
             List<FilePaths> filePathList = requestForm.getAwsFileList();
-            MemberBoard savedBoard = boardRepository.save(requestForm.toMemberBoard());
+            MemberBoard savedBoard = boardRepository.save(requestForm.toMemberBoard(savedMember));
 
             log.info(requestForm.getAwsFileList().toString());
 
@@ -68,7 +70,10 @@ public class MemberBoardServiceImpl implements MemberBoardService {
         List<Long> idList = maybeBoard.get().getFilePathList().stream().map(FilePaths::getFileId).toList();
         // lazy 걸려있어서 proxy patten안에 있어서 못가져옴 Transactional 하면 해결, 그치만 조회해야 거기서 쿼리가 한번 나간다.
         // joinFetch로 사용 가능
-        List<FilePaths> savedFilePath = boardRepository.findById(boardId).get().getFilePathList();
+        List<FilePaths> savedFilePath = maybeBoard.get().getFilePathList();
+
+//        List<Comment> commentList = commentRepository.findByMemberBoard(maybeBoard.get());
+//        .stream().toList();
         final ResponseBoardForm responseBoardForm = new ResponseBoardForm(maybeBoard.get(),savedFilePath);
 
         return responseBoardForm;

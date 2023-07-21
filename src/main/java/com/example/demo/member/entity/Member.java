@@ -1,10 +1,13 @@
 package com.example.demo.member.entity;
 
+import com.example.demo.board.entity.MemberBoard;
+import com.example.demo.comment.entity.Comment;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -25,6 +28,11 @@ public class Member {
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
     private MemberRole memberRole;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Comment> Comment;
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<MemberBoard> memberBoardList;
 
     @Getter
     @Setter

@@ -1,5 +1,7 @@
 package com.example.demo.board.entity;
 
+import com.example.demo.comment.entity.Comment;
+import com.example.demo.member.entity.Member;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -40,10 +42,23 @@ public class MemberBoard {
     @JsonIgnore
     private List<FilePaths> filePathList;
 
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    private Member member;
+
+    @OneToMany(mappedBy = "memberBoard", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Comment> commentList;
     public MemberBoard(String title, String nickname, String content, List<FilePaths> filePathList) {
         this.title = title;
         this.nickname = nickname;
         this.content = content;
         this.filePathList = filePathList;
+    }
+
+    public MemberBoard(String title, String nickname, String content, List<FilePaths> filePathList, Member member) {
+        this.title = title;
+        this.nickname = nickname;
+        this.content = content;
+        this.filePathList = filePathList;
+        this.member = member;
     }
 }
