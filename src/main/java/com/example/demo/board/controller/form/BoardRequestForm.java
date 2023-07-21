@@ -17,10 +17,6 @@ public class BoardRequestForm {
 
     final private String content;
 
-    public Board toBoard() {
-        return new Board(title, writer, content);
-    }
-
     public void setWriter(String writer) {
         this.writer = writer;
     }

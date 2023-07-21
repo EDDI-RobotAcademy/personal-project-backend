@@ -1,6 +1,9 @@
 package com.example.demo.board.controller;
 
 import com.example.demo.board.controller.form.BoardRequestForm;
+import com.example.demo.board.controller.response.BoardListResponse;
+import com.example.demo.board.controller.response.BoardReadResponse;
+import com.example.demo.board.controller.response.BoardResponse;
 import com.example.demo.board.entity.Board;
 import com.example.demo.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -18,20 +21,20 @@ public class BoardController {
     final private BoardService boardService;
 
     @GetMapping("/list")
-    public List<Board> boardList () {
+    public List<BoardListResponse> boardList () {
         log.info("boardList");
 
         return boardService.list();
     }
 
     @PostMapping("/register")
-    public Board registerBoard(@RequestBody BoardRequestForm form, @RequestHeader("Authorization") String accessToken) {
+    public BoardResponse registerBoard(@RequestBody BoardRequestForm form, @RequestHeader("Authorization") String accessToken) {
 
-        return boardService.register(accessToken, form.toBoard());
+        return boardService.register(accessToken, form);
     }
 
     @GetMapping("/{boardId}")
-    public Board read(@PathVariable("boardId") Long boardId) {
+    public BoardReadResponse read(@PathVariable("boardId") Long boardId) {
         log.info("read");
 
         return boardService.read(boardId);
