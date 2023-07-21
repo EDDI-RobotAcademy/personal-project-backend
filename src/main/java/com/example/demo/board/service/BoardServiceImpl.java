@@ -1,13 +1,18 @@
 package com.example.demo.board.service;
 
+import com.example.demo.board.controller.form.BoardCategoryListForm;
+import com.example.demo.board.controller.form.BoardCategoryResponseForm;
 import com.example.demo.board.controller.form.RequestBoardForm;
 import com.example.demo.board.entity.Board;
+import com.example.demo.board.entity.BoardCategory;
 import com.example.demo.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,7 +75,29 @@ public class BoardServiceImpl implements BoardService{
         List<Board> searchBoard = boardRepository.findByTitleContaining(keyword);
         return searchBoard;
     }
+    @Override
+    public List<BoardCategoryResponseForm> getListByCategory(BoardCategory category){
+        List<Board> boardList = boardRepository.findAllCategory(category);
 
+        List<BoardCategoryResponseForm> boardCategoryList = new ArrayList<>();
+        for (Board board: boardList) {
+            boardCategoryList.add(
+                    new BoardCategoryResponseForm(
+                            board.getBoardId(),board.getTitle(),board.getWriter(),board.getContent()));
+        }
+        return boardCategoryList;
+    }
+    @Override
+    public List<BoardCategoryListForm> getCategoryList() {
+        List<BoardCategoryListForm> categoryList = new ArrayList<>();
+        for (BoardCategory category: BoardCategory.values()) {
+            Long posts = boardRepository.findPostNumberByCategory(category);
+            log.info("posts:" +posts);
+            categoryList.add(
+                    new BoardCategoryListForm(category,posts));
+        }
+        return categoryList;
+    }
 
 //    @Override
 //    public Board findById(Long boardId) {

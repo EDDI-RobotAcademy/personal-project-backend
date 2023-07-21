@@ -1,5 +1,8 @@
 package com.example.demo.board.controller;
 
+import com.example.demo.board.controller.form.BoardCategoryListForm;
+import com.example.demo.board.controller.form.BoardCategoryResponseForm;
+import com.example.demo.board.entity.BoardCategory;
 import org.springframework.ui.Model;
 import com.example.demo.board.controller.form.RequestBoardForm;
 import com.example.demo.board.dto.BoardDto;
@@ -36,12 +39,6 @@ public class BoardController {
         return boardService.read(boardId);
     }
 
-//    @PutMapping("/read-count/{boardId}")
-//    public void updateReadCount(@PathVariable("boardId") Long boardId) {
-//        log.info("updateReadCount()");
-//        boardService.updateReadCount();
-//    }
-
     @GetMapping("/read-count/{boardId}")
     public String boardContent(@PathVariable("boardId") Long boardId, Model model) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found with id: " + boardId));
@@ -52,7 +49,6 @@ public class BoardController {
         model.addAttribute("board", board);
         return "redirect:/key-we-board-page/read/" + boardId;
     }
-
 
     @DeleteMapping("/{boardId}")
     public void deleteBoard(@PathVariable("boardId") Long boardId) {
@@ -68,6 +64,15 @@ public class BoardController {
     @GetMapping("/search")
     public List<Board> searchBoard(@RequestParam("boardId") String keyword) {
         List<Board> searchBoardList = boardService.search(keyword);
+        log.info("searchBoard()");
         return searchBoardList;
+    }
+    @GetMapping("/category")
+    public List<BoardCategoryListForm> getCategoryList() {
+        return boardService.getCategoryList();
+    }
+    @GetMapping("list/{category}")
+    public List<BoardCategoryResponseForm> categoryResponseForms (@PathVariable("category")BoardCategory category){
+        return boardService.getListByCategory(category);
     }
 }

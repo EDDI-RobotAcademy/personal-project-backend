@@ -14,7 +14,7 @@ public class RequestBoardForm {
     final private String writer;
     final private String title;
     final private String content;
-    final private Long category;
+    final private BoardCategory category;
 
     public BoardRegisterRequest toBoard() {
         return new BoardRegisterRequest(writer, title, content, category);
