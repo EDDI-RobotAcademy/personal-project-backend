@@ -16,9 +16,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -39,32 +41,35 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     }
 
     @Override
+    @Transactional
     public MemberBoard register(RequestRegisterBoardForm requestForm) {
         log.info(String.valueOf(requestForm));
         Optional<Member> isMember = memberRepository.findByUserToken(requestForm.getUserToken());
-        if(isMember.isEmpty()){
+        if (isMember.isEmpty()) {
             log.info("회원이 아닙니다.");
             return null;
         }
-            Member savedMember = isMember.get();
-            List<FilePaths> filePathList = requestForm.getAwsFileList();
-            MemberBoard savedBoard = boardRepository.save(requestForm.toMemberBoard(savedMember));
+        Member savedMember = isMember.get();
+        List<FilePaths> filePathList = requestForm.getAwsFileList();
 
-            log.info(requestForm.getAwsFileList().toString());
+        MemberBoard newMemberBoard = requestForm.toMemberBoard(savedMember);
+        MemberBoard savedBoard = boardRepository.save(newMemberBoard);
 
-            for (FilePaths filePaths : filePathList){
-                String imagePath = filePaths.getImagePath();
-                FilePaths imageFilePath = new FilePaths(imagePath, savedBoard);
-                filePathsRepository.save(imageFilePath);
-            }
+        log.info(requestForm.getAwsFileList().toString());
+
+        for (FilePaths filePaths : filePathList) {
+            String imagePath = filePaths.getImagePath();
+            FilePaths imageFilePath = new FilePaths(imagePath, savedBoard);
+            filePathsRepository.save(imageFilePath);
+        }
         return savedBoard;
     }
 
     @Override
     @Transactional
     public ResponseBoardForm read(Long boardId) {
-        Optional<MemberBoard> maybeBoard = boardRepository.findById(boardId);
-        if(maybeBoard.isEmpty()){
+        Optional<MemberBoard> maybeBoard = boardRepository.findByIdWithMember(boardId);
+        if (maybeBoard.isEmpty()) {
             return null;
         }
         List<Long> idList = maybeBoard.get().getFilePathList().stream().map(FilePaths::getFileId).toList();
@@ -74,7 +79,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
 
 //        List<Comment> commentList = commentRepository.findByMemberBoard(maybeBoard.get());
 //        .stream().toList();
-        final ResponseBoardForm responseBoardForm = new ResponseBoardForm(maybeBoard.get(),savedFilePath);
+        final ResponseBoardForm responseBoardForm = new ResponseBoardForm(maybeBoard.get(), savedFilePath);
 
         return responseBoardForm;
     }
@@ -90,43 +95,50 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     @Transactional
     public MemberBoard modify(RequestModifyBoardForm requestForm, Long boardId) {
         Optional<Member> isMember = memberRepository.findByUserToken(requestForm.getUserToken());
-        log.info("Dsdf",requestForm.getUserToken());
-        if(isMember.isEmpty()){
+        if (isMember.isEmpty()) {
             log.info("회원이 아닙니다.");
             return null;
         }
-            Optional<MemberBoard> maybeMemberBoard = boardRepository.findById(boardId);
-            if (maybeMemberBoard.isEmpty()) {
-                log.info("정보가 없습니다!");
-                return null;
-            }
-            MemberBoard memberBoard = maybeMemberBoard.get();
+        Optional<MemberBoard> maybeMemberBoard = boardRepository.findById(boardId);
+        if (maybeMemberBoard.isEmpty()) {
+            log.info("정보가 없습니다!");
+            return null;
+        }
+        MemberBoard memberBoard = maybeMemberBoard.get();
+
+        if (memberBoard.getMember().getUserToken().equals(requestForm.getUserToken())) {
             memberBoard.setContent(requestForm.getContent());
             memberBoard.setTitle(requestForm.getTitle());
-
-
+            log.info("여기냐?");
             filePathsRepository.deleteAll(memberBoard.getFilePathList());
-
+            log.info("??");
             List<FilePaths> filePathList = requestForm.getAwsFileList();
-            for (FilePaths filePaths : filePathList){
+            for (FilePaths filePaths : filePathList) {
                 String imagePath = filePaths.getImagePath();
                 FilePaths imageFilePath = new FilePaths(imagePath, memberBoard);
                 filePathsRepository.save(imageFilePath);
             }
             return boardRepository.save(memberBoard);
+        }
+        log.info("토큰달라오");
+        return null;
     }
 
     @Override
     @Transactional
-    public boolean delete(Long boardId) {
+    public boolean delete(Long boardId, HttpHeaders headers) {
         Optional<MemberBoard> maybeBoard = boardRepository.findById(boardId);
-        if(maybeBoard.isEmpty()) {
+        if (maybeBoard.isEmpty()) {
             return false;
         }
         MemberBoard finedBoard = maybeBoard.get();
-        filePathsRepository.deleteAll(finedBoard.getFilePathList());
-        boardRepository.deleteById(boardId);
+        if (finedBoard.getMember().getUserToken().equals(Objects.requireNonNull(headers.get("authorization")).get(0))) {
 
-        return true;
+            filePathsRepository.deleteAll(finedBoard.getFilePathList());
+            boardRepository.deleteById(boardId);
+
+            return true;
+        }
+        return false;
     }
 }
