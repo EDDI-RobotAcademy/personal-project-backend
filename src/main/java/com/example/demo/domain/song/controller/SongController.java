@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 @Slf4j
 @RequestMapping("/song")
 @RestController
@@ -17,7 +20,7 @@ public class SongController {
     final private SongService songService;
 
     @PostMapping("/register")
-    public Long songRegister (@RequestBody SongRegisterRequestForm requestForm, HttpServletRequest request) {
+    public Long songRegister (@RequestBody SongRegisterRequestForm requestForm, HttpServletRequest request) throws GeneralSecurityException, IOException {
 
         return songService.register(requestForm, request);
     }
