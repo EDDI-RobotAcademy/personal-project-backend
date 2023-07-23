@@ -24,6 +24,8 @@ public class BoardMap {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardMapId;
 
+    private String placeName;
+
     private String title;
 
     private String writer;
@@ -34,7 +36,8 @@ public class BoardMap {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    public BoardMap(String title, String writer, String content) {
+    public BoardMap(String placeName, String title, String writer, String content) {
+        this.placeName = placeName;
         this.title = title;
         this.writer = writer;
         this.content = content;
