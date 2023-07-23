@@ -1,5 +1,6 @@
 package com.example.demo.account.service;
 
+import com.example.demo.account.controller.response.LoginResponse;
 import com.example.demo.account.controller.response.MyPageResponse;
 import com.example.demo.account.repository.ProfileRepository;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
@@ -94,7 +95,7 @@ public class AccountServiceImpl implements AccountService {
 
     // 로그인
     @Override
-    public TokenResponse login(AccountLoginRequestForm form) {
+    public LoginResponse login(AccountLoginRequestForm form, Long accountId) {
         Optional<Account> maybeAccount = accountRepository.findByEmail(form.getEmail());
 
         if (maybeAccount.isPresent()) {
@@ -104,9 +105,11 @@ public class AccountServiceImpl implements AccountService {
 
                 String accessToken = tokenResponse.getAccessToken();
                 String refreshToken = tokenResponse.getRefreshToken();
+                accountId = account.getId();
                 form.setEmail(accessToken, refreshToken);
                 redisService.setKeyAndValue(refreshToken, account.getEmail());
-                return tokenResponse;
+                LoginResponse loginResponse = new LoginResponse(accountId, accessToken, refreshToken);
+                return loginResponse;
             }
         }
         return null;

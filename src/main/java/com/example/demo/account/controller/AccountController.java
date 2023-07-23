@@ -3,6 +3,7 @@ package com.example.demo.account.controller;
 import com.example.demo.account.controller.form.AccessRegisterRequestForm;
 import com.example.demo.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.account.controller.form.AccountRegisterRequestForm;
+import com.example.demo.account.controller.response.LoginResponse;
 import com.example.demo.account.controller.response.MyPageResponse;
 import com.example.demo.security.jwt.service.AccountResponse;
 import com.example.demo.account.service.AccountService;
@@ -42,8 +43,8 @@ public class AccountController {
     }
 
     @PostMapping("/log-in")
-    public TokenResponse login(@RequestBody AccountLoginRequestForm form) {
-        return accountService.login(form);
+    public LoginResponse login(@RequestBody AccountLoginRequestForm form, Long accountId) {
+        return accountService.login(form, accountId);
     }
 
     @PostMapping("/reissue")
