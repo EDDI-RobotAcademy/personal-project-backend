@@ -84,7 +84,7 @@ public class BoardServiceImpl implements BoardService {
             return null;
         }
         Board board = maybeBoard.get();
-        BoardReadResponse response = new BoardReadResponse(accountId, board.getBoardId(), board.getTitle(), board.getWriter(), board.getContent(), board.getCreatedData());
+        BoardReadResponse response = new BoardReadResponse(board.getAccount().getId() , accountId, board.getBoardId(), board.getTitle(), board.getWriter(), board.getContent(), board.getCreatedData());
         return response;
     }
 
