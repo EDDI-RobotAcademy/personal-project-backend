@@ -69,22 +69,13 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardReadResponse read(Long boardId, String accessToken) {
-        SecretKey key = jwtProvider.getKey();
-        Jws<Claims> claims = Jwts.parser().setSigningKey(key)
-                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
-
-        String email = claims.getBody().getSubject();
-        email = email.substring(email.indexOf("\"email\":\"") + 9, email.indexOf("\",\"types\""));
-        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
-        Long accountId = maybeAccount.get().getId();
-
+    public BoardReadResponse read(Long boardId) {
         Optional<Board> maybeBoard = boardRepository.findById(boardId);
         if (maybeBoard.isEmpty()) {
             return null;
         }
         Board board = maybeBoard.get();
-        BoardReadResponse response = new BoardReadResponse(board.getAccount().getId() , accountId, board.getBoardId(), board.getTitle(), board.getWriter(), board.getContent(), board.getCreatedData());
+        BoardReadResponse response = new BoardReadResponse(board.getAccount().getId(), board.getBoardId(), board.getTitle(), board.getWriter(), board.getContent(), board.getCreatedData());
         return response;
     }
 

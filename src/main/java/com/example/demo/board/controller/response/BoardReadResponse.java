@@ -15,8 +15,6 @@ public class BoardReadResponse {
 
     private Long accountId;
 
-    private Long accountId2;
-
     private Long boardId;
 
     private String title;

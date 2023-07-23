@@ -13,7 +13,7 @@ public interface BoardService {
 
     BoardResponse register(String accessToken, BoardRequestForm form);
 
-    BoardReadResponse read(Long boardId, String accessToken);
+    BoardReadResponse read(Long boardId);
 
     void delete(Long boardId, String accessToken);
 
