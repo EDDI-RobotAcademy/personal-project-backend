@@ -32,8 +32,8 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    public BoardReadResponse read(@PathVariable("boardId") Long boardId) {
-        return boardService.read(boardId);
+    public BoardReadResponse read(@PathVariable("boardId") Long boardId, @RequestHeader("Authorization") String accessToken) {
+        return boardService.read(boardId, accessToken);
     }
 
     @DeleteMapping("/{boardId}")
