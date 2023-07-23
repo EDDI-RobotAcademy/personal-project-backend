@@ -5,7 +5,6 @@ import com.example.demo.domain.playlist.controller.form.PlaylistReadResponseForm
 import com.example.demo.domain.playlist.controller.form.PlaylistRegisterRequestForm;
 import com.example.demo.domain.playlist.entity.Playlist;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
@@ -30,5 +29,9 @@ public interface PlaylistService {
 
     Boolean isPlaylistLiked(Long playlistId, HttpServletRequest request);
 
-    List<PlaylistReadResponseForm> pagingPlaylist(int page, HttpServletRequest request);
+    List<PlaylistReadResponseForm> slicePlaylist(int page);
+
+    List<PlaylistReadResponseForm> sortByLikersSlicePlaylist(int page);
+
+    long countAllPlaylist();
 }

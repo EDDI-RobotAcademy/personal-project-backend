@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -31,6 +30,7 @@ public class PlaylistServiceImpl implements PlaylistService{
     final private AccountRepository accountRepository;
 
     final private JwtTokenUtil jwtTokenUtil;
+    final int PAGE_SIZE = 6;
     @Override
     public Playlist register(PlaylistRegisterRequestForm requestForm, HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
@@ -53,8 +53,8 @@ public class PlaylistServiceImpl implements PlaylistService{
 
     @Override
     @Transactional
-    public List<PlaylistReadResponseForm> pagingPlaylist(int page, HttpServletRequest request) {
-        Slice<Playlist> playlists = playlistRepository.slicePlaylist(PageRequest.of(page-1,2));
+    public List<PlaylistReadResponseForm> slicePlaylist(int page) {
+        Slice<Playlist> playlists = playlistRepository.slicePlaylist(PageRequest.of(page-1,PAGE_SIZE));
 
         List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
         for(Playlist playlist : playlists){
@@ -65,6 +65,33 @@ public class PlaylistServiceImpl implements PlaylistService{
             System.out.println(playlist.getTitle());
         }
         return responseForms;
+    }
+
+    @Override
+    @Transactional
+    public List<PlaylistReadResponseForm> sortByLikersSlicePlaylist(int page) {;
+        Slice<Playlist> playlists = playlistRepository.sortByLikersSlicePlaylist(PageRequest.of(page-1,PAGE_SIZE));
+
+        List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
+        for(Playlist playlist : playlists){
+            PlaylistReadResponseForm responseForm = new PlaylistReadResponseForm(playlist, playlist.getSongList(), playlist.getLikers().size());
+            responseForms.add(responseForm);
+        }
+        for (Playlist playlist : playlists.getContent()) {
+            System.out.println(playlist.getTitle());
+        }
+        return responseForms;
+    }
+
+    @Override
+    public long countAllPlaylist() {
+        long count = playlistRepository.count();
+
+        if(count%PAGE_SIZE==0){
+            return (count/PAGE_SIZE);
+        }else{
+            return (count/PAGE_SIZE)+1;
+        }
     }
 
     @Override
@@ -129,13 +156,11 @@ public class PlaylistServiceImpl implements PlaylistService{
         //Account 클래스에서 removeFromLikedPlaylists 메소드 호출 - likedPlaylists 컬렉션에서 제거
         for (Account account : playlist.getLikers()) {
             account.removeFromLikedPlaylists(playlist);
-//            accountRepository.save(account);
         }
 
         //Playlist 클래스에서 removeFromLikers 메소드 호출 - likers 컬렉션에서 제거
         for (Account liker : new HashSet<>(playlist.getLikers())) {
             playlist.removeFromLikers(liker);
-//            playlistRepository.save(playlist);
         }
 
         playlistRepository.deleteById(playlistId);
@@ -199,4 +224,5 @@ public class PlaylistServiceImpl implements PlaylistService{
 
         return likedPlaylists.contains(playlist);
     }
+
 }

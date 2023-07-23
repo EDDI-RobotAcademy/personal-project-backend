@@ -1,9 +1,13 @@
 package com.example.demo.domain.playlist.entity;
+
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.song.entity.Song;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.*;
 

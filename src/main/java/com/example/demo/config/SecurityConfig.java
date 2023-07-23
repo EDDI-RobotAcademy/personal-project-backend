@@ -38,7 +38,8 @@ public class SecurityConfig {
                 .and()
                 .addFilterBefore(new JwtTokenFilter(accountService, secretKey, redisService, jwtTokenUtil), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .requestMatchers("/account/register", "/account/login", "/account/email-check", "/account/nickname-check", "/playlist/list").permitAll()
+                .requestMatchers("/account/register", "/account/login", "/account/email-check", "/account/nickname-check",
+                        "/playlist/count-all-playlist", "/playlist/slice-list/**", "/playlist/sort-slice-list/**").permitAll()
                 .anyRequest().hasAuthority(RoleType.NORMAL.name())
                 .and().build();
     }
