@@ -59,6 +59,7 @@ public class SecurityConfig {
                 .requestMatchers("/account/sign-up").permitAll()
                 .requestMatchers("/account/log-in").permitAll()
                 .requestMatchers("/board/**").permitAll()
+                .requestMatchers("/map/**").permitAll()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, accountDetailsService),
                         UsernamePasswordAuthenticationFilter.class);
