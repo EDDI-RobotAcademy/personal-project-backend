@@ -42,4 +42,11 @@ public class BoardMapController {
                                 @PathVariable("placeName") String placeName, @RequestHeader("Authorization") String accessToken) {
         boardMapService.delete(boardMapId, placeName, accessToken);
     }
+
+    @PutMapping("/{placeName}/{boardMapId}")
+    public BoardMapRegisterResponse boardMapModify(@PathVariable("boardMapId") Long boardMapId, @PathVariable("placeName") String placeName,
+                                                   @RequestHeader("Authorization") String accessToken, @RequestBody BoardMapRequestForm form) {
+        log.info("수정");
+        return boardMapService.modify(boardMapId, placeName, accessToken, form);
+    }
 }

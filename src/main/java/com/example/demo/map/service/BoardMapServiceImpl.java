@@ -15,7 +15,9 @@ import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.crypto.SecretKey;
 import java.util.List;
@@ -110,5 +112,34 @@ public class BoardMapServiceImpl implements BoardMapService{
         } else {
             throw new RuntimeException("삭제할 게시물을 찾을 수 없습니다.");
         }
+    }
+
+    @Override
+    public BoardMapRegisterResponse modify(Long boardMapId, String placeName, String accessToken, BoardMapRequestForm form) {
+        SecretKey key = jwtProvider.getKey();
+        Jws<Claims> claims = Jwts.parser().setSigningKey(key)
+                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
+
+        String email = claims.getBody().getSubject();
+        email = email.substring(email.indexOf("\"email\":\"") + 9, email.indexOf("\",\"types\""));
+        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+        Long accountId = maybeAccount.get().getId();
+
+        Optional<BoardMap> maybeBoardMap = boardMapRepository.findById(boardMapId);
+        if (maybeBoardMap.isPresent()) {
+            BoardMap boardMap = maybeBoardMap.get();
+
+            if (boardMap.getAccount() != null && boardMap.getAccount().getId().equals(accountId)) {
+                log.info("권한확인: " + boardMap.getAccount().getId().equals(accountId));
+
+                boardMap.setTitle(form.getTitle());
+                boardMap.setContent(form.getContent());
+                boardMapRepository.save(boardMap);
+
+                BoardMapRegisterResponse response = new BoardMapRegisterResponse(boardMap.getBoardMapId(), boardMap.getPlaceName(), boardMap.getTitle(), boardMap.getWriter(), boardMap.getContent());
+                return response;
+            }
+        }
+        throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
     }
 }
