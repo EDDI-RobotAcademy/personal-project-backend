@@ -19,4 +19,6 @@ public interface BoardService {
     void delete(Long id);
 
     Board modify(Long id, BoardModifyRequest request);
+
+    List<Board> myBoards(String userToken);
 }

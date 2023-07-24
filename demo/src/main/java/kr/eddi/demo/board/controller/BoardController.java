@@ -1,15 +1,18 @@
 package kr.eddi.demo.board.controller;
 
+import kr.eddi.demo.account.controller.form.UsertokenRequestForm;
 import kr.eddi.demo.board.controller.form.BoardModifyRequest;
 import kr.eddi.demo.board.controller.form.BoardRegisterRequestForm;
 import kr.eddi.demo.board.entity.Board;
 import kr.eddi.demo.board.service.BoardService;
 import kr.eddi.demo.board.service.reqeust.BoardRegisterRequest;
+import kr.eddi.demo.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping("/board")
@@ -20,11 +23,12 @@ public class BoardController {
 
     @Autowired
     final private BoardService boardService;
-
+    @Autowired
+    final private RedisService redisService;
     @PostMapping("/register")
     public Board boardRegister(@RequestBody BoardRegisterRequestForm form){
       Board registerBoard= boardService.boardRegister(form);
-      log.info(registerBoard.getBoardTitle());
+      log.info(registerBoard.getImgPath());
 
     return registerBoard;
     }
@@ -50,5 +54,9 @@ public class BoardController {
 
         log.info(request.toString());
         return boardService.modify(id, request);
+    }
+    @PostMapping("/myList") List<Board> myBoardList (@RequestBody UsertokenRequestForm usertokenRequestForm){
+        log.info("이제 찾을거야"+usertokenRequestForm.getUserToken());
+        return boardService.myBoards(usertokenRequestForm.getUserToken());
     }
 }
