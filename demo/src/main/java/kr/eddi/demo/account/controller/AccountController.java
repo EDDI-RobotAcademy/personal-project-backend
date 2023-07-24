@@ -2,6 +2,7 @@ package kr.eddi.demo.account.controller;
 
 import kr.eddi.demo.account.controller.form.AccountLoginRequestForm;
 import kr.eddi.demo.account.controller.form.AccountRegisterForm;
+import kr.eddi.demo.account.controller.form.PasswordCheckForm;
 import kr.eddi.demo.account.service.AccountService;
 import kr.eddi.demo.redis.RedisService;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,9 @@ public class AccountController {
         responseList.add(userToken);
         responseList.add(nickname);
         return responseList;
+    }
+    @PostMapping("/passwordCheck")
+    public Boolean passwordCheck (@RequestBody PasswordCheckForm form){
+        return accountService.checkPassword(form);
     }
 }
