@@ -4,6 +4,7 @@ import com.example.demo.account.entity.Account;
 import com.example.demo.account.repository.AccountRepository;
 import com.example.demo.map.controller.form.BoardMapRequestForm;
 import com.example.demo.map.controller.response.BoardMapListResponse;
+import com.example.demo.map.controller.response.BoardMapReadResponse;
 import com.example.demo.map.controller.response.BoardMapRegisterResponse;
 import com.example.demo.map.entity.BoardMap;
 import com.example.demo.map.repository.BoardMapRepository;
@@ -43,7 +44,6 @@ public class BoardMapServiceImpl implements BoardMapService{
 
     @Override
     public BoardMapRegisterResponse register(String accessToken, BoardMapRequestForm form, String placeName) {
-        log.info("여기는 오겠지:" + placeName);
         SecretKey key = jwtProvider.getKey();
         Jws<Claims> claims = Jwts.parser().setSigningKey(key)
                 .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
@@ -57,14 +57,32 @@ public class BoardMapServiceImpl implements BoardMapService{
             form.setWriter(account.getName());
             BoardMap boardMap = new BoardMap(placeName, form.getTitle(), form.getWriter(), form.getContent());
             boardMap.setAccount(account);
-            log.info("병원저장:" + boardMap.toString());
             boardMapRepository.save(boardMap);
 
             BoardMapRegisterResponse response = new BoardMapRegisterResponse(
                     boardMap.getBoardMapId(), placeName, boardMap.getTitle(), boardMap.getWriter(), boardMap.getContent());
-            log.info("확인:" + boardMap.getPlaceName());
             return response;
         }
         return null;
+    }
+
+    @Override
+    public BoardMapReadResponse read(String placeName, Long boardMapId, String accessToken) {
+        SecretKey key = jwtProvider.getKey();
+        Jws<Claims> claims = Jwts.parser().setSigningKey(key)
+                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
+
+        String email = claims.getBody().getSubject();
+        email = email.substring(email.indexOf("\"email\":\"") + 9, email.indexOf("\",\"types\""));
+        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+        maybeAccount.get();
+        Optional<BoardMap> maybeBoardMap = boardMapRepository.findById(boardMapId);
+        if (maybeBoardMap.isEmpty()) {
+            return null;
+        }
+        BoardMap boardMap = maybeBoardMap.get();
+        BoardMapReadResponse response = new BoardMapReadResponse(
+                boardMap.getAccount().getId(), boardMap.getBoardMapId(), boardMap.getPlaceName(), boardMap.getTitle(), boardMap.getWriter(), boardMap.getContent(), boardMap.getCreatedData());
+        return response;
     }
 }
