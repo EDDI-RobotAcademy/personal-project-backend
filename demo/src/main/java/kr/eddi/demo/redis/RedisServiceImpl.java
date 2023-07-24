@@ -20,7 +20,7 @@ public class RedisServiceImpl implements RedisService {
     public void setKeyAndValue(String token, Long accountId) {
         String accountIdToString = String.valueOf(accountId);
         ValueOperations<String, String> value = redisTemplate.opsForValue();
-        value.set(token, accountIdToString, Duration.ofMinutes(3));
+        value.set(token, accountIdToString, Duration.ofMinutes(20));
     }
 
     @Override

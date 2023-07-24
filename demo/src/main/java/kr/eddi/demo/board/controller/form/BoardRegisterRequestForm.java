@@ -11,9 +11,12 @@ public class BoardRegisterRequestForm {
     final private String boardInfo;
     final private String coordLat;
     final private String coordLng;
+
     final private String writer;
+    final private String imgPath;
+    final private String boardTransport;
 
     public BoardRegisterRequest toBoardRequest() {
-        return new BoardRegisterRequest(boardTitle, boardInfo, coordLat, coordLng, writer);
+        return new BoardRegisterRequest(boardTitle, boardInfo, coordLat, coordLng, writer,imgPath,boardTransport);
     }
 }

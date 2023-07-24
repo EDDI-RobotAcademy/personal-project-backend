@@ -61,6 +61,8 @@ public class BoardServiceImpl implements BoardService{
         Board board = maybeBoard.get();
         board.setBoardTitle(request.getBoardTitle());
         board.setBoardInfo(request.getBoardInfo());
+        board.setBoardTransport(request.getBoardTransport());
+        log.info(request.getBoardTransport()+"왜 아난옴");
         return boardRepository.save(board);
     }
 

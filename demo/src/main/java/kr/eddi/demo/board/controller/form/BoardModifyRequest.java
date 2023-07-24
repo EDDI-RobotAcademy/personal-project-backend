@@ -8,4 +8,5 @@ import lombok.RequiredArgsConstructor;
 public class BoardModifyRequest {
     final private String boardTitle;
     final private String boardInfo;
+    final private String boardTransport;
 }

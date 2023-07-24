@@ -21,17 +21,22 @@ public class Board {
     private String boardTitle;
     private String boardInfo;
 
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "marker_id")
     private Marker marker;
 
     private String writer;
+    private String imgPath;
+    private String boardTransport;
 
-    public Board(String boardTitle, String boardInfo, String coordLat, String coordLng, String writer) {
+    public Board(String boardTitle, String boardInfo, String coordLat, String coordLng, String writer,String imgPath, String boardTransport) {
         this.boardTitle = boardTitle;
         this.boardInfo = boardInfo;
         this.marker = new Marker(coordLat, coordLng);
         this.writer = writer;
+        this.imgPath=imgPath;
+        this.boardTransport=boardTransport;
     }
 
     // Getter와 Setter (생략 가능)
