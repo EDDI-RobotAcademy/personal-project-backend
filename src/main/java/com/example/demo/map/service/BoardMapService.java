@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface BoardMapService {
 
-    List<BoardMapListResponse> list();
+    List<BoardMapListResponse> list(String placeName);
 
-    BoardMapRegisterResponse register(String accessToken, BoardMapRequestForm form);
+    BoardMapRegisterResponse register(String accessToken, BoardMapRequestForm form, String placeName);
+
 }

@@ -14,6 +14,8 @@ public class BoardMapListResponse {
 
     private Long boardMapId;
 
+    private String placeName;
+
     private String title;
 
     private String writer;
@@ -21,6 +23,7 @@ public class BoardMapListResponse {
     private LocalDateTime createdData;
 
     public void setBoardMap(BoardMap boardMap) {
+        this.placeName = placeName;
         this.title = title;
         this.writer = writer;
         this.createdData = createdData;

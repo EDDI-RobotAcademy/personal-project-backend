@@ -32,16 +32,17 @@ public class BoardMapServiceImpl implements BoardMapService{
 
 
     @Override
-    public List<BoardMapListResponse> list() {
+    public List<BoardMapListResponse> list(String placeName) {
         List<BoardMap> boardMaps = boardMapRepository.findAll(Sort.by(Sort.Direction.DESC, "boardMapId"));
 
         return boardMaps.stream()
-                .map(boardMap -> new BoardMapListResponse(boardMap.getBoardMapId(), boardMap.getTitle(), boardMap.getWriter(), boardMap.getCreatedData()))
+                .map(boardMap -> new BoardMapListResponse(boardMap.getBoardMapId(), boardMap.getPlaceName(), boardMap.getTitle(), boardMap.getWriter(), boardMap.getCreatedData()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public BoardMapRegisterResponse register(String accessToken, BoardMapRequestForm form) {
+    public BoardMapRegisterResponse register(String accessToken, BoardMapRequestForm form, String placeName) {
+        log.info("여기는 오겠지:" + placeName);
         SecretKey key = jwtProvider.getKey();
         Jws<Claims> claims = Jwts.parser().setSigningKey(key)
                 .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
@@ -53,12 +54,14 @@ public class BoardMapServiceImpl implements BoardMapService{
         if (maybeAccount.isPresent()) {
             Account account = maybeAccount.get();
             form.setWriter(account.getName());
-            BoardMap boardMap = new BoardMap(form.getPlaceName(), form.getTitle(), form.getWriter(), form.getContent());
+            BoardMap boardMap = new BoardMap(placeName, form.getTitle(), form.getWriter(), form.getContent());
             boardMap.setAccount(account);
+            log.info("병원저장:" + boardMap.toString());
             boardMapRepository.save(boardMap);
 
             BoardMapRegisterResponse response = new BoardMapRegisterResponse(
-                    boardMap.getBoardMapId(), boardMap.getTitle(), boardMap.getWriter(), boardMap.getContent());
+                    boardMap.getBoardMapId(), placeName, boardMap.getTitle(), boardMap.getWriter(), boardMap.getContent());
+            log.info("확인:" + boardMap.getPlaceName());
             return response;
         }
         return null;

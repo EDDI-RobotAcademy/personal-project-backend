@@ -19,13 +19,18 @@ public class BoardMapController {
 
     final private BoardMapService boardMapService;
 
-    @GetMapping("/boardMapList")
-    public List<BoardMapListResponse> boardMapList () {
-        return boardMapService.list();
+    @GetMapping("/boardMapList/{placeName}")
+    public List<BoardMapListResponse> boardMapList (@PathVariable("placeName") String placeName) {
+        log.info("실행");
+        return boardMapService.list(placeName);
     }
 
-    @PostMapping("/boardMapRegister")
-    public BoardMapRegisterResponse boardMapRegister(@RequestBody BoardMapRequestForm form, @RequestHeader("Authorization") String accessToken) {
-        return boardMapService.register(accessToken, form);
+    @PostMapping("/boardMapRegister/{placeName}")
+    public BoardMapRegisterResponse boardMapRegister(@RequestBody BoardMapRequestForm form, @RequestHeader("Authorization") String accessToken,
+                                                     @PathVariable("placeName") String placeName) {
+        log.info("등록");
+        log.info("form:" + form);
+        log.info("placeName:" + placeName);
+        return boardMapService.register(accessToken, form, placeName);
     }
 }

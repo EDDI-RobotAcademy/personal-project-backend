@@ -13,6 +13,8 @@ public class BoardMapRegisterResponse {
 
     private Long boardMapId;
 
+    private String placeName;
+
     private String title;
 
     private String writer;
