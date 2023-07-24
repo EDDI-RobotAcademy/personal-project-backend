@@ -34,14 +34,18 @@ jobs:
         
       - name: Create redis.properties for CD Deploy
         run: |
+          mkdir src/main/resources
+          pwd
           echo "${{ secrets.REDIS_PROPERTIES }}" > redis.properties
           
       - name: Create jwt.properties for CD Deploy
         run: |
+          pwd
           echo "${{ secrets.JWT_PROPERTIES }}" > jwt.properties
       
       - name: Create youtube.properties for CD Deploy
         run: |
+          pwd
           echo "${{ secrets.YOUTUBE_PROPERTIES }}" > youtube.properties
 
       ## chmod gradlew
