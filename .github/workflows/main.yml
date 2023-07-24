@@ -32,6 +32,18 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-
+          
+      - name: Create application.properties for CD Deploy
+        run: |
+          cd src/main/resources
+          pwd
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > application.properties
+          
+      - name: Create mysql.properties for CD Deploy
+        run: |
+          cd src/main/resources
+          pwd
+          echo "${{ secrets.MYSQL_PROPERTIES }}" > mysql.properties
         
       - name: Create redis.properties for CD Deploy
         run: |
