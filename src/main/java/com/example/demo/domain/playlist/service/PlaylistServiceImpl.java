@@ -172,6 +172,7 @@ public class PlaylistServiceImpl implements PlaylistService{
     }
 
     @Override
+    @Transactional
     public int likePlaylist(Long playlistId, HttpServletRequest request) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
@@ -193,6 +194,7 @@ public class PlaylistServiceImpl implements PlaylistService{
     }
 
     @Override
+    @Transactional
     public int unlikePlaylist(Long playlistId, HttpServletRequest request) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
@@ -215,6 +217,7 @@ public class PlaylistServiceImpl implements PlaylistService{
     }
 
     @Override
+    @Transactional
     public Boolean isPlaylistLiked(Long playlistId, HttpServletRequest request) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
@@ -228,5 +231,4 @@ public class PlaylistServiceImpl implements PlaylistService{
 
         return likedPlaylists.contains(playlist);
     }
-
 }

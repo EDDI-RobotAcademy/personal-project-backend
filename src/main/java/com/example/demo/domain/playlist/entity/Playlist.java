@@ -23,7 +23,7 @@ public class Playlist {
     @Setter
     private String title;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JsonIgnore
     @JoinColumn(name = "account_id")
     private Account account;
@@ -32,7 +32,7 @@ public class Playlist {
     @JsonIgnore
     private List<Song> songList = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "likedPlaylists", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "likedPlaylists", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Account> likers = new HashSet<>();
 

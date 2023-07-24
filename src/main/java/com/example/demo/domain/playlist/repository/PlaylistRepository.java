@@ -21,10 +21,10 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
     int countPlaylistByAccountId(Long accountId);
 
-    @Query("SELECT p FROM Playlist p JOIN FETCH p.account JOIN FETCH p.songList LEFT JOIN FETCH p.likers ORDER BY p.id DESC")
+    @Query("SELECT p FROM Playlist p JOIN FETCH p.songList LEFT JOIN FETCH p.likers ORDER BY p.id DESC")
     Slice<Playlist> slicePlaylist(Pageable pageable);
 
-    @Query("SELECT p FROM Playlist p JOIN FETCH p.account JOIN FETCH p.songList LEFT JOIN FETCH p.likers ORDER BY SIZE(p.likers) DESC")
+    @Query("SELECT p FROM Playlist p JOIN FETCH p.songList LEFT JOIN FETCH p.likers ORDER BY SIZE(p.likers) DESC")
     Slice<Playlist> sortByLikersSlicePlaylist(Pageable pageable);
 
     @Query("SELECT p.id FROM Playlist p where p.account = :account")
