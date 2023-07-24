@@ -13,8 +13,10 @@ import com.example.demo.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 @Slf4j
 @Service
@@ -71,5 +73,20 @@ public class CommentServiceImpl implements CommentService{
                 .member(finedComment.getMember())
                 .build();
         return comment;
+    }
+
+    @Override
+    @Transactional
+    public Boolean delete(Long commentId, HttpHeaders headers) {
+        Optional<Comment> maybeComment = commentRepository.findById(commentId);
+        if (maybeComment.isEmpty()) {
+            return false;
+        }
+        Comment finedComment = maybeComment.get();
+        if (finedComment.getMember().getUserToken().equals(Objects.requireNonNull(headers.get("authorization")).get(0))) {
+            commentRepository.deleteById(commentId);
+            return true;
+        }
+        return false;
     }
 }

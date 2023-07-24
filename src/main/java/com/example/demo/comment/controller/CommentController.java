@@ -10,6 +10,7 @@ import com.example.demo.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
@@ -30,6 +31,9 @@ public class CommentController {
         log.info("modifyComment()");
         return commentService.modify(requestCommentForm, commentId);
     }
-
-
+    @DeleteMapping("/{commentId}")
+    public Boolean deleteBoard (@PathVariable("commentId") Long commentId, @RequestHeader HttpHeaders headers) {
+        log.info("deleteBoard() ");
+        return commentService.delete(commentId, headers);
+    }
 }
