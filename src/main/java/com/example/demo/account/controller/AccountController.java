@@ -99,7 +99,7 @@ public class AccountController {
     public Account accountInfo(@PathVariable String accountId){
         log.info("accountInfo() ");
         Account accountInfo = accountService.accountInfoList(accountId);
-
+log.info(String.valueOf(accountInfo));
         return accountInfo;
     }
 

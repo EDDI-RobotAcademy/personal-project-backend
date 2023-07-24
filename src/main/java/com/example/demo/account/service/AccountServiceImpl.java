@@ -141,7 +141,7 @@ public class AccountServiceImpl implements AccountService{
     @Override
     public Account accountInfoList(String accountId) {
 
-        Optional<Account> maybeAccount = accountRepository.findByAccountId(accountId);
+        Optional<Account> maybeAccount = accountRepository.findByAccountId(Long.valueOf(accountId));
         if (maybeAccount.isEmpty()){
             log.info("에러 발생");
             return null;
