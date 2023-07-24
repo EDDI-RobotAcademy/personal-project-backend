@@ -34,7 +34,7 @@ jobs:
         
       - name: Create redis.properties for CD Deploy
         run: |
-          mkdir src/main/resources
+          cd src/main/resources
           pwd
           echo "${{ secrets.REDIS_PROPERTIES }}" > redis.properties
           
