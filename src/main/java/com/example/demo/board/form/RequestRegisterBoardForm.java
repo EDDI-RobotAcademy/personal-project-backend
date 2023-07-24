@@ -19,7 +19,7 @@ public class RequestRegisterBoardForm {
         private String userToken;
 
         public MemberBoard toMemberBoard(Member member) {
-            return new MemberBoard(title, nickname, content, awsFileList, member);
+            return new MemberBoard(title, nickname, content, member);
         }
 
 }

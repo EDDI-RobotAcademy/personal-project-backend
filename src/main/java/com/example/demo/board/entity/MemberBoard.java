@@ -17,7 +17,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@ToString
 @NoArgsConstructor
 public class MemberBoard {
 
@@ -38,7 +37,7 @@ public class MemberBoard {
     @UpdateTimestamp
     private LocalDateTime updateDate;
 
-    @OneToMany(mappedBy = "memberBoard", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "memberBoard", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     @JsonIgnore
     private List<FilePaths> filePathList;
 
@@ -54,11 +53,10 @@ public class MemberBoard {
         this.filePathList = filePathList;
     }
 
-    public MemberBoard(String title, String nickname, String content, List<FilePaths> filePathList, Member member) {
+    public MemberBoard(String title, String nickname, String content, Member member) {
         this.title = title;
         this.nickname = nickname;
         this.content = content;
-        this.filePathList = filePathList;
         this.member = member;
     }
 }

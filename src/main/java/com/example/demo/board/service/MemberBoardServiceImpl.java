@@ -35,7 +35,6 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     final private CommentRepository commentRepository;
 
     @Override
-    @Transactional
     public List<MemberBoard> list() {
         return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
     }
@@ -106,23 +105,29 @@ public class MemberBoardServiceImpl implements MemberBoardService {
         }
         MemberBoard memberBoard = maybeMemberBoard.get();
 
-        if (memberBoard.getMember().getUserToken().equals(requestForm.getUserToken())) {
+        if (!memberBoard.getMember().getUserToken().equals(requestForm.getUserToken())) {
+            log.info("토큰이 일치하지 않습니다.");
+            return null;
+        }
             memberBoard.setContent(requestForm.getContent());
             memberBoard.setTitle(requestForm.getTitle());
-            log.info("여기냐?");
-            filePathsRepository.deleteAll(memberBoard.getFilePathList());
-            log.info("??");
+            log.info("지울리스트" + memberBoard.getFilePathList().toString());
+            memberBoard.getFilePathList().clear();
+            log.info(memberBoard.getFilePathList().toString());
+//            filePathsRepository.deleteAll(memberBoard.getFilePathList());
+            boardRepository.save(memberBoard);
+
             List<FilePaths> filePathList = requestForm.getAwsFileList();
+        if (filePathList != null) {
             for (FilePaths filePaths : filePathList) {
                 String imagePath = filePaths.getImagePath();
                 FilePaths imageFilePath = new FilePaths(imagePath, memberBoard);
                 filePathsRepository.save(imageFilePath);
             }
+        }
             return boardRepository.save(memberBoard);
         }
-        log.info("토큰달라오");
-        return null;
-    }
+
 
     @Override
     @Transactional
