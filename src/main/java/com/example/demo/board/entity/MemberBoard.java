@@ -44,7 +44,7 @@ public class MemberBoard {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Member member;
 
-    @OneToMany(mappedBy = "memberBoard", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "memberBoard", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> commentList;
     public MemberBoard(String title, String nickname, String content, List<FilePaths> filePathList) {
         this.title = title;

@@ -3,6 +3,7 @@ package com.example.demo.board.service;
 
 import com.example.demo.board.entity.FilePaths;
 import com.example.demo.board.entity.MemberBoard;
+import com.example.demo.board.form.BoardResForm;
 import com.example.demo.board.form.RequestModifyBoardForm;
 import com.example.demo.board.form.RequestRegisterBoardForm;
 import com.example.demo.board.form.ResponseBoardForm;
@@ -10,7 +11,6 @@ import com.example.demo.board.reposiitory.FilePathsRepository;
 import com.example.demo.board.reposiitory.MemberBoardRepository;
 import com.example.demo.member.entity.Member;
 import com.example.demo.member.repository.MemberRepository;
-import com.example.demo.comment.entity.Comment;
 import com.example.demo.comment.repository.CommentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +35,17 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     final private CommentRepository commentRepository;
 
     @Override
-    public List<MemberBoard> list() {
-        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
+    public List<BoardResForm> list() {
+//        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
+        List<MemberBoard> memberBoardList = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
+        List<BoardResForm> boardResFormList = memberBoardList.stream().map((mb)-> BoardResForm
+                .builder()
+                .boardId(mb.getBoardId())
+                .title(mb.getTitle())
+                .createDate(mb.getCreateDate())
+                .member(mb.getMember())
+                .build()).toList();
+        return boardResFormList;
     }
 
     @Override
@@ -66,21 +75,29 @@ public class MemberBoardServiceImpl implements MemberBoardService {
 
     @Override
     @Transactional
-    public ResponseBoardForm read(Long boardId) {
+    public BoardResForm read(Long boardId) {
         Optional<MemberBoard> maybeBoard = boardRepository.findByIdWithMember(boardId);
         if (maybeBoard.isEmpty()) {
             return null;
         }
-        List<Long> idList = maybeBoard.get().getFilePathList().stream().map(FilePaths::getFileId).toList();
-        // lazy 걸려있어서 proxy patten안에 있어서 못가져옴 Transactional 하면 해결, 그치만 조회해야 거기서 쿼리가 한번 나간다.
-        // joinFetch로 사용 가능
-        List<FilePaths> savedFilePath = maybeBoard.get().getFilePathList();
+        MemberBoard savedBoard = maybeBoard.get();
+//        List<Long> idList = maybeBoard.get().getFilePathList().stream().map(FilePaths::getFileId).toList();
+//        // lazy 걸려있어서 proxy patten안에 있어서 못가져옴 Transactional 하면 해결, 그치만 조회해야 거기서 쿼리가 한번 나간다.
+//        // joinFetch로 사용 가능
+        List<FilePaths> savedFilePath = savedBoard.getFilePathList();
+//        final ResponseBoardForm responseBoardForm = new ResponseBoardForm(maybeBoard.get(), savedFilePath);
 
-//        List<Comment> commentList = commentRepository.findByMemberBoard(maybeBoard.get());
-//        .stream().toList();
-        final ResponseBoardForm responseBoardForm = new ResponseBoardForm(maybeBoard.get(), savedFilePath);
+        BoardResForm board = BoardResForm
+                .builder()
+                .boardId(savedBoard.getBoardId())
+                .title(savedBoard.getTitle())
+                .createDate(savedBoard.getCreateDate())
+                .member(savedBoard.getMember())
+                .filePathList(savedBoard.getFilePathList())
+                .build();
 
-        return responseBoardForm;
+
+        return board;
     }
 
     @Override

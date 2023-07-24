@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface MemberBoardRepository extends JpaRepository<MemberBoard, Long> {
     @Query("SELECT b FROM MemberBoard b JOIN FETCH b.member")
     List<MemberBoard> findAll(Sort sort);
-    @Query("SELECT b FROM MemberBoard b JOIN FETCH b.member WHERE b.boardId = :boardId")
+    @Query("SELECT b FROM MemberBoard b JOIN FETCH b.member left join fetch filePathList WHERE b.boardId = :boardId")
     Optional<MemberBoard> findByIdWithMember(Long boardId);
     @Query("SELECT b FROM MemberBoard b JOIN FETCH b.member WHERE LOWER(b.content) LIKE %:keyword%")
     List<MemberBoard> findByContentContaining(String keyword);

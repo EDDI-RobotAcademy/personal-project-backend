@@ -22,11 +22,10 @@ public class MemberBoardController {
     final private MemberBoardService boardService;
 
     @GetMapping("/list")
-    public List<MemberBoard> boardList() {
+    public List<BoardResForm> boardList() {
         log.info("boardList()");
 
-        List<MemberBoard> returnedBoardList = boardService.list();
-        return returnedBoardList;
+        return  boardService.list();
     }
 
     @PostMapping("/register")
@@ -36,7 +35,7 @@ public class MemberBoardController {
         return boardService.register(requestBoardForm);
     }
     @GetMapping("/{boardId}")
-    public ResponseBoardForm readBoard(@PathVariable("boardId") Long boardId) {
+    public BoardResForm readBoard(@PathVariable("boardId") Long boardId) {
 
         log.info("boardRead()");
 
