@@ -91,6 +91,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .builder()
                 .boardId(savedBoard.getBoardId())
                 .title(savedBoard.getTitle())
+                .content(savedBoard.getContent())
                 .createDate(savedBoard.getCreateDate())
                 .member(savedBoard.getMember())
                 .filePathList(savedBoard.getFilePathList())
@@ -109,7 +110,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
 
     @Override
     @Transactional
-    public MemberBoard modify(RequestModifyBoardForm requestForm, Long boardId) {
+    public BoardResForm modify(RequestModifyBoardForm requestForm, Long boardId) {
         Optional<Member> isMember = memberRepository.findByUserToken(requestForm.getUserToken());
         if (isMember.isEmpty()) {
             log.info("회원이 아닙니다.");
@@ -142,7 +143,16 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 filePathsRepository.save(imageFilePath);
             }
         }
-            return boardRepository.save(memberBoard);
+        BoardResForm board = BoardResForm
+                .builder()
+                .boardId(memberBoard.getBoardId())
+                .title(memberBoard.getTitle())
+                .content(memberBoard.getContent())
+                .createDate(memberBoard.getCreateDate())
+                .member(memberBoard.getMember())
+                .filePathList(memberBoard.getFilePathList())
+                .build();
+            return board;
         }
 
 

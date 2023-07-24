@@ -48,7 +48,7 @@ public class MemberBoardController {
         return findKeywordBoardList;
     }
     @PutMapping("/{boardId}")
-    public MemberBoard modifyBoard (@PathVariable("boardId") Long boardId,
+    public BoardResForm modifyBoard (@PathVariable("boardId") Long boardId,
                                  @RequestBody RequestModifyBoardForm requestBoardForm) {
         log.info("modifyBoard(): " + requestBoardForm + ", id: " + boardId);
 

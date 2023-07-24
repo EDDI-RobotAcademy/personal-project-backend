@@ -17,7 +17,7 @@ public interface MemberBoardService {
 
     BoardResForm read(Long boardId);
 
-    MemberBoard modify(RequestModifyBoardForm requestForm, Long boardId);
+    BoardResForm modify(RequestModifyBoardForm requestForm, Long boardId);
 
     boolean delete(Long boardId, HttpHeaders headers);
 }
