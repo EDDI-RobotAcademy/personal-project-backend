@@ -3,12 +3,10 @@ package com.example.demo.board.service;
 
 import com.example.demo.board.entity.FilePaths;
 import com.example.demo.board.entity.MemberBoard;
-import com.example.demo.board.form.BoardResForm;
-import com.example.demo.board.form.RequestModifyBoardForm;
-import com.example.demo.board.form.RequestRegisterBoardForm;
-import com.example.demo.board.form.ResponseBoardForm;
+import com.example.demo.board.form.*;
 import com.example.demo.board.reposiitory.FilePathsRepository;
 import com.example.demo.board.reposiitory.MemberBoardRepository;
+import com.example.demo.comment.entity.Comment;
 import com.example.demo.member.entity.Member;
 import com.example.demo.member.repository.MemberRepository;
 import com.example.demo.comment.repository.CommentRepository;
@@ -100,6 +98,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
         MemberBoard savedBoard = maybeBoard.get();
 //        List<Long> idList = maybeBoard.get().getFilePathList().stream().map(FilePaths::getFileId).toList();
 //        // lazy 걸려있어서 proxy patten안에 있어서 못가져옴 Transactional 하면 해결, 그치만 조회해야 거기서 쿼리가 한번 나간다.
+          // 스프링에서 멤버보드 가져왔어 콘텐트는 두고왔어 게을러서 직접 불러야 가져올 수 있어 부른다 = select한다.
 //        // joinFetch로 사용 가능
         List<FilePaths> savedFilePath = savedBoard.getFilePathList();
 //        final ResponseBoardForm responseBoardForm = new ResponseBoardForm(maybeBoard.get(), savedFilePath);
@@ -112,9 +111,13 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .createDate(savedBoard.getCreateDate())
                 .member(savedBoard.getMember())
                 .filePathList(savedBoard.getFilePathList())
+                .commentList(savedBoard.getCommentList().stream().map((c)-> CommentResForm.builder()
+                        .commentId(c.getCommentId())
+                        .createdDate(c.getCreatedDate())
+                        .text(c.getText())
+                        .member(c.getMember())
+                        .build()).toList())
                 .build();
-
-
         return board;
     }
 

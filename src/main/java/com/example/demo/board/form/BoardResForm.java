@@ -27,7 +27,7 @@ public class BoardResForm {
     private LocalDateTime updateDate;
     private Long count;
     @Builder
-    public BoardResForm(Long boardId, String title, String nickname, String content, LocalDateTime createDate, LocalDateTime updateDate, List<FilePaths> filePathList, Member member, List<Comment> commentList) {
+    public BoardResForm(Long boardId, String title, String nickname, String content, LocalDateTime createDate, LocalDateTime updateDate, List<FilePaths> filePathList, Member member, List<CommentResForm> commentList) {
         this.boardId = boardId;
         this.title = title;
         this.nickname = nickname;
@@ -43,6 +43,6 @@ public class BoardResForm {
 
     private Member member;
 
-    private List<Comment> commentList;
+    private List<CommentResForm> commentList;
 
 }
