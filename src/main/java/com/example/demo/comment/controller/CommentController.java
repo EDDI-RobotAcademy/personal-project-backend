@@ -2,6 +2,7 @@ package com.example.demo.comment.controller;
 
 import com.example.demo.board.entity.MemberBoard;
 import com.example.demo.board.form.BoardResForm;
+import com.example.demo.board.form.CommentResForm;
 import com.example.demo.board.form.RequestRegisterBoardForm;
 import com.example.demo.comment.form.RequestRegisterCommentForm;
 import com.example.demo.comment.repository.CommentRepository;
@@ -22,6 +23,12 @@ public class CommentController {
     public BoardResForm registerBoard(@RequestBody RequestRegisterCommentForm requestCommentForm, @PathVariable Long boardId) {
         log.info("registerComment()");
         return commentService.register(requestCommentForm, boardId);
+    }
+
+    @PostMapping("/{commentId}/modify")
+    public CommentResForm modifyBoard(@RequestBody RequestRegisterCommentForm requestCommentForm, @PathVariable Long commentId) {
+        log.info("modifyComment()");
+        return commentService.modify(requestCommentForm, commentId);
     }
 
 

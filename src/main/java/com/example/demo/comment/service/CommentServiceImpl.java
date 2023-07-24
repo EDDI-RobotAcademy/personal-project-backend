@@ -2,6 +2,7 @@ package com.example.demo.comment.service;
 
 import com.example.demo.board.entity.MemberBoard;
 import com.example.demo.board.form.BoardResForm;
+import com.example.demo.board.form.CommentResForm;
 import com.example.demo.board.reposiitory.MemberBoardRepository;
 import com.example.demo.board.service.MemberBoardService;
 import com.example.demo.comment.entity.Comment;
@@ -44,5 +45,31 @@ public class CommentServiceImpl implements CommentService{
         commentRepository.save(newComment);
 
         return memberBoardService.read(boardId);
+    }
+
+    @Override
+    @Transactional
+    public CommentResForm modify(RequestRegisterCommentForm requestCommentForm, Long commentId) {
+        Optional<Member> maybeMember = memberRepository.findByUserToken(requestCommentForm.getUserToken());
+        if (maybeMember.isEmpty()) {
+            log.info("회원이 아닙니다.");
+            return null;
+        }
+        Member savedMember= maybeMember.get();
+        Optional<Comment> maybeComment = commentRepository.findById(commentId);
+        if (maybeComment.isEmpty()) {
+            log.info("정보가 없습니다!");
+            return null;
+        }
+        Comment finedComment = maybeComment.get();
+        finedComment.setText(requestCommentForm.getText());
+        CommentResForm comment = CommentResForm
+                .builder()
+                .text(finedComment.getText())
+                .createdDate(finedComment.getCreatedDate())
+                .modifiedDate(finedComment.getModifiedDate())
+                .member(finedComment.getMember())
+                .build();
+        return comment;
     }
 }
