@@ -86,19 +86,19 @@ public class AccountController {
     }
 
     // 마이페이지 들어갈 때
-    @GetMapping("/gomypage")
-    public boolean goMypage(@RequestBody AccountGoMypageForm accountGoMypageForm){
+    @PostMapping("/gomypage")
+    public String goMypage(@RequestBody AccountGoMypageForm accountGoMypageForm){
         log.info("accountGoMypageForm()");
-        Boolean goMypage_result = accountService.goMypage(accountGoMypageForm);
+        String goMypage_account = accountService.goMypage(accountGoMypageForm);
 
-        return goMypage_result;
+        return goMypage_account;
     }
 
     // 내 정보 확인
-    @GetMapping("/accountInfo")
-    public Account accountInfo(AccountUserTokenRequestForm accountUserTokenRequestForm){
+    @GetMapping("/{accountId}")
+    public Account accountInfo(@PathVariable String accountId){
         log.info("accountInfo() ");
-        Account accountInfo = accountService.accountInfoList(accountUserTokenRequestForm);
+        Account accountInfo = accountService.accountInfoList(accountId);
 
         return accountInfo;
     }

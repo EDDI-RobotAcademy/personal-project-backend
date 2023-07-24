@@ -22,9 +22,9 @@ public interface AccountService {
 
     AccountPasswordResponseForm passwordFind(AccountPasswordFindRequestForm requestForm);
 
-    Boolean goMypage(AccountGoMypageForm accountGoMypageForm);
+    String goMypage(AccountGoMypageForm accountId);
 
-    Account accountInfoList(AccountUserTokenRequestForm accountUserTokenRequestForm);
+    Account accountInfoList(String accountId);
 
     String userTypeCheck(AccountUserTokenRequestForm accountUserTokenRequestForm);
 }

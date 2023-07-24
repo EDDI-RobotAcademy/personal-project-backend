@@ -124,28 +124,24 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public Boolean goMypage(AccountGoMypageForm accountGoMypageForm) {
-
+    public String goMypage(AccountGoMypageForm accountGoMypageForm) {
         Optional<Account> maybeAccount = accountRepository.findByUserToken(accountGoMypageForm.getUserToken());
-
         if(maybeAccount.isEmpty()){
             log.info("에러 발생");
             return null;
         }
-
         if(maybeAccount.get().getPassword().equals(accountGoMypageForm.getPassword())){
-            return true;
+            return String.valueOf(maybeAccount.get().getAccountId());
         }else {
             log.info("틀린 비밀번호 입니다.");
-            return false;
+            return null;
         }
-
     }
 
     @Override
-    public Account accountInfoList(AccountUserTokenRequestForm accountUserTokenRequestForm) {
+    public Account accountInfoList(String accountId) {
 
-        Optional<Account> maybeAccount = accountRepository.findByUserToken(accountUserTokenRequestForm.getUserToken());
+        Optional<Account> maybeAccount = accountRepository.findByAccountId(accountId);
         if (maybeAccount.isEmpty()){
             log.info("에러 발생");
             return null;

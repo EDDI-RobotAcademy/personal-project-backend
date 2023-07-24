@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class AccountGoMypageForm {
-
     final private String userToken;
     final private String password;
-
 }
