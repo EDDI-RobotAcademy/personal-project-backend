@@ -28,6 +28,19 @@ public class MemberBoardController {
         return  boardService.list();
     }
 
+    @GetMapping(value = "/list", params = {"page"})
+    public List<BoardResForm> boardList(@RequestParam Integer page){
+        log.info("boardList()");
+
+        return  boardService.list(page);
+    }
+    @GetMapping(value = "/list/total-page")
+    public Integer getTotalPage(){
+        log.info("boardList()");
+
+        return  boardService.getTotalPage();
+    }
+
     @PostMapping("/register")
     public MemberBoard registerBoard(@RequestBody RequestRegisterBoardForm requestBoardForm) {
         log.info("registerBoard()");

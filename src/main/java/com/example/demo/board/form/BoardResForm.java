@@ -25,6 +25,7 @@ public class BoardResForm {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
+    private Long count;
     @Builder
     public BoardResForm(Long boardId, String title, String nickname, String content, LocalDateTime createDate, LocalDateTime updateDate, List<FilePaths> filePathList, Member member, List<Comment> commentList) {
         this.boardId = boardId;

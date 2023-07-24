@@ -15,9 +15,12 @@ import com.example.demo.comment.repository.CommentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +50,20 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .build()).toList();
         return boardResFormList;
     }
+    @Override
+    public List<BoardResForm> list(Integer page) {
+        Pageable pageable = PageRequest.of(page-1, 10 ,Sort.by("boardId").descending());
+        List<MemberBoard> memberBoardList = boardRepository.findAllwithPage(pageable);
+        List<BoardResForm> boardResFormList = memberBoardList.stream().map((mb)-> BoardResForm
+                .builder()
+                .boardId(mb.getBoardId())
+                .title(mb.getTitle())
+                .createDate(mb.getCreateDate())
+                .member(mb.getMember())
+                .build()).toList();
+        return boardResFormList;
+    }
+
 
     @Override
     @Transactional
@@ -179,5 +196,15 @@ public class MemberBoardServiceImpl implements MemberBoardService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Integer getTotalPage() {
+        Integer totalBoard = (int) boardRepository.count();
+        Integer size = 10;
+        if(totalBoard % size ==0){
+            return totalBoard/size;
+        }else{
+        return totalBoard/size+1;}
     }
 }
