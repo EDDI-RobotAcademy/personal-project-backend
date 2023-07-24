@@ -85,4 +85,30 @@ public class BoardMapServiceImpl implements BoardMapService{
                 boardMap.getAccount().getId(), boardMap.getBoardMapId(), boardMap.getPlaceName(), boardMap.getTitle(), boardMap.getWriter(), boardMap.getContent(), boardMap.getCreatedData());
         return response;
     }
+
+    @Override
+    public void delete(Long boardMapId, String placeName, String accessToken) throws RuntimeException {
+        SecretKey key = jwtProvider.getKey();
+        Jws<Claims> claims = Jwts.parser().setSigningKey(key)
+                .parseClaimsJws(accessToken.replace(" ", "").replace("Bearer", ""));
+
+        String email = claims.getBody().getSubject();
+        email = email.substring(email.indexOf("\"email\":\"") + 9, email.indexOf("\",\"types\""));
+        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+        Long accountId = maybeAccount.get().getId();
+
+        Optional<BoardMap> maybeBoardMap = boardMapRepository.findById(boardMapId);
+        if (maybeBoardMap.isPresent()) {
+            BoardMap boardMap = maybeBoardMap.get();
+
+            if (boardMap.getAccount() != null && boardMap.getAccount().getId().equals(accountId)) {
+                log.info("권한확인: " + boardMap.getAccount().getId().equals(accountId));
+                boardMapRepository.deleteById(boardMapId);
+            } else {
+                throw new RuntimeException("삭제 권한이 없습니다.");
+            }
+        } else {
+            throw new RuntimeException("삭제할 게시물을 찾을 수 없습니다.");
+        }
+    }
 }

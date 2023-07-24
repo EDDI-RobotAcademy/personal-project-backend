@@ -15,4 +15,6 @@ public interface BoardMapService {
     BoardMapRegisterResponse register(String accessToken, BoardMapRequestForm form, String placeName);
 
     BoardMapReadResponse read(String placeName, Long boardMapId, String accessToken);
+
+    void delete(Long boardMapId, String placeName, String accessToken);
 }

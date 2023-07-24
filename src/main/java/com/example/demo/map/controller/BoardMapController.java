@@ -36,4 +36,10 @@ public class BoardMapController {
                                              @PathVariable("placeName") String placeName, @RequestHeader("Authorization") String accessToken) {
         return boardMapService.read(placeName, boardMapId, accessToken);
     }
+
+    @DeleteMapping("/{placeName}/{boardMapId}")
+    public void deleteBoardMap (@PathVariable("boardMapId") Long boardMapId,
+                                @PathVariable("placeName") String placeName, @RequestHeader("Authorization") String accessToken) {
+        boardMapService.delete(boardMapId, placeName, accessToken);
+    }
 }
