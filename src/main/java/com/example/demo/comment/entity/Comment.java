@@ -33,13 +33,17 @@ public class Comment {
     @LastModifiedDate
     private String modifiedDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "board_id")
     private MemberBoard memberBoard;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "member_id")
     private Member member;
 
-
+    public Comment(String text, MemberBoard memberBoard, Member member) {
+        this.text = text;
+        this.memberBoard = memberBoard;
+        this.member = member;
+    }
 }
