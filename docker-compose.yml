@@ -36,6 +36,19 @@ services:
     networks:
       - app
 
+  redis:
+    image: redis:7.0.4
+    container_name: redis-container
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis.cnf:/usr/local/etc/redis/redis.cnf
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    command: redis-server /usr/local/etc/redis/redis.cnf
+    networks:
+      - app
+
 networks:
   app:
     driver: bridge
