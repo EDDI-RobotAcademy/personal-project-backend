@@ -36,6 +36,7 @@ public class BoardMapServiceImpl implements BoardMapService{
         List<BoardMap> boardMaps = boardMapRepository.findAll(Sort.by(Sort.Direction.DESC, "boardMapId"));
 
         return boardMaps.stream()
+                .filter(boardMap -> boardMap.getPlaceName().equals(placeName)) 
                 .map(boardMap -> new BoardMapListResponse(boardMap.getBoardMapId(), boardMap.getPlaceName(), boardMap.getTitle(), boardMap.getWriter(), boardMap.getCreatedData()))
                 .collect(Collectors.toList());
     }
