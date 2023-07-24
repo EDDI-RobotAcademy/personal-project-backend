@@ -40,11 +40,13 @@ jobs:
           
       - name: Create jwt.properties for CD Deploy
         run: |
+          cd src/main/resources
           pwd
           echo "${{ secrets.JWT_PROPERTIES }}" > jwt.properties
       
       - name: Create youtube.properties for CD Deploy
         run: |
+          cd src/main/resources
           pwd
           echo "${{ secrets.YOUTUBE_PROPERTIES }}" > youtube.properties
 
