@@ -103,9 +103,16 @@ public class MemberBoardServiceImpl implements MemberBoardService {
 
     @Override
     @Transactional
-    public List<MemberBoard> search(String keyword) {
+    public List<BoardResForm> search(String keyword) {
         List<MemberBoard> findBoards = boardRepository.findByContentContaining(keyword);
-        return findBoards;
+        List<BoardResForm> boardResFormList = findBoards.stream().map((fb)-> BoardResForm
+                .builder()
+                .boardId(fb.getBoardId())
+                .title(fb.getTitle())
+                .createDate(fb.getCreateDate())
+                .member(fb.getMember())
+                .build()).toList();
+        return boardResFormList;
     }
 
     @Override

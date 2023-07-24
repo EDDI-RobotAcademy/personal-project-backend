@@ -10,7 +10,7 @@ import org.springframework.http.HttpHeaders;
 import java.util.List;
 
 public interface MemberBoardService {
-    List<MemberBoard> search(String keyword);
+    List<BoardResForm> search(String keyword);
 
     List<BoardResForm> list();
     MemberBoard register(RequestRegisterBoardForm requestForm);

@@ -43,9 +43,9 @@ public class MemberBoardController {
     }
 
     @GetMapping("/search")
-      public List<MemberBoard> findBoardList(@RequestParam("keyword") String keyword){
-        List<MemberBoard>findKeywordBoardList = boardService.search(keyword);
-        return findKeywordBoardList;
+      public List<BoardResForm> findBoardList(@RequestParam("keyword") String keyword){
+
+        return boardService.search(keyword);
     }
     @PutMapping("/{boardId}")
     public BoardResForm modifyBoard (@PathVariable("boardId") Long boardId,
