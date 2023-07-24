@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface PlaylistService {
-    Playlist register(PlaylistRegisterRequestForm requestForm, HttpServletRequest request);
+    boolean register(PlaylistRegisterRequestForm requestForm, HttpServletRequest request);
 
     int countPlaylist(HttpServletRequest request);
 
@@ -17,7 +17,7 @@ public interface PlaylistService {
 
     PlaylistReadResponseForm read(Long id);
 
-    Playlist modify(PlaylistModifyRequestForm requestForm);
+    boolean modify(PlaylistModifyRequestForm requestForm);
 
     List<PlaylistReadResponseForm> listByLoginAccount(HttpServletRequest request);
 

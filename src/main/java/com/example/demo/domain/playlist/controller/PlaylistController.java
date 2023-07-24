@@ -21,7 +21,7 @@ public class PlaylistController {
     final private PlaylistService playlistService;
 
     @PostMapping("/register")
-    public Playlist playlistRegister (@RequestBody PlaylistRegisterRequestForm requestForm, HttpServletRequest request) {
+    public boolean playlistRegister (@RequestBody PlaylistRegisterRequestForm requestForm, HttpServletRequest request) {
         return playlistService.register(requestForm, request);
     }
 
@@ -41,7 +41,7 @@ public class PlaylistController {
     }
 
     @PostMapping("/modify")
-    public Playlist modifyPlaylist(@RequestBody PlaylistModifyRequestForm requestForm, HttpServletRequest request){
+    public boolean modifyPlaylist(@RequestBody PlaylistModifyRequestForm requestForm, HttpServletRequest request){
         return playlistService.modify(requestForm);
     }
 

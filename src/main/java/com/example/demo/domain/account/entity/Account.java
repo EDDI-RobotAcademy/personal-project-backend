@@ -17,6 +17,7 @@ public class Account {
     private Long id;
     private String email;
     @Setter
+    @JsonIgnore
     private String password;
     @Setter
     private String nickname;

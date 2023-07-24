@@ -83,6 +83,7 @@ public class SongServiceImpl implements SongService{
         song.setSinger(requestForm.getSinger());
         song.setGenre(requestForm.getGenre());
         song.setLink(requestForm.getLink());
+        song.setLyrics(getLyrics(requestForm.getSinger() + " " + requestForm.getTitle()));
 
         songRepository.save(song);
 

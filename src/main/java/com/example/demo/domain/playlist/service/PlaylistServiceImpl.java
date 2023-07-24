@@ -32,14 +32,16 @@ public class PlaylistServiceImpl implements PlaylistService{
     final private JwtTokenUtil jwtTokenUtil;
     final int PAGE_SIZE = 6;
     @Override
-    public Playlist register(PlaylistRegisterRequestForm requestForm, HttpServletRequest request) {
+    public boolean register(PlaylistRegisterRequestForm requestForm, HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findWithPlaylistByEmail(email);
 
         final Playlist playlist = new Playlist(requestForm.getTitle(), account);
 
-        return playlistRepository.save(playlist);
+        playlistRepository.save(playlist);
+
+        return true;
     }
 
     @Override
@@ -118,17 +120,19 @@ public class PlaylistServiceImpl implements PlaylistService{
     }
 
     @Override
-    public Playlist modify(PlaylistModifyRequestForm requestForm) {
+    public boolean modify(PlaylistModifyRequestForm requestForm) {
         Optional<Playlist> maybePlaylist = playlistRepository.findById(requestForm.getId());
 
         if(maybePlaylist.isEmpty()){
-            return null;
+            return false;
         }
         Playlist playlist = maybePlaylist.get();
 
         playlist.setTitle(requestForm.getTitle());
 
-        return playlistRepository.save(playlist);
+        playlistRepository.save(playlist);
+
+        return true;
     }
 
     @Override
