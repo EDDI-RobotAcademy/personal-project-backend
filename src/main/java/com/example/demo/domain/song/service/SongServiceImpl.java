@@ -12,6 +12,8 @@ import com.example.demo.utility.Youtube;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -24,6 +26,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@PropertySource("classpath:youtube.properties")
 public class SongServiceImpl implements SongService{
 
     final private PlaylistRepository playlistRepository;
@@ -31,6 +34,9 @@ public class SongServiceImpl implements SongService{
     final private AccountRepository accountRepository;
     final private JwtTokenUtil jwtTokenUtil;
     final private Youtube youtube;
+
+    @Value("${youtube.lyricsAddress}")
+    private String lyricsAddress;
 
 
     @Override
@@ -102,7 +108,7 @@ public class SongServiceImpl implements SongService{
     }
 
     public String getLyrics(String searchWord) {
-        String url = "http://localhost:8000/get_lyrics?song_title=" + searchWord;
+        String url = "http://" + lyricsAddress + "/get_lyrics?song_title=" + searchWord;
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         String lyrics = null;
