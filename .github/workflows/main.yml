@@ -35,6 +35,7 @@ jobs:
           
       - name: Create application.properties for CD Deploy
         run: |
+          mkdir src/main/resources
           cd src/main/resources
           pwd
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > application.properties
