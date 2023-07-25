@@ -1,6 +1,9 @@
 package com.example.demo.board.entity;
 
+import com.example.demo.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +32,7 @@ public class Board {
     private Integer likeCount = 0;
     @Setter
     @Column(columnDefinition = "integer default 0", nullable = false)
-    private Integer readCount;
+    private Integer readCount = 0;
     @Setter
     @Generated(GenerationTime.ALWAYS)
     @Column(name = "reply_count", nullable = false, columnDefinition = "int default 0")
@@ -43,6 +46,17 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private BoardCategory boardCategory;
 
+    @Setter
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @JsonManagedReference
+    public User getUser() {
+        return user;
+    }
+
     public Board(String writer, String title, String content, Integer likeCount, Integer readCount, Integer replyCount, BoardCategory boardCategory) {
         this.writer = writer;
         this.title = title;
@@ -53,14 +67,15 @@ public class Board {
         this.boardCategory = boardCategory;
     }
 
-    public Board(String writer, String title, String content, BoardCategory boardCategory) {
+    public Board(String writer, String title, String content, BoardCategory category) {
         this.writer = writer;
         this.title = title;
         this.content = content;
-        this.boardCategory = boardCategory;
+        this.boardCategory = category;
     }
 
     public void updateReadCount(Integer readCount) {
         this.readCount = readCount;
     }
+
 }

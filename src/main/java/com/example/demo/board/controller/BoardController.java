@@ -2,10 +2,11 @@ package com.example.demo.board.controller;
 
 import com.example.demo.board.controller.form.BoardCategoryListForm;
 import com.example.demo.board.controller.form.BoardCategoryResponseForm;
+import com.example.demo.board.controller.form.BoardResponseForm;
 import com.example.demo.board.entity.BoardCategory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import com.example.demo.board.controller.form.RequestBoardForm;
-import com.example.demo.board.dto.BoardDto;
 import com.example.demo.board.entity.Board;
 import com.example.demo.board.repository.BoardRepository;
 import com.example.demo.board.service.BoardService;
@@ -35,7 +36,7 @@ public class BoardController {
     }
     @GetMapping("/{boardId}")
     public Board readBoard(@PathVariable("boardId")Long boardId){
-        log.info("boardRead()");
+        log.info("readBoard()");
         return boardService.read(boardId);
     }
 
@@ -74,5 +75,10 @@ public class BoardController {
     @GetMapping("list/{category}")
     public List<BoardCategoryResponseForm> categoryResponseForms (@PathVariable("category")BoardCategory category){
         return boardService.getListByCategory(category);
+    }
+    @GetMapping("/list-page")
+    public ResponseEntity<BoardResponseForm> getBoardsByPage(@RequestParam("page") int pageNumber, @RequestParam("size") int pageSize) {
+        BoardResponseForm boardResponse = boardService.getBoardsByPage(pageNumber, pageSize);
+        return ResponseEntity.ok(boardResponse);
     }
 }

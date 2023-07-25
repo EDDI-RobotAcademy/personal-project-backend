@@ -2,6 +2,7 @@ package com.example.demo.board.service;
 
 import com.example.demo.board.controller.form.BoardCategoryListForm;
 import com.example.demo.board.controller.form.BoardCategoryResponseForm;
+import com.example.demo.board.controller.form.BoardResponseForm;
 import com.example.demo.board.controller.form.RequestBoardForm;
 import com.example.demo.board.dto.BoardDto;
 import com.example.demo.board.dto.BoardResponseDto;
@@ -18,10 +19,9 @@ import java.util.List;
 
 
 public interface BoardService {
+
     List<Board> list();
-
     Board register(Board registerBoard);
-
     Board read(Long boardId);
     void updateReadCount(Long boardId,Integer readCount);
     void delete(Long boardId);
@@ -29,6 +29,7 @@ public interface BoardService {
     List<Board> search(String keyword);
     List<BoardCategoryListForm> getCategoryList();
     List<BoardCategoryResponseForm> getListByCategory(BoardCategory category);
+    BoardResponseForm getBoardsByPage(int pageNumber, int pageSize);
 
 //    Page<Board>boardList(Pageable pageable);
 //     Page<Board> boardSearchList(String searchKeyword, Pageable pageable);
