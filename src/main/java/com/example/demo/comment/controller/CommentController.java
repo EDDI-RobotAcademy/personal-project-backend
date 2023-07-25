@@ -26,7 +26,7 @@ public class CommentController {
         return commentService.register(requestCommentForm, boardId);
     }
 
-    @PostMapping("/{commentId}/modify")
+    @PutMapping("/{commentId}/modify")
     public CommentResForm modifyBoard(@RequestBody RequestRegisterCommentForm requestCommentForm, @PathVariable Long commentId) {
         log.info("modifyComment()");
         return commentService.modify(requestCommentForm, commentId);

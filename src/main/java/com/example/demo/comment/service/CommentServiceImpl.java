@@ -58,21 +58,24 @@ public class CommentServiceImpl implements CommentService{
             return null;
         }
         Member savedMember= maybeMember.get();
-        Optional<Comment> maybeComment = commentRepository.findById(commentId);
-        if (maybeComment.isEmpty()) {
-            log.info("정보가 없습니다!");
-            return null;
-        }
-        Comment finedComment = maybeComment.get();
-        finedComment.setText(requestCommentForm.getText());
-        CommentResForm comment = CommentResForm
-                .builder()
-                .text(finedComment.getText())
-                .createdDate(finedComment.getCreatedDate())
-                .modifiedDate(finedComment.getModifiedDate())
-                .member(finedComment.getMember())
-                .build();
-        return comment;
+        if(savedMember.getUserToken().equals(requestCommentForm.getUserToken())){
+
+            Optional<Comment> maybeComment = commentRepository.findById(commentId);
+            if (maybeComment.isEmpty()) {
+                log.info("정보가 없습니다!");
+                return null;
+            }
+            Comment finedComment = maybeComment.get();
+            finedComment.setText(requestCommentForm.getText());
+            CommentResForm comment = CommentResForm
+                    .builder()
+                    .text(finedComment.getText())
+                    .createdDate(finedComment.getCreatedDate())
+                    .modifiedDate(finedComment.getModifiedDate())
+                    .member(finedComment.getMember())
+                    .build();
+            return comment;}
+        return null;
     }
 
     @Override
