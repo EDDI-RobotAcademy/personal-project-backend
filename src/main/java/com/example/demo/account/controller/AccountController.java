@@ -69,7 +69,7 @@ public class AccountController {
     }
     
     // 계정 수정 기능
-    @PutMapping("/modify")
+    @PutMapping("/{accountId}")
     public void accountModify(@RequestBody AccountModifyRequestForm requestForm){
         log.info("accountModify()");
 
