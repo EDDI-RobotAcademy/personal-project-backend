@@ -12,11 +12,9 @@ public class BoardRegisterRequest {
     final private String writer;
     final private String title;
     final private String content;
-    final private BoardCategory boardCategory;
+    final private BoardCategory category;
 
     public Board toBoard() {
-        return new Board(writer, title, content, boardCategory);
+        return new Board(writer, title, content, category);
     }
 }
-
-
