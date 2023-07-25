@@ -20,7 +20,7 @@ public class PlaylistController {
     final private PlaylistService playlistService;
 
     @PostMapping("/register")
-    public boolean playlistRegister (@RequestBody PlaylistRegisterRequestForm requestForm, HttpServletRequest request) {
+    public long playlistRegister (@RequestBody PlaylistRegisterRequestForm requestForm, HttpServletRequest request) {
         return playlistService.register(requestForm, request);
     }
 
@@ -44,9 +44,9 @@ public class PlaylistController {
         return playlistService.modify(requestForm);
     }
 
-    @PostMapping("list-by-login-account")
-    public List<PlaylistReadResponseForm> playlistByLoginAccount(HttpServletRequest request){
-        return playlistService.listByLoginAccount(request);
+    @PostMapping("list-by-login-account/{page}")
+    public List<PlaylistReadResponseForm> playlistByLoginAccount(@PathVariable("page") int page, HttpServletRequest request){
+        return playlistService.listByLoginAccount(page, request);
     }
 
     @DeleteMapping("/{playlistId}")
@@ -82,5 +82,10 @@ public class PlaylistController {
     @PostMapping("/count-all-playlist")
     public long countAllPlaylist(){
         return playlistService.countAllPlaylist();
+    }
+
+    @PostMapping("/count-playlist-by-account")
+    public long countByLoginAccount(HttpServletRequest request){
+        return playlistService.countTotalPageByLoginAccount(request); // 로그인 계정 플레이리스트 카운트
     }
 }

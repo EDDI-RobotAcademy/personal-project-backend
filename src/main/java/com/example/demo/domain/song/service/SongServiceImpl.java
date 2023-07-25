@@ -117,7 +117,7 @@ public class SongServiceImpl implements SongService{
             if (lyrics != null) {
                 log.info(lyrics);
             } else {
-                return null;
+                return "가사를 못 찾았어용";
             }
         }
         lyrics = lyrics.replaceAll("\"", "");

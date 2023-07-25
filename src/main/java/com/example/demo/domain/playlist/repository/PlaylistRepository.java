@@ -31,7 +31,7 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
     List<Long> findPlaylistIdByAccountId(Account account);
 
     @Query("SELECT p FROM Playlist p LEFT JOIN FETCH p.account LEFT JOIN FETCH p.songList LEFT JOIN FETCH p.likers where p.account = :account")
-    List<Playlist> findPlaylistByAccountId(Account account);
+    Slice<Playlist> findPlaylistByAccountId(Account account,Pageable pageable);
 
     @Modifying
     @Transactional

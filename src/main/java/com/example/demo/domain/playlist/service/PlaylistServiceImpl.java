@@ -32,16 +32,16 @@ public class PlaylistServiceImpl implements PlaylistService{
     final private JwtTokenUtil jwtTokenUtil;
     final int PAGE_SIZE = 6;
     @Override
-    public boolean register(PlaylistRegisterRequestForm requestForm, HttpServletRequest request) {
+    public long register(PlaylistRegisterRequestForm requestForm, HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findWithPlaylistByEmail(email);
 
         final Playlist playlist = new Playlist(requestForm.getTitle(), account);
 
-        playlistRepository.save(playlist);
+        Playlist savedPlaylist = playlistRepository.save(playlist);
 
-        return true;
+        return savedPlaylist.getId();
     }
 
     @Override
@@ -97,6 +97,20 @@ public class PlaylistServiceImpl implements PlaylistService{
     }
 
     @Override
+    public long countTotalPageByLoginAccount(HttpServletRequest request) {
+        String email = jwtTokenUtil.getEmailFromCookie(request);
+
+        long count =playlistRepository.countPlaylistByAccountId(accountRepository.findByEmail(email).get().getId());
+
+        if(count%PAGE_SIZE==0){
+            return (count/PAGE_SIZE);
+        }else{
+            return (count/PAGE_SIZE)+1;
+        }
+    }
+
+
+    @Override
     @Transactional
     public List<PlaylistReadResponseForm> list() {
         List<Playlist> playlists = playlistRepository.findAll();
@@ -136,10 +150,10 @@ public class PlaylistServiceImpl implements PlaylistService{
     }
 
     @Override
-    public List<PlaylistReadResponseForm> listByLoginAccount(HttpServletRequest request) {
+    public List<PlaylistReadResponseForm> listByLoginAccount(int page, HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
-        List<Playlist> playlists = playlistRepository.findPlaylistByAccountId(accountRepository.findByEmail(email).get());
+        Slice<Playlist> playlists = playlistRepository.findPlaylistByAccountId(accountRepository.findByEmail(email).get(), PageRequest.of(page-1,PAGE_SIZE));
 
         List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
         for (Playlist playlist : playlists) {
