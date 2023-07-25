@@ -13,5 +13,4 @@ public class BoardResponseDto {
     private Integer likeCount;
     private Integer readCount;
     private Integer replyCount;
-    // 추가적인 필드나 메서드 정의
 }

@@ -1,15 +1,14 @@
 package com.example.demo.board.dto;
 
 import com.example.demo.board.entity.Board;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardDto {
@@ -34,5 +33,12 @@ public class BoardDto {
         this.replyCount = board.getReplyCount();
         this.createDate = board.getCreateDate();
         this.modifyDate = board.getModifyDate();
+    }
+
+    public BoardDto(String title, String content, String writer, Integer readCount){
+        this.title = title;
+        this.content = content;
+        this.writer = writer;
+        this.readCount = readCount;
     }
 }
