@@ -60,18 +60,23 @@ public class AccountController {
     }
 
     // 계정 삭제 기능
-    @DeleteMapping("/delete")
+    @DeleteMapping("/{accountId}")
     public void accountDelete(@RequestBody AccountUserTokenRequestForm requestForm) {
 
         log.info("accountDelete()");
         accountService.delete(requestForm);
-
     }
     
     // 계정 수정 기능
     @PutMapping("/{accountId}")
     public void accountModify(@RequestBody AccountModifyRequestForm requestForm){
         log.info("accountModify()");
+        log.info(String.valueOf(requestForm.getUserToken()));
+        log.info(String.valueOf(requestForm.getAccountBirth()));
+        log.info(String.valueOf(requestForm.getAccountPhone()));
+        log.info(String.valueOf(requestForm.getPassword()));
+        log.info(String.valueOf(requestForm.getAccountName()));
+
 
         accountService.modify(requestForm);
     }
