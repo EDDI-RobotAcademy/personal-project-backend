@@ -8,6 +8,9 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @ToString
 @Table(name = "comments")
@@ -22,13 +25,11 @@ public class Comment {
     @Column(nullable = false)
     private String text;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     @CreationTimestamp
-    private String createdDate;
+    private LocalDate createdDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     @LastModifiedDate
-    private String modifiedDate;
+    private LocalDate modifiedDate;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "board_id")

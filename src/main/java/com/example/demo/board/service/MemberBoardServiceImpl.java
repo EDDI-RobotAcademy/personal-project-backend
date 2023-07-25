@@ -114,6 +114,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .commentList(savedBoard.getCommentList().stream().map((c)-> CommentResForm.builder()
                         .commentId(c.getCommentId())
                         .createdDate(c.getCreatedDate())
+                        .modifiedDate(c.getModifiedDate())
                         .text(c.getText())
                         .member(c.getMember())
                         .build()).toList())

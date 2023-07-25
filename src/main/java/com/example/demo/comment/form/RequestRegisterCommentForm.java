@@ -14,7 +14,6 @@ public class RequestRegisterCommentForm {
     final private String text;
     final private String nickname;
     final private String userToken;
-    final private Long BoardId;
 
     public Comment toComment(MemberBoard memberBoard, Member member) {
         return new Comment(text, memberBoard, member);
