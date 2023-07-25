@@ -37,6 +37,11 @@ jobs:
       ## gradle build
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: make properties files
+        run: |
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
+          echo "${{ secrets.SSL_KEY }}"|base64 --decode > ./src/main/resources/keystore.p12
         
       - name: Build with Gradle
         run: ./gradlew build -x test
