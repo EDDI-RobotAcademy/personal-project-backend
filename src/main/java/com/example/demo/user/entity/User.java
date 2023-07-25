@@ -1,6 +1,8 @@
 package com.example.demo.user.entity;
 
 import com.example.demo.board.entity.Board;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -38,6 +40,17 @@ public class User {
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private UserRole userRole;
+
+    @Setter
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    private Board board;
+
+    @JsonManagedReference
+    public Board getBoard() {
+        return board;
+    }
 
     public void setUserRole(UserRole userRole) {
         this.userRole = userRole;

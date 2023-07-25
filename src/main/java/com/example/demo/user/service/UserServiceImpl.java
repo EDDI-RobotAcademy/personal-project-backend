@@ -1,10 +1,10 @@
 package com.example.demo.user.service;
 
+import com.example.demo.board.dto.BoardDto;
+import com.example.demo.board.entity.Board;
 import com.example.demo.user.controller.form.UserSignInResponseForm;
-import com.example.demo.user.entity.Role;
-import com.example.demo.user.entity.RoleType;
-import com.example.demo.user.entity.User;
-import com.example.demo.user.entity.UserRole;
+import com.example.demo.user.dto.UserDto;
+import com.example.demo.user.entity.*;
 import com.example.demo.user.repository.*;
 import com.example.demo.user.service.request.UserLogInRequest;
 import com.example.demo.user.service.request.UserSignInRequest;
@@ -27,6 +27,7 @@ public class UserServiceImpl implements UserService {
     final private UserRepository userRepository;
     final private RoleRepository roleRepository;
     final private UserRoleRepository userRoleRepository;
+    private BookmarkRepository bookmarkRepository;
     final private UserTokenRepository userTokenRepository = UserTokenRepositoryImpl.getInstance();
 
     @Override
@@ -78,6 +79,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void delete(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    @Override
     public RoleType lookup(String userToken) {
         final Long userId = userTokenRepository.findUserIdByToken(userToken);
         final Optional<User> maybeUser = userRepository.findById(userId);
@@ -94,5 +100,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long findUserId(String userToken) {
         return userTokenRepository.findUserIdByToken(userToken);
+    }
+
+    @Override
+    public Bookmark createBookmark(User user, Board board) {
+        Bookmark bookmark = new Bookmark();
+        bookmark.setUser(user);
+        bookmark.setBoard(board);
+        return bookmarkRepository.save(bookmark);
+    }
+    @Override
+    public void deleteBookmark(Bookmark bookmark) {
+        bookmarkRepository.delete(bookmark);
     }
 }
