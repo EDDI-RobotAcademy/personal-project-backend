@@ -40,3 +40,4 @@ out/
 github.properties
 redis.properties
 kakao.properties
+application.properties

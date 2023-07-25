@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,12 +23,10 @@ public class BoardResForm {
     private String title;
     private String nickname;
     private String content;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-    private LocalDateTime createDate;
-    private LocalDateTime updateDate;
-    private Long count;
+    private LocalDate createDate;
+    private LocalDate updateDate;
     @Builder
-    public BoardResForm(Long boardId, String title, String nickname, String content, LocalDateTime createDate, LocalDateTime updateDate, List<FilePaths> filePathList, Member member, List<CommentResForm> commentList) {
+    public BoardResForm(Long boardId, String title, String nickname, String content, LocalDate createDate, LocalDate updateDate, List<FilePaths> filePathList, Member member, List<CommentResForm> commentList) {
         this.boardId = boardId;
         this.title = title;
         this.nickname = nickname;
