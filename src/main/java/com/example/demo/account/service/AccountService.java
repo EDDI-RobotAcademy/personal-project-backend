@@ -27,4 +27,6 @@ public interface AccountService {
     Account accountInfoList(String accountId);
 
     String userTypeCheck(AccountUserTokenRequestForm accountUserTokenRequestForm);
+
+    Account checkUserToken(AccountUserTokenRequestForm accountUserTokenRequestForm);
 }

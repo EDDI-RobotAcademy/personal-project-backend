@@ -6,6 +6,7 @@ import com.example.demo.account.controller.form.response.AccountLoginResponseFor
 import com.example.demo.account.controller.form.response.AccountPasswordResponseForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.service.AccountService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -117,7 +118,7 @@ log.info(String.valueOf(accountInfo));
     }
 
     @PostMapping("/manager/regist")
-    public String managerRegist(ManagerRegistRequestForm managerRegistRequestForm){
+    public String managerRegist(@RequestBody ManagerRegistRequestForm managerRegistRequestForm){
         log.info("ManagerRegist() ");
         Account managerAccount = accountService.regist(managerRegistRequestForm.toAccount());
 
@@ -125,5 +126,13 @@ log.info(String.valueOf(accountInfo));
         return managerAccount.getEmail();
     }
 
+    // 받아온 usertoken으로 이름 받아오기
+    @GetMapping("/checktoken")
+    public String checkUserToken(@RequestBody AccountUserTokenRequestForm accountUserTokenRequestForm){
+        log.info("checkUserToken() ");
+        Account account = accountService.checkUserToken(accountUserTokenRequestForm);
+
+        return account.getAccountName();
+    }
 
 }
