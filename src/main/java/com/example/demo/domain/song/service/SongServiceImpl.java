@@ -8,38 +8,49 @@ import com.example.demo.domain.song.controller.form.SongModifyRequestForm;
 import com.example.demo.domain.song.controller.form.SongRegisterRequestForm;
 import com.example.demo.domain.song.entity.Song;
 import com.example.demo.domain.song.repository.SongRepository;
-import jakarta.servlet.http.Cookie;
+import com.example.demo.utility.Youtube;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@PropertySource("classpath:youtube.properties")
 public class SongServiceImpl implements SongService{
 
     final private PlaylistRepository playlistRepository;
     final private SongRepository songRepository;
     final private AccountRepository accountRepository;
+    final private JwtTokenUtil jwtTokenUtil;
+    final private Youtube youtube;
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    @Value("${youtube.lyricsAddress}")
+    private String lyricsAddress;
+
 
     @Override
-    public Long register(SongRegisterRequestForm requestForm, HttpServletRequest request) {
+    public Long register(SongRegisterRequestForm requestForm, HttpServletRequest request) throws GeneralSecurityException, IOException {
 
         final Playlist playlist = playlistRepository.findWithSongById(requestForm.getPlaylistId());
-
         final Song song = new Song(requestForm.getTitle(), requestForm.getSinger(), requestForm.getGenre(), requestForm.getLink(), playlist);
+        if(requestForm.getLink().equals("")){
+            String videoId = youtube.searchByKeyword(requestForm.getSinger() + " " + requestForm.getTitle());
+            song.setLink("https://www.youtube.com/watch?v=" + videoId);
+        }
 
         song.setLyrics(getLyrics(requestForm.getSinger() + " " + requestForm.getTitle()));
+
         songRepository.save(song);
         log.info(String.valueOf(song.getId()));
         return song.getId();
@@ -47,16 +58,7 @@ public class SongServiceImpl implements SongService{
 
     @Override
     public int countSong(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String email = null;
-
-        for(Cookie cookie : cookies) {
-            if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-                break;
-            }
-        }
+        String email = jwtTokenUtil.getEmailFromCookie(request);
         List<Long> counting = playlistRepository.findPlaylistIdByAccountId(accountRepository.findByEmail(email).get());
 
         log.info("playlistId = " + counting);
@@ -87,6 +89,7 @@ public class SongServiceImpl implements SongService{
         song.setSinger(requestForm.getSinger());
         song.setGenre(requestForm.getGenre());
         song.setLink(requestForm.getLink());
+        song.setLyrics(getLyrics(requestForm.getSinger() + " " + requestForm.getTitle()));
 
         songRepository.save(song);
 
@@ -105,7 +108,7 @@ public class SongServiceImpl implements SongService{
     }
 
     public String getLyrics(String searchWord) {
-        String url = "http://localhost:8000/get_lyrics?song_title=" + searchWord;
+        String url = "http://" + lyricsAddress + "/get_lyrics?song_title=" + searchWord;
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         String lyrics = null;
@@ -114,7 +117,7 @@ public class SongServiceImpl implements SongService{
             if (lyrics != null) {
                 log.info(lyrics);
             } else {
-                return null;
+                return "가사를 못 찾았어용";
             }
         }
         lyrics = lyrics.replaceAll("\"", "");

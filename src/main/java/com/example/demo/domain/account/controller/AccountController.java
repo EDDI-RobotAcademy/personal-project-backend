@@ -1,7 +1,6 @@
 package com.example.demo.domain.account.controller;
 
 import com.example.demo.authentication.jwt.JwtTokenUtil;
-import com.example.demo.authentication.redis.RedisService;
 import com.example.demo.domain.account.controller.form.*;
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.account.service.AccountService;
@@ -10,10 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 
 @Slf4j
 @RestController
@@ -22,10 +18,6 @@ import java.util.Date;
 public class AccountController {
     final private AccountService accountService;
     final private JwtTokenUtil jwtTokenUtil;
-    final private RedisService redisService;
-
-    @Value("${jwt.secret}")
-    private String secretKey;
 
     @PostMapping("/register")
     public Account accountRegister (@RequestBody AccountRegisterRequestForm requestForm) {
@@ -62,23 +54,8 @@ public class AccountController {
 
     @PostMapping("/logout")
     public Boolean logout(HttpServletRequest request, HttpServletResponse response){
-        Cookie[] cookies = request.getCookies();
-
-        for(Cookie cookie : cookies){
-            if(cookie.getName().equals("AccessToken")){
-                String token = cookie.getValue();
-
-                Date exp = JwtTokenUtil.getExp(token, secretKey);
-                Date date = new Date();
-
-                redisService.registBlackList(token, exp.getTime()-date.getTime());
-            }
-            if(cookie.getName().equals("RefreshToken")){
-                String token = cookie.getValue();
-                redisService.deleteByKey(token);
-            }
-        }
-
+        jwtTokenUtil.deleteLoginInfo(request);
+        
         Cookie accessCookie = jwtTokenUtil.generateCookie("AccessToken", null, 0);
         response.addCookie(accessCookie);
 
@@ -90,19 +67,7 @@ public class AccountController {
 
     @DeleteMapping("/withdraw")
     public Boolean withdrawal(HttpServletRequest request, HttpServletResponse response){
-        Cookie[] cookies = request.getCookies();
-        String email = null;
-
-        for(Cookie cookie : cookies) {
-            if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-            }
-            if(cookie.getName().equals("RefreshToken")){
-                String token = cookie.getValue();
-                redisService.deleteByKey(token);
-            }
-        }
+        String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Cookie accessCookie = jwtTokenUtil.generateCookie("AccessToken", null, 0);
         response.addCookie(accessCookie);

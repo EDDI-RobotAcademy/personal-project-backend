@@ -1,18 +1,31 @@
 package com.example.demo.authentication.jwt;
 
+import com.example.demo.authentication.redis.RedisService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
+@PropertySource("classpath:jwt.properties")
 public class JwtTokenUtil {
+
+    final private RedisService redisService;
+
+    @Value("${jwt.secret}")
+    private String secretKey;
+
     // JWT Token 발급
     public static TokenInfo createToken(String email, String key, long expireTimeMs) {
         // Claim = Jwt Token에 들어갈 정보
@@ -23,13 +36,14 @@ public class JwtTokenUtil {
         String accessToken = Jwts.builder()       // 토큰 생성
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))      //  시작 시간 : 현재 시간기준으로 만들어짐
-                .setExpiration(new Date(System.currentTimeMillis() + 60000))     // 끝나는 시간 : 지금 시간 + 유지할 시간(입력받아옴)
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))     // 끝나는 시간 : 지금 시간 + 유지할 시간(입력받아옴)
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
                 .setClaims(claims)
+                .setSubject("refreshToken")
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
@@ -83,7 +97,7 @@ public class JwtTokenUtil {
         }catch (ExpiredJwtException e){
             Claims claims =Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshToken).getBody();
             String email = claims.get("email").toString();
-            accessToken = createAccessToken(email, secretKey, 60000);
+            accessToken = createAccessToken(email, secretKey, 86400000);
             log.info("catch accessToken : " + accessToken);
         }
 
@@ -97,5 +111,38 @@ public class JwtTokenUtil {
         cookie.setHttpOnly(true);
 
         return cookie;
+    }
+
+    public String getEmailFromCookie(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        String email = null;
+
+        for(Cookie cookie : cookies) {
+            if (cookie.getName().equals("AccessToken")) {
+                String token = cookie.getValue();
+                email = JwtTokenUtil.getEmail(token, secretKey);
+                break;
+            }
+        }
+        return email;
+    }
+
+    public void deleteLoginInfo(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        for(Cookie cookie : cookies){
+            if(cookie.getName().equals("AccessToken")){
+                String token = cookie.getValue();
+
+                Date exp = JwtTokenUtil.getExp(token, secretKey);
+                Date date = new Date();
+
+                redisService.registBlackList(token, exp.getTime()-date.getTime());
+            }
+            if(cookie.getName().equals("RefreshToken")){
+                String token = cookie.getValue();
+                redisService.deleteByKey(token);
+            }
+        }
     }
 }

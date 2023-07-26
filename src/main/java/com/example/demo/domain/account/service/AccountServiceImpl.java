@@ -13,20 +13,24 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@PropertySource("classpath:jwt.properties")
 public class AccountServiceImpl implements AccountService{
 
     final private AccountRepository accountRepository;
     final private RedisService redisService;
     final private BCryptPasswordEncoder encoder;
     final private PlaylistRepository playlistRepository;
+    final private JwtTokenUtil jwtTokenUtil;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -80,16 +84,7 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public boolean modify(AccountModifyRequestForm requestForm, HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String email = null;
-
-        for(Cookie cookie : cookies) {
-            if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-                break;
-            }
-        }
+        String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Optional<Account> maybeAccount = accountRepository.findByEmail(email);
 
@@ -143,16 +138,7 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public boolean duplicateCheckPassword(AccountPasswordCheckRequestForm requestForm, HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String email = null;
-
-        for(Cookie cookie : cookies) {
-            if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-                break;
-            }
-        }
+        String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Optional<Account> maybeAccount = accountRepository.findByEmail(email);
         if(maybeAccount.isEmpty()){

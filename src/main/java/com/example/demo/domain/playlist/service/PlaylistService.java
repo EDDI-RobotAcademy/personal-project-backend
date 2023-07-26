@@ -3,13 +3,12 @@ package com.example.demo.domain.playlist.service;
 import com.example.demo.domain.playlist.controller.form.PlaylistModifyRequestForm;
 import com.example.demo.domain.playlist.controller.form.PlaylistReadResponseForm;
 import com.example.demo.domain.playlist.controller.form.PlaylistRegisterRequestForm;
-import com.example.demo.domain.playlist.entity.Playlist;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
 public interface PlaylistService {
-    Playlist register(PlaylistRegisterRequestForm requestForm, HttpServletRequest request);
+    long register(PlaylistRegisterRequestForm requestForm, HttpServletRequest request);
 
     int countPlaylist(HttpServletRequest request);
 
@@ -19,7 +18,21 @@ public interface PlaylistService {
 
     boolean modify(PlaylistModifyRequestForm requestForm);
 
-    List<Playlist> listByLoginAccount(HttpServletRequest request);
+    List<PlaylistReadResponseForm> listByLoginAccount(int page,HttpServletRequest request);
 
     boolean delete(Long playlistId);
+
+    int likePlaylist(Long playlistId, HttpServletRequest request);
+
+    int unlikePlaylist(Long playlistId, HttpServletRequest request);
+
+    Boolean isPlaylistLiked(Long playlistId, HttpServletRequest request);
+
+    List<PlaylistReadResponseForm> slicePlaylist(int page);
+
+    List<PlaylistReadResponseForm> sortByLikersSlicePlaylist(int page);
+
+    long countAllPlaylist();
+
+    long countTotalPageByLoginAccount(HttpServletRequest request);
 }

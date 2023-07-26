@@ -1,12 +1,14 @@
 package com.example.demo.accountTest;
 
+import com.example.demo.authentication.jwt.JwtTokenUtil;
+import com.example.demo.authentication.redis.RedisService;
 import com.example.demo.domain.account.controller.form.AccountLoginRequestForm;
 import com.example.demo.domain.account.controller.form.AccountRegisterRequestForm;
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.account.repository.AccountRepository;
 import com.example.demo.domain.account.service.AccountService;
 import com.example.demo.domain.account.service.AccountServiceImpl;
-import com.example.demo.authentication.redis.RedisService;
+import com.example.demo.domain.playlist.repository.PlaylistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,6 +47,12 @@ public class AccountTest {
     @Autowired
     BCryptPasswordEncoder testEncoder;
 
+    @Autowired
+    PlaylistRepository playlistRepository;
+
+    @Autowired
+    JwtTokenUtil jwtTokenUtil;
+
     @Test
     @DisplayName("사용자 회원 가입")
     void 사용자_회원_가입() {
@@ -81,7 +89,7 @@ public class AccountTest {
             return new Account(savedAccount.getEmail(), savedAccount.getPassword(), savedAccount.getNickname());
         });
 
-        final AccountServiceImpl sut = new AccountServiceImpl(mockAccountRepository, testRedisService, testEncoder);
+        final AccountServiceImpl sut = new AccountServiceImpl(mockAccountRepository, testRedisService, testEncoder, playlistRepository, jwtTokenUtil);
         final Account actual = sut.register(requestForm);
 
         verify(mockAccountRepository, times(1)).save(any(Account.class));
