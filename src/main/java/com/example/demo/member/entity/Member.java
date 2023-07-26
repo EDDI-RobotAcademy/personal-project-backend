@@ -29,7 +29,7 @@ public class Member {
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
     private MemberRole memberRole;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> Comment;
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<MemberBoard> memberBoardList;
@@ -41,6 +41,12 @@ public class Member {
     public Member(String email, String password, String nickname, String userToken) {
         this.email = email;
         this.password = password;
+        this.nickname = nickname;
+        this.userToken = userToken;
+    }
+
+    public Member(String email, String nickname, String userToken) {
+        this.email = email;
         this.nickname = nickname;
         this.userToken = userToken;
     }

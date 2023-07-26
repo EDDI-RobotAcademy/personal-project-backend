@@ -112,14 +112,14 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .cafeTitle(savedBoard.getCafeTitle())
                 .content(savedBoard.getContent())
                 .createDate(savedBoard.getCreateDate())
-                .member(savedBoard.getMember())
+                .member(new Member(savedBoard.getMember().getEmail(), savedBoard.getNickname(), savedBoard.getMember().getUserToken()))
                 .filePathList(savedBoard.getFilePathList())
                 .commentList(savedBoard.getCommentList().stream().map((c)-> CommentResForm.builder()
                         .commentId(c.getCommentId())
                         .createdDate(c.getCreatedDate())
                         .modifiedDate(c.getModifiedDate())
                         .text(c.getText())
-                        .member(c.getMember())
+                        .member(new Member(c.getMember().getEmail(), c.getMember().getNickname(), c.getMember().getUserToken()))
                         .build()).toList())
                 .build();
         return board;
