@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import javax.crypto.SecretKey;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -132,5 +133,18 @@ public class BoardServiceImpl implements BoardService {
             }
         }
         throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+    }
+
+    @Override
+    public List<BoardListResponse> search(String title) {
+        if (title == null || title.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Board> boards = boardRepository.findByKeyword(title);
+
+        return boards.stream()
+                .map(board -> new BoardListResponse(board.getBoardId(), board.getTitle(), board.getWriter(), board.getCreatedData()))
+                .collect(Collectors.toList());
     }
 }
