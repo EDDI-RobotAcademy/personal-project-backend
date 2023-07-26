@@ -41,6 +41,7 @@ jobs:
       - name: make properties files
         run: |
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
+          echo "${{ secrets.KAKAO_PROPERTIES }}" > ./src/main/resources/kakao.properties
           echo "${{ secrets.SSL_KEY }}"|base64 --decode > ./src/main/resources/keystore.p12
         
       - name: Build with Gradle
