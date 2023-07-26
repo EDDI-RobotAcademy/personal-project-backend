@@ -33,7 +33,7 @@ public class CommentController {
     }
     @DeleteMapping("/{commentId}")
     public Boolean deleteBoard (@PathVariable("commentId") Long commentId, @RequestHeader HttpHeaders headers) {
-        log.info("deleteBoard() ");
+        log.info("deleteComment() ");
         return commentService.delete(commentId, headers);
     }
 }

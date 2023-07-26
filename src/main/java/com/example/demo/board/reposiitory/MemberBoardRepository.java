@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MemberBoardRepository extends JpaRepository<MemberBoard, Long> {
-    @Query("SELECT b FROM MemberBoard b JOIN FETCH b.member")
+    @Query("SELECT b FROM MemberBoard b JOIN FETCH b.member left join fetch filePathList")
     List<MemberBoard> findAll(Sort sort);
     @Query("SELECT b FROM MemberBoard b JOIN FETCH b.member")
     List<MemberBoard> findAllwithPage(Pageable pageable);

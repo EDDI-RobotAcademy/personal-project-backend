@@ -23,14 +23,16 @@ public class BoardResForm {
     private String title;
     private String nickname;
     private String content;
+    private String cafeTitle;
     private LocalDate createDate;
     private LocalDate updateDate;
     @Builder
-    public BoardResForm(Long boardId, String title, String nickname, String content, LocalDate createDate, LocalDate updateDate, List<FilePaths> filePathList, Member member, List<CommentResForm> commentList) {
+    public BoardResForm(Long boardId, String title, String nickname, String content, String cafeTitle, LocalDate createDate, LocalDate updateDate, List<FilePaths> filePathList, Member member, List<CommentResForm> commentList) {
         this.boardId = boardId;
         this.title = title;
         this.nickname = nickname;
         this.content = content;
+        this.cafeTitle = cafeTitle;
         this.createDate = createDate;
         this.updateDate = updateDate;
         this.filePathList = filePathList;

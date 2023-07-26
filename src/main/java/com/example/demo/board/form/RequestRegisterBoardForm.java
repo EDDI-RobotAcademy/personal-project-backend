@@ -17,9 +17,10 @@ public class RequestRegisterBoardForm {
         private String content;
         private List<FilePaths> awsFileList;
         private String userToken;
+        private String cafeTitle;
 
         public MemberBoard toMemberBoard(Member member) {
-            return new MemberBoard(title, nickname, content, member);
+            return new MemberBoard(title, nickname, content, cafeTitle, member);
         }
 
 }

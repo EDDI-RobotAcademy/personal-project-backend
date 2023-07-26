@@ -43,6 +43,8 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .builder()
                 .boardId(mb.getBoardId())
                 .title(mb.getTitle())
+                .filePathList(mb.getFilePathList())
+                .cafeTitle(mb.getCafeTitle())
                 .createDate(mb.getCreateDate())
                 .member(mb.getMember())
                 .build()).toList();
@@ -107,6 +109,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .builder()
                 .boardId(savedBoard.getBoardId())
                 .title(savedBoard.getTitle())
+                .cafeTitle(savedBoard.getCafeTitle())
                 .content(savedBoard.getContent())
                 .createDate(savedBoard.getCreateDate())
                 .member(savedBoard.getMember())
@@ -157,6 +160,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
         }
             memberBoard.setContent(requestForm.getContent());
             memberBoard.setTitle(requestForm.getTitle());
+            memberBoard.setCafeTitle(requestForm.getCafeTitle());
             log.info("지울리스트" + memberBoard.getFilePathList().toString());
             memberBoard.getFilePathList().clear();
             log.info(memberBoard.getFilePathList().toString());
@@ -176,6 +180,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .boardId(memberBoard.getBoardId())
                 .title(memberBoard.getTitle())
                 .content(memberBoard.getContent())
+                .cafeTitle(memberBoard.getCafeTitle())
                 .createDate(memberBoard.getCreateDate())
                 .member(memberBoard.getMember())
                 .filePathList(memberBoard.getFilePathList())
