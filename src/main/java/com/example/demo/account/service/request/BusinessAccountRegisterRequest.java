@@ -12,8 +12,13 @@ public class BusinessAccountRegisterRequest {
     final private String password;
     final private RoleType roleType;
     final private Long businessNumber;
+    final private String userName;
+    final private String gender;
+    final private Integer birth;
+    final private String nickName;
+    final private String address;
 
     public Account toAccount () {
-        return new Account(email, password);
+        return new Account(email, password, userName, gender, birth , nickName, address);
     }
 }

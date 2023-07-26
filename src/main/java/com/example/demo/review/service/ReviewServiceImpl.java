@@ -10,6 +10,7 @@ import com.example.demo.restaurant.entity.Restaurant;
 import com.example.demo.restaurant.entity.RestaurantImages;
 import com.example.demo.restaurant.repository.RestaurantRepository;
 import com.example.demo.review.controller.form.ReviewModifyForm;
+import com.example.demo.review.controller.form.request.ReviewAverageRatingsForm;
 import com.example.demo.review.controller.form.response.ReviewListResponseForm;
 import com.example.demo.review.controller.form.response.ReviewReadResponseForm;
 import com.example.demo.review.entity.Review;
@@ -110,6 +111,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     @Override
     public ReviewReadResponseForm read(Long id) {
+
         final Optional<Review> maybeReview = reviewRepository.findById(id);
 
         if (maybeReview.isEmpty()) {
@@ -123,5 +125,33 @@ public class ReviewServiceImpl implements ReviewService {
 //        log.info("restaurantImagesList: " + restaurantImagesList);
 
         return new ReviewReadResponseForm(review);
+    }
+
+    @Override
+    public void delete(Long id) {
+//        restaurantImagesRepository.deleteAllByRestaurantId(id);
+        reviewRepository.deleteById(id);
+    }
+
+    @Override
+    public Float averageRatings(ReviewAverageRatingsForm averageRatingsForm) {
+
+        final Long restaurantId = averageRatingsForm.getRestaurantId();
+        final List<Review> reviews = reviewRepository.findByRestaurantId(restaurantId);
+
+        if (!reviews.isEmpty()) {
+
+            float sumRatings = 0;
+            for (Review review : reviews) {
+                sumRatings += review.getRatings();
+            }
+
+            final Integer reviewCount = reviews.size();
+
+            final Float averageRatings = sumRatings / reviewCount;
+            return averageRatings;
+        }
+
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.demo.review.service;
 
 import com.example.demo.review.controller.form.ReviewModifyForm;
+import com.example.demo.review.controller.form.request.ReviewAverageRatingsForm;
 import com.example.demo.review.controller.form.response.ReviewListResponseForm;
 import com.example.demo.review.controller.form.response.ReviewReadResponseForm;
 import com.example.demo.review.entity.Review;
@@ -14,4 +15,6 @@ public interface ReviewService {
     List<ReviewListResponseForm> list(Long restaurantId);
     Review modify(Long id, ReviewModifyForm modifyForm);
     ReviewReadResponseForm read(Long id);
+    void delete(Long id);
+    Float averageRatings(ReviewAverageRatingsForm averageRatingsForm);
 }

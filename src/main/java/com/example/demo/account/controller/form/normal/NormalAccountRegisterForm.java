@@ -15,10 +15,15 @@ public class NormalAccountRegisterForm {
     private String email;
     private String password;
     private RoleType roleType;
+    private String userName;
+    private String gender;
+    private Integer birth;
+    private String nickName;
+    private String address;
 
     public NormalAccountRegisterRequest toAccountRegisterRequest () {
 
         return new NormalAccountRegisterRequest(
-                email, password, roleType);
+                email, password, roleType, userName, gender, birth, nickName, address);
     }
 }

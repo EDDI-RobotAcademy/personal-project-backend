@@ -16,10 +16,15 @@ public class BusinessAccountRegisterForm {
     private String password;
     private RoleType roleType;
     private Long businessNumber; //사업자 등록번호
+    private String userName;
+    private String gender;
+    private Integer birth;
+    private String nickName;
+    private String address;
 
     public BusinessAccountRegisterRequest toAccountRegisterRequest () {
 
         return new BusinessAccountRegisterRequest(
-                email, password, roleType, businessNumber);
+                email, password, roleType, businessNumber, userName, gender, birth, nickName, address);
     }
 }
