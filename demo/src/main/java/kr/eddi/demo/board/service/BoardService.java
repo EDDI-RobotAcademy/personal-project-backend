@@ -21,4 +21,5 @@ public interface BoardService {
     Board modify(Long id, BoardModifyRequest request);
 
     List<Board> myBoards(String userToken);
+    void increaseView(Long id);
 }

@@ -1,5 +1,6 @@
 package kr.eddi.demo.board.service;
 
+import jakarta.transaction.Transactional;
 import kr.eddi.demo.account.entity.Account;
 import kr.eddi.demo.account.repository.AccountRepository;
 
@@ -34,7 +35,7 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public List<Board> list() {
-        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "view"));
     }
 
     @Override
@@ -77,5 +78,14 @@ public class BoardServiceImpl implements BoardService{
         String nickName=maybeAccount.get().getNickname();
 
         return boardRepository.findByWriter(nickName);
+    }
+    @Override
+    public void increaseView(Long id) {
+        Optional<Board> maybeBoard = boardRepository.findById(id);
+        if (maybeBoard.isPresent()) {
+            Board board = maybeBoard.get();
+            board.setView(board.getView() + 1);
+            boardRepository.save(board);
+        }
     }
 }

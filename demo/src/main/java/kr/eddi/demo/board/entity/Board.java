@@ -26,9 +26,13 @@ public class Board {
     @JoinColumn(name = "marker_id")
     private Marker marker;
 
+
+
     private String writer;
     private String imgPath;
     private String boardTransport;
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int view;
 
     public Board(String boardTitle, String boardInfo, String coordLat, String coordLng, String writer,String imgPath, String boardTransport) {
         this.boardTitle = boardTitle;
@@ -37,6 +41,7 @@ public class Board {
         this.writer = writer;
         this.imgPath=imgPath;
         this.boardTransport=boardTransport;
+
     }
 
     // Getter와 Setter (생략 가능)

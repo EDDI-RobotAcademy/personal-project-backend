@@ -41,6 +41,7 @@ public class BoardController {
     @PostMapping("/read/{id}")
     public Board readBoard (@PathVariable("id") Long id){
         log.info("보드 가져와");
+        boardService.increaseView(id);
         return boardService.read(id);
     }
     @DeleteMapping("/{id}")
