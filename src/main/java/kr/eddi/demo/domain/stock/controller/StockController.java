@@ -1,6 +1,8 @@
 package kr.eddi.demo.domain.stock.controller;
 
 import kr.eddi.demo.domain.stock.controller.form.response.StockNameResponseForm;
+import kr.eddi.demo.domain.stock.controller.form.response.StockOCVAResponseForm;
+import kr.eddi.demo.domain.stock.controller.form.response.StockOpinionResponseForm;
 import kr.eddi.demo.domain.stock.entity.Stock;
 import kr.eddi.demo.domain.stock.service.StockService;
 import lombok.RequiredArgsConstructor;
@@ -20,21 +22,21 @@ import java.util.List;
 @RequestMapping("/stock")
 public class StockController {
     final private StockService stockService;
-
-    @GetMapping("/save-data")
-    public void saveStockData ( ) {
-
-        String requestSaveUrl = "http://localhost:8000/stock/save-data";
-        stockService.save(requestSaveUrl);
-    }
-    @GetMapping("/list")
-    public List<Stock> stockList () {
-
-        List<Stock> returnedBoardList = stockService.list();
-        return returnedBoardList;
-    }
     @GetMapping("/name/{ticker}")
     public StockNameResponseForm responseStockName (@PathVariable("ticker") String ticker) {
        return stockService.getStockName(ticker);
+    }
+    @GetMapping("/list/{OCVA}/{ascending}/{pageNumber}")
+    public List<StockOCVAResponseForm> stockListResponse (@PathVariable("OCVA") String OCVA,
+                                                          @PathVariable("ascending") String ascending,
+                                                          @PathVariable("pageNumber") int pageNumber
+                                                          ) {
+        return stockService.list(OCVA, ascending, pageNumber);
+    }
+    @GetMapping("/opinion-list/{sortItem}/{ascending}/{pageNumber}")
+    public List<StockOpinionResponseForm> stockOpinionListResponse (@PathVariable("sortItem") String sortItem,
+                                                                    @PathVariable("ascending") String ascending,
+                                                                    @PathVariable("pageNumber") int pageNumber) {
+        return stockService.opinionList(sortItem, ascending, pageNumber);
     }
 }

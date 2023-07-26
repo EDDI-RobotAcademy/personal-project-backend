@@ -1,5 +1,7 @@
 package kr.eddi.demo.domain.account.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import kr.eddi.demo.domain.account.controller.form.AccountLogOutRequestForm;
 import kr.eddi.demo.domain.account.controller.form.AccountLoginRequestForm;
 import kr.eddi.demo.domain.account.controller.form.AccountRegisterRequestFrom;
@@ -19,18 +21,16 @@ public class AccountController {
     final private AccountService accountService;
     @PostMapping("/sign-up")
     public boolean accountRegister (@RequestBody AccountRegisterRequestFrom requestFrom) {
-        return accountService.register(requestFrom.toAccountRegisterRequest());
+        return accountService.register(requestFrom);
     }
 
     @PostMapping("/sign-in")
-    public String accountSignIn (@RequestBody AccountLoginRequestForm requestForm) {
-        String userToken = accountService.signIn(requestForm.toAccountRequest());
-        log.info("userToken" + userToken);
-        return userToken;
+    public Boolean accountSignIn (@RequestBody AccountLoginRequestForm requestForm,
+                                  HttpServletResponse response) {
+        return accountService.signIn(requestForm, response);
     }
     @PostMapping("/sign-out")
-    public void accountSignOut (@RequestBody AccountLogOutRequestForm requestForm) {
-        log.info("로그아웃" + requestForm);
-        accountService.signOut(requestForm.toAccountLogOutRequest());
+    public void accountSignOut (HttpServletRequest request, HttpServletResponse response) {
+        accountService.signOut(request, response);
     }
 }
