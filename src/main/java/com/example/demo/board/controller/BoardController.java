@@ -1,6 +1,9 @@
 package com.example.demo.board.controller;
 
 import com.example.demo.board.controller.form.BoardRequestForm;
+import com.example.demo.board.controller.response.BoardListResponse;
+import com.example.demo.board.controller.response.BoardReadResponse;
+import com.example.demo.board.controller.response.BoardResponse;
 import com.example.demo.board.entity.Board;
 import com.example.demo.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -18,22 +21,28 @@ public class BoardController {
     final private BoardService boardService;
 
     @GetMapping("/list")
-    public List<Board> boardList () {
-        log.info("boardList");
-
+    public List<BoardListResponse> boardList () {
         return boardService.list();
     }
 
     @PostMapping("/register")
-    public Board registerBoard(@RequestBody BoardRequestForm form, @RequestHeader("Authorization") String accessToken) {
+    public BoardResponse registerBoard(@RequestBody BoardRequestForm form, @RequestHeader("Authorization") String accessToken) {
 
-        return boardService.register(accessToken, form.toBoard());
+        return boardService.register(accessToken, form);
     }
 
     @GetMapping("/{boardId}")
-    public Board read(@PathVariable("boardId") Long boardId) {
-        log.info("read");
-
+    public BoardReadResponse read(@PathVariable("boardId") Long boardId) {
         return boardService.read(boardId);
+    }
+
+    @DeleteMapping("/{boardId}")
+    public void deleteBoard(@PathVariable("boardId") Long boardId,@RequestHeader("Authorization") String accessToken) {
+        boardService.delete(boardId, accessToken);
+    }
+
+    @PutMapping("/{boardId}")
+    public BoardResponse modify(@PathVariable("boardId") Long boardId, @RequestBody BoardRequestForm form, @RequestHeader("Authorization") String accessToken) {
+        return boardService.modify(boardId, form, accessToken);
     }
 }
