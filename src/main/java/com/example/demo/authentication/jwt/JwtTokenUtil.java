@@ -93,12 +93,10 @@ public class JwtTokenUtil {
     public static String checkClaims(String accessToken, String refreshToken, String secretKey) {
         try{
             Claims claims =Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken).getBody();
-            log.info("try accessToken : " + accessToken);
         }catch (ExpiredJwtException e){
             Claims claims =Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshToken).getBody();
             String email = claims.get("email").toString();
             accessToken = createAccessToken(email, secretKey, 86400000);
-            log.info("catch accessToken : " + accessToken);
         }
 
         return accessToken;
