@@ -2,6 +2,7 @@ package kh.project.demo.library.book.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import kh.project.demo.library.member.entity.Member;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -20,8 +21,11 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookNumber; // 도서 번호
 
+    @Setter
     @JoinColumn(name = "memberNumber")
-    private Long managerNumber; // 등록 관리자 번호
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    private Member manager; // 등록 관리자 번호
+    // 한 명의 관리자는 한 개의 도서를 관리할 수 있다.
 
 //    @Column(name="isbn" , unique=true)
 //    private String isbn; // 국제 표준 도서 번호
@@ -34,10 +38,14 @@ public class Book {
     private String publishCompany;
 
     @Setter
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Enumerated(EnumType.STRING)
     private KoreanDecimalClassification categorizationSymbol; // 분류 기호 -> 한국 십진 분류표
+
+    @Setter
+    private Integer rentalAmount; // 대여 가능 권 수
 
     @Setter
     private Integer bookAmount; // 전체 도서 권 수
@@ -65,6 +73,10 @@ public class Book {
 //    }
 
     public void minusAmount () {
-        this.bookAmount -= 1;
+        this.rentalAmount -= 1;
+    }
+
+    public void plusAmount () {
+        this.rentalAmount += 1;
     }
 }

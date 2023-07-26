@@ -66,14 +66,17 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorizeRequests) -> {
             authorizeRequests.requestMatchers(
                     "/library-member/sign-up", // 회원가입
-                    "/application/json", // 로그인
+                    "/library-member/sign-in", // 로그인
                     "/library-member/check-id", // 아이디 중복 체크
                     "/library-member/check-email", // 이메일 중복 체크
                     "/email-authentication/send-email", // 이메일 코드 전송
                     "/email-authentication/authentication-code", // 이메일 코드 인증
                     "/book-list/whole-book", // 전체 도서 목록
                     "/book-list/category-book/{categorizationSymbol}", // 카테고리 별 도서 목록
-                    "/book-list/read-book/{bookNumber}" // 개별 도서 읽기
+                    "/book-list/read-book/{bookNumber}", // 개별 도서 읽기
+                    "/library-service/hope-book-list", // 희망 도서 목록
+                    "/library-service/hope-book-read", // 개별 희망 도서 읽기
+                    "/book-list/registration-date" // 신간 도서 목록
             ).anonymous();
             authorizeRequests.requestMatchers(
                     "/book-list/register-book", // 도서 등록
@@ -83,7 +86,8 @@ public class SecurityConfig {
                     ).hasAnyRole("MANAGER");
             authorizeRequests.requestMatchers(
                     "/library-service/rental", // 도서 대여
-                    "/library-service/hope-book" // 희망 도서 신청
+                    "/library-service/hope-book", // 희망 도서 신청
+                    "/library-service/extension" // 도서 대여기간 연장
             ).hasAnyRole("NORMAL", "MANAGER");
             authorizeRequests.anyRequest().permitAll(); // 모두 접근 가능
         });
@@ -95,7 +99,7 @@ public class SecurityConfig {
         http.authenticationManager(authenticationManager);
 
         // JWT 로그인용 필터 등록
-        JWTLoginFilter jwtLoginFilter = new JWTLoginFilter("/application/json");
+        JWTLoginFilter jwtLoginFilter = new JWTLoginFilter("/library-member/sign-in");
         jwtLoginFilter.setAuthenticationManager(authenticationManager); // AuthenticationManager 설정 - 반드시 필요
         jwtLoginFilter.setAuthenticationSuccessHandler(new JWTLoginSuccessHandler(jwtUtil)); // 성공 핸들러 등록
         jwtLoginFilter.setAuthenticationFailureHandler(new JWTLoginFailHandler()); // 실패 핸들러 등록
