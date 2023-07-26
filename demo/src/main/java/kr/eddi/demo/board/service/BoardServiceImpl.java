@@ -1,16 +1,21 @@
 package kr.eddi.demo.board.service;
 
+import kr.eddi.demo.account.entity.Account;
+import kr.eddi.demo.account.repository.AccountRepository;
+
 import kr.eddi.demo.board.controller.form.BoardModifyRequest;
 import kr.eddi.demo.board.controller.form.BoardRegisterRequestForm;
 import kr.eddi.demo.board.entity.Board;
 import kr.eddi.demo.board.repository.BoardRepository;
-import kr.eddi.demo.board.service.reqeust.BoardRegisterRequest;
+
+import kr.eddi.demo.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -18,12 +23,13 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService{
-
+    final private AccountRepository accountRepository;
     final private  BoardRepository boardRepository;
+    @Autowired
+    final private RedisService redisService;
     @Override
     public Board boardRegister(BoardRegisterRequestForm form) {
-        Board board = boardRepository.save(form.toBoardRequest().toBoard());
-        return board;
+        return boardRepository.save(form.toBoardRequest().toBoard());
     }
 
     @Override
@@ -55,6 +61,21 @@ public class BoardServiceImpl implements BoardService{
         Board board = maybeBoard.get();
         board.setBoardTitle(request.getBoardTitle());
         board.setBoardInfo(request.getBoardInfo());
+        board.setBoardTransport(request.getBoardTransport());
+        log.info(request.getBoardTransport()+"왜 아난옴");
         return boardRepository.save(board);
+    }
+
+    @Override
+    public List<Board> myBoards(String userToken) {
+        Long id = redisService.getValueByKey(userToken);
+        log.info("찾은 id: "+id);
+        Optional<Account> maybeAccount= accountRepository.findById(id);
+        if (maybeAccount.isEmpty()){
+            return null;
+        }
+        String nickName=maybeAccount.get().getNickname();
+
+        return boardRepository.findByWriter(nickName);
     }
 }

@@ -14,7 +14,9 @@ public class BoardRegisterRequest {
     final private String coordLat;
     final private String coordLng;
     final private String writer;
+    final private String imgPath;
+    final private String boardTransport;
 
     public Board toBoard(){
-        return new Board(boardTitle,boardInfo,coordLat,coordLng, writer);}
+        return new Board(boardTitle,boardInfo,coordLat,coordLng, writer,imgPath,boardTransport);}
 }

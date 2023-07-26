@@ -1,6 +1,7 @@
 package kr.eddi.demo.account.service;
 
 import kr.eddi.demo.account.controller.form.AccountLoginRequestForm;
+import kr.eddi.demo.account.controller.form.PasswordCheckForm;
 import kr.eddi.demo.account.entity.Account;
 import kr.eddi.demo.account.repository.AccountRepository;
 import kr.eddi.demo.account.repository.UserTokenRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,5 +67,14 @@ public class AccountServiceImpl implements AccountService {
            return account.get().getNickname();
        }
     return null;
+    }
+
+    @Override
+    public Boolean checkPassword(PasswordCheckForm form) {
+        Optional<Account> maybeAccount= accountRepository.findByNickname(form.getNickName());
+        if (maybeAccount.isEmpty()){
+            return false;
+        }
+        return Objects.equals(maybeAccount.get().getPassword(), form.getPassword());
     }
 }
