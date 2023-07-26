@@ -121,7 +121,6 @@ public class AccountServiceImpl implements AccountService{
         Long accountId = account.getId();
         playlistRepository.deleteByAccountId(accountId);
 
-        // 이제 account 레코드를 안전하게 삭제할 수 있습니다.
         accountRepository.deleteByEmail(email);
         return true;
     }
