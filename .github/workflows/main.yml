@@ -9,6 +9,7 @@ env:
   DOCKER_IMAGE: ghcr.io/${{ github.actor }}/personal-backend
   VERSION: ${{ github.sha }}
   NAME: personal-backend
+  REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
  
 jobs:
   build:
@@ -42,6 +43,7 @@ jobs:
         run: |
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
           echo "${{ secrets.KAKAO_PROPERTIES }}" > ./src/main/resources/kakao.properties
+          echo "${{ secrets.REDIS_PROPERTIES }}" > ./src/main/resources/redis.properties
           echo "${{ secrets.SSL_KEY }}"|base64 --decode > ./src/main/resources/keystore.p12
         
       - name: Build with Gradle
