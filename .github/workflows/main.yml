@@ -41,6 +41,7 @@ jobs:
 
       - name: make properties files
         run: |
+          echo "${{ secrets.APPLICATION_YAML }}" > ./src/main/resources/application.yaml
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
           echo "${{ secrets.KAKAO_PROPERTIES }}" > ./src/main/resources/kakao.properties
           echo "${{ secrets.REDIS_PROPERTIES }}" > ./src/main/resources/redis.properties
