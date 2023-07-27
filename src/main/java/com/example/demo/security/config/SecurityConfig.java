@@ -60,6 +60,7 @@ public class SecurityConfig {
                 .requestMatchers("/account/log-in").permitAll()
                 .requestMatchers("/board/**").permitAll()
                 .requestMatchers("/map/**").permitAll()
+                .requestMatchers(HttpMethod.GET,"/map/boardMapList/**").permitAll()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, accountDetailsService),
                         UsernamePasswordAuthenticationFilter.class);
