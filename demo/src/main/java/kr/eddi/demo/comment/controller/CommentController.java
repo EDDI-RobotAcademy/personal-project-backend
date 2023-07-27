@@ -1,12 +1,15 @@
 package kr.eddi.demo.comment.controller;
 
-import kr.eddi.demo.comment.controller.form.CommentListRequestForm;
+
 import kr.eddi.demo.comment.controller.form.CommentRegisterForm;
+
 import kr.eddi.demo.comment.entity.Comment;
+import kr.eddi.demo.comment.entity.ReportedComment;
 import kr.eddi.demo.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 public class CommentController {
-    @Autowired
     final private CommentService commentService;
 
     @PostMapping(value = "/list/{boardId}", consumes = "application/json")
@@ -34,5 +36,17 @@ public class CommentController {
     @DeleteMapping("/{id}")
     public void deleteComment(@PathVariable("id") Long id){
         commentService.delete(id);
+    }
+    @PostMapping("/{commentId}/report")
+    public ResponseEntity<String> reportComment(
+            @PathVariable("commentId") Long commentId) {
+        commentService.reportComment(commentId);
+        return ResponseEntity.ok("Comment reported successfully.");
+    }
+
+    @GetMapping("/reported-comments")
+    public ResponseEntity<List<ReportedComment>> getAllReportedComments() {
+        List<ReportedComment> reportedComments = commentService.getAllReportedComments();
+        return ResponseEntity.ok(reportedComments);
     }
 }
