@@ -126,13 +126,14 @@ log.info(String.valueOf(accountInfo));
         return managerAccount.getEmail();
     }
 
-    // 받아온 usertoken으로 이름 받아오기
-    @GetMapping("/checktoken")
-    public String checkUserToken(@RequestBody AccountUserTokenRequestForm accountUserTokenRequestForm){
+    // 받아온 usertoken으로 계정 정보 받아오기
+    @PostMapping("/checktoken")
+    public Account checkUserToken(@RequestBody AccountUserTokenRequestForm accountUserTokenRequestForm){
         log.info("checkUserToken() ");
+        log.info(accountUserTokenRequestForm.getUserToken());
         Account account = accountService.checkUserToken(accountUserTokenRequestForm);
 
-        return account.getAccountName();
+        return account;
     }
 
 }

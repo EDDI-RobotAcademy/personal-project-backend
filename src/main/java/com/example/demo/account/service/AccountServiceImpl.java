@@ -170,12 +170,15 @@ public class AccountServiceImpl implements AccountService{
 
     }
 
-    // 받아온 usertoken으로 이름 받아오기
+    // 받아온 usertoken으로 계정 정보 받아오기
     @Override
     public Account checkUserToken(AccountUserTokenRequestForm accountUserTokenRequestForm) {
+        System.out.println(accountUserTokenRequestForm.getUserToken());
         Optional<Account> maybeAccount = accountRepository.findByUserToken(accountUserTokenRequestForm.getUserToken());
-
+        if(maybeAccount.isEmpty()){
+            log.info("에러 발생");
+            return null;
+        }
         return maybeAccount.get();
     }
-
 }
