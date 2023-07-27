@@ -32,6 +32,7 @@ public interface BoardService {
     BoardResponseForm getBoardsByPage(int pageNumber, int pageSize);
     void addLikeCount(Long boardId, Long userId);
     boolean isAlreadyLiked(Long boardId, Long userId);
+    int getLikeCount(Long boardId);
 
 //    Page<Board>boardList(Pageable pageable);
 //     Page<Board> boardSearchList(String searchKeyword, Pageable pageable);

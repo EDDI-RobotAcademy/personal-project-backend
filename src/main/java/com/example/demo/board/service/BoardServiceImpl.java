@@ -135,6 +135,15 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
+    public int getLikeCount(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElse(null);
+        if (board != null) {
+            return board.getLikes().size();
+        }
+        return 0;
+    }
+
+    @Override
     public List<BoardCategoryListForm> getCategoryList() {
         List<BoardCategoryListForm> categoryList = new ArrayList<>();
         for (BoardCategory category: BoardCategory.values()) {

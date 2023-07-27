@@ -30,6 +30,7 @@ public class Board {
     @Setter
     private String content;
     @Setter
+    @Getter
     @Column(columnDefinition = "integer default 0", nullable = false)
     private Integer likeCount = 0;
     @Setter
@@ -53,6 +54,7 @@ public class Board {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.EAGER) // Eager Loading 설정
     private List<BoardLike> likes = new ArrayList<>();

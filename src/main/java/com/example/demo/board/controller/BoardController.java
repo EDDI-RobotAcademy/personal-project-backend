@@ -96,4 +96,10 @@ public class BoardController {
             return ResponseEntity.badRequest().body("Failed to increase like count.");
         }
     }
+    @GetMapping("/board/like-count/{boardId}")
+    public ResponseEntity<Integer> getLikeCount(@PathVariable Long boardId) {
+        int likeCount = boardService.getLikeCount(boardId);
+        return ResponseEntity.ok(likeCount);
+    }
+
 }
