@@ -64,6 +64,27 @@ public class MemberBoardServiceImpl implements MemberBoardService {
         return boardResFormList;
     }
 
+    @Override
+    public List<BoardResForm> listWithMember(HttpHeaders headers, int page) {
+        Optional<Member> isMember = memberRepository.findByUserToken(Objects.requireNonNull(headers.get("authorization")).get(0));
+        if (isMember.isEmpty()) {
+            log.info("회원이 아닙니다.");
+            return null;
+        }
+        Member findMember = isMember.get();
+        Pageable pageable = PageRequest.of(page-1, 10 ,Sort.by("boardId").descending());
+        List<MemberBoard> memberBoardList = boardRepository.findAllByMemberId(findMember.getId(), pageable);
+
+        List<BoardResForm> boardResFormList = memberBoardList.stream().map((mb)-> BoardResForm
+                .builder()
+                .boardId(mb.getBoardId())
+                .title(mb.getTitle())
+                .nickname(mb.getNickname())
+                .createDate(mb.getCreateDate())
+                .build()).toList();
+        return boardResFormList;
+    }
+
 
     @Override
     @Transactional
@@ -215,5 +236,22 @@ public class MemberBoardServiceImpl implements MemberBoardService {
             return totalBoard/size;
         }else{
         return totalBoard/size+1;}
+    }
+
+    @Override
+    public Integer getMyBoardTotalPage(HttpHeaders headers) {
+        Optional<Member> isMember = memberRepository.findByUserToken(Objects.requireNonNull(headers.get("authorization")).get(0));
+        if (isMember.isEmpty()) {
+            log.info("회원이 아닙니다.");
+            return null;
+        }
+        Member findMember = isMember.get();
+        Integer totalBoard = (int) boardRepository.findById(findMember.getId()).stream().count();
+        log.info(String.valueOf(totalBoard));
+        Integer size = 10;
+        if(totalBoard % size ==0){
+            return totalBoard/size;
+        }else{
+            return totalBoard/size+1;}
     }
 }

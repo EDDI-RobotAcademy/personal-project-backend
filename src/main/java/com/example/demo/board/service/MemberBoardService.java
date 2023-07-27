@@ -15,6 +15,9 @@ public interface MemberBoardService {
 
     List<BoardResForm> list();
     List<BoardResForm> list(@RequestParam(value="page", required=false)Integer page);
+    List<BoardResForm> listWithMember(HttpHeaders headers, int page);
+    Integer getMyBoardTotalPage(HttpHeaders headers);
+
     MemberBoard register(RequestRegisterBoardForm requestForm);
 
     BoardResForm read(Long boardId);

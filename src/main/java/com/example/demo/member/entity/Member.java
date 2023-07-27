@@ -2,6 +2,7 @@ package com.example.demo.member.entity;
 
 import com.example.demo.board.entity.MemberBoard;
 import com.example.demo.comment.entity.Comment;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class Member {
     @Getter
     private String email;
     @Getter
+    @JsonIgnore
     private String password;
     @Getter
     private String nickname;

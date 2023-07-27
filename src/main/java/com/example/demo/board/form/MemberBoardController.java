@@ -76,5 +76,16 @@ public class MemberBoardController {
 
     }
 
+    @GetMapping("/list/member/{page}")
+    public List<BoardResForm> boardListWithMember(@RequestHeader HttpHeaders headers, @PathVariable("page") Integer page) {
+        log.info("boardListWithMember()");
+        return  boardService.listWithMember(headers, page);
+    }
+    @GetMapping(value = "/list/my-board-total-page")
+    public Integer getMyBoardTotalPage(@RequestHeader HttpHeaders headers){
+        log.info("boardList141414()");
+
+        return  boardService.getMyBoardTotalPage(headers);
+    }
 
 }

@@ -2,7 +2,6 @@ package com.example.demo.board.reposiitory;
 
 
 import com.example.demo.board.entity.MemberBoard;
-import io.lettuce.core.GeoArgs;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +20,6 @@ public interface MemberBoardRepository extends JpaRepository<MemberBoard, Long> 
     Optional<MemberBoard> findByIdWithMember(Long boardId);
     @Query("SELECT b FROM MemberBoard b JOIN FETCH b.member WHERE LOWER(b.content) LIKE %:keyword%")
     List<MemberBoard> findByContentContaining(String keyword);
+
+    List<MemberBoard> findAllByMemberId(Long findedMember, Pageable pageable);
 }
