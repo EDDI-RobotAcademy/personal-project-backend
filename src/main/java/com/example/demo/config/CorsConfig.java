@@ -17,7 +17,7 @@ public class CorsConfig implements WebMvcConfigurer {
                                 "https://localhost:8080",
                                 "https://127.0.0.1:8080",
                                 "https://192.168.20.3:8080",
-                                "https://coffee_ground.site"
+                                "https://coffeeground.site"
                         )
                 .allowedMethods("GET", "POST", "PUT", "DELETE");
     }
