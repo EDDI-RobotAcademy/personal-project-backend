@@ -2,6 +2,7 @@ package com.example.demo.domain.playlist.repository;
 
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.playlist.entity.Playlist;
+import com.example.demo.domain.playlist.service.PlaylistService;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
@@ -32,6 +34,9 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
     @Query("SELECT p FROM Playlist p LEFT JOIN FETCH p.account LEFT JOIN FETCH p.songList LEFT JOIN FETCH p.likers where p.account = :account")
     Slice<Playlist> findPlaylistByAccountId(Account account,Pageable pageable);
+
+    @Query("SELECT p FROM Playlist p LEFT JOIN FETCH p.account LEFT JOIN FETCH p.songList where p.id = :playlistId")
+    Optional<Playlist> findByPlaylistId(Long playlistId);
 
     @Modifying
     @Transactional

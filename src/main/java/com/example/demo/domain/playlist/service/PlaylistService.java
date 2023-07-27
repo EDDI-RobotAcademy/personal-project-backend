@@ -35,4 +35,10 @@ public interface PlaylistService {
     long countAllPlaylist();
 
     long countTotalPageByLoginAccount(HttpServletRequest request);
+
+    List<PlaylistReadResponseForm> likedPlaylistByLoginAccount(int page, HttpServletRequest request);
+
+    long countLikedPlaylist(HttpServletRequest request);
+
+    long countPageLikedPlaylist(HttpServletRequest request);
 }

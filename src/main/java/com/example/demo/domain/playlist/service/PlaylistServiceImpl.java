@@ -245,4 +245,63 @@ public class PlaylistServiceImpl implements PlaylistService{
 
         return likedPlaylists.contains(playlist);
     }
+
+    @Override
+    @Transactional
+    public List<PlaylistReadResponseForm> likedPlaylistByLoginAccount(int page, HttpServletRequest request){
+        String email = jwtTokenUtil.getEmailFromCookie(request);
+
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+        Playlist[] playlists = account.getLikedPlaylists().toArray(new Playlist[0]);
+
+        int start = (page-1) * PAGE_SIZE;
+        int end = start + PAGE_SIZE;
+
+        if(end>playlists.length){
+            end = playlists.length;
+        }
+
+        List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
+
+        for(int i = start; i < end; i++){
+            Playlist playlist = playlistRepository.findByPlaylistId(playlists[i].getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
+
+            PlaylistReadResponseForm responseForm = new PlaylistReadResponseForm(playlist, playlist.getSongList(), playlist.getLikers().size());
+            responseForms.add(responseForm);
+        }
+        return responseForms;
+    }
+
+    @Override
+    @Transactional
+    public long countLikedPlaylist(HttpServletRequest request) {
+        String email = jwtTokenUtil.getEmailFromCookie(request);
+
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+        long count = account.getLikedPlaylists().size();
+
+        return count;
+    }
+
+    @Override
+    @Transactional
+    public long countPageLikedPlaylist(HttpServletRequest request) {
+        String email = jwtTokenUtil.getEmailFromCookie(request);
+
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+        long count = account.getLikedPlaylists().size();
+
+        if(count % PAGE_SIZE == 0){
+            return (count / PAGE_SIZE);
+        }else{
+            return (count / PAGE_SIZE) + 1;
+        }
+    }
 }
