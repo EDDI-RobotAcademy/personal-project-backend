@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 @Slf4j
@@ -60,6 +61,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void delete(Long id) {
+        List<ReportedComment> reportedComments = reportedCommentRepository.findByCommentId(id);
+
+        // Delete all reported comments for the comment
+        for (ReportedComment reportedComment : reportedComments) {
+            reportedCommentRepository.deleteById(reportedComment.getId());
+        }
         commentRepository.deleteById(id);
     }
 
@@ -79,7 +86,20 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<ReportedComment> getAllReportedComments() {
-        return reportedCommentRepository.findAll();
+    public List<Comment> getAllReportedComments() {
+        List<ReportedComment> ReportedList =reportedCommentRepository.findAll();
+        // 신고된 댓글 리스트 이다
+        List<Comment> ReportedCommentList =new ArrayList<>();
+        for (ReportedComment comments:ReportedList) {
+            Comment comment=comments.getComment();
+            ReportedCommentList.add(comment);
+        }
+        return ReportedCommentList;
+    }
+
+    @Override
+    public void deleteReported(Long id) {
+       Optional<ReportedComment> maybeReport = reportedCommentRepository.findReportByCommentId(id);
+        maybeReport.ifPresent(reportedComment -> reportedCommentRepository.deleteById(reportedComment.getId()));
     }
 }

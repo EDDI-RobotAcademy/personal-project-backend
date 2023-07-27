@@ -20,5 +20,7 @@ public interface CommentService {
     void delete(Long id);
     public void reportComment(Long commentId);
 
-    List<ReportedComment> getAllReportedComments();
+    List<Comment> getAllReportedComments();
+
+    void deleteReported(Long id);
 }

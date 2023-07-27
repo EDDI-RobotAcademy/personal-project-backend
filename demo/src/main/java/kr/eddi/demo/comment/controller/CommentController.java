@@ -37,6 +37,12 @@ public class CommentController {
     public void deleteComment(@PathVariable("id") Long id){
         commentService.delete(id);
     }
+
+
+    @DeleteMapping("/reported-comment/{id}")
+    public void deleteReportedComment(@PathVariable("id") Long id){
+        commentService.deleteReported(id);
+    }
     @PostMapping("/{commentId}/report")
     public ResponseEntity<String> reportComment(
             @PathVariable("commentId") Long commentId) {
@@ -45,8 +51,7 @@ public class CommentController {
     }
 
     @GetMapping("/reported-comments")
-    public ResponseEntity<List<ReportedComment>> getAllReportedComments() {
-        List<ReportedComment> reportedComments = commentService.getAllReportedComments();
-        return ResponseEntity.ok(reportedComments);
+    public List<Comment> getAllReportedComments() {
+        return commentService.getAllReportedComments();
     }
 }
