@@ -18,10 +18,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CommentServiceImpl implements CommentService{
+public class CommentServiceImpl implements CommentService {
 
     final private MemberRepository memberRepository;
     final private MemberBoardRepository boardRepository;
@@ -36,14 +37,14 @@ public class CommentServiceImpl implements CommentService{
             log.info("회원이 아닙니다.");
             return null;
         }
-        Member savedMember= isMember.get();
+        Member savedMember = isMember.get();
         Optional<MemberBoard> isBoard = boardRepository.findById(boardId);
         if (isBoard.isEmpty()) {
             log.info("정보가 없습니다!");
             return null;
         }
         MemberBoard savedBoard = isBoard.get();
-        Comment newComment=requestCommentForm.toComment(savedBoard, savedMember);
+        Comment newComment = requestCommentForm.toComment(savedBoard, savedMember);
         commentRepository.save(newComment);
 
         return memberBoardService.read(boardId);
@@ -57,15 +58,14 @@ public class CommentServiceImpl implements CommentService{
             log.info("회원이 아닙니다.");
             return null;
         }
-        Member savedMember= maybeMember.get();
-        if(savedMember.getUserToken().equals(requestCommentForm.getUserToken())){
-
-            Optional<Comment> maybeComment = commentRepository.findById(commentId);
-            if (maybeComment.isEmpty()) {
-                log.info("정보가 없습니다!");
-                return null;
-            }
-            Comment finedComment = maybeComment.get();
+        Member savedMember = maybeMember.get();
+        Optional<Comment> maybeComment = commentRepository.findById(commentId);
+        if (maybeComment.isEmpty()) {
+            log.info("정보가 없습니다!");
+            return null;
+        }
+        Comment finedComment = maybeComment.get();
+        if (savedMember.getUserToken().equals(finedComment.getMember().getUserToken())) {
             finedComment.setText(requestCommentForm.getText());
             CommentResForm comment = CommentResForm
                     .builder()
@@ -74,7 +74,8 @@ public class CommentServiceImpl implements CommentService{
                     .modifiedDate(finedComment.getModifiedDate())
                     .member(finedComment.getMember())
                     .build();
-            return comment;}
+            return comment;
+        }
         return null;
     }
 
