@@ -70,11 +70,13 @@ public class JwtTokenUtil {
     }
 
     // Claims에서 email 꺼내기
-    public static String getEmail(String token, String secretKey) {
+    public static String getEmail(String token, String refresh, String secretKey) {
+        token = isExpired(token, refresh, secretKey);
         return extractClaims(token, secretKey).get("email").toString();
     }
 
-    public static Date getExp(String token, String secretKey){
+    public static Date getExp(String token, String refresh, String secretKey){
+        token = isExpired(token, refresh, secretKey);
         return extractClaims(token, secretKey).getExpiration();
     }
 
@@ -113,34 +115,41 @@ public class JwtTokenUtil {
 
     public String getEmailFromCookie(HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
-        String email = null;
+
+        String token = null;
+        String refresh = null;
 
         for(Cookie cookie : cookies) {
             if (cookie.getName().equals("AccessToken")) {
-                String token = cookie.getValue();
-                email = JwtTokenUtil.getEmail(token, secretKey);
-                break;
+                token = cookie.getValue();
+            } else if (cookie.getName().equals("RefreshToken")) {
+                refresh = cookie.getValue();
             }
         }
+
+        String email = JwtTokenUtil.getEmail(token, refresh, secretKey);
         return email;
     }
 
     public void deleteLoginInfo(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-
+        String token = null;
+        String refresh = null;
         for(Cookie cookie : cookies){
             if(cookie.getName().equals("AccessToken")){
-                String token = cookie.getValue();
+                token = cookie.getValue();
 
-                Date exp = JwtTokenUtil.getExp(token, secretKey);
-                Date date = new Date();
-
-                redisService.registBlackList(token, exp.getTime()-date.getTime());
             }
             if(cookie.getName().equals("RefreshToken")){
-                String token = cookie.getValue();
-                redisService.deleteByKey(token);
+                refresh = cookie.getValue();
+
             }
         }
+
+        Date exp = JwtTokenUtil.getExp(token, refresh, secretKey);
+        Date date = new Date();
+
+        redisService.registBlackList(token, exp.getTime()-date.getTime());
+        redisService.deleteByKey(refresh);
     }
 }

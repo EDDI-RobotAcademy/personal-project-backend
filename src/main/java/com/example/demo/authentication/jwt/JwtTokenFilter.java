@@ -72,7 +72,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         response.addCookie(accessCookie);
 
         // AccessToken에서 Email 추출
-        String email = JwtTokenUtil.getEmail(token, secretKey);
+        String email = JwtTokenUtil.getEmail(token, refreshToken, secretKey);
 
         // 추출한 Email로 Account 찾아오기
         Account loginAccount = accountService.getLoginAccountByEmail(email);
