@@ -3,13 +3,16 @@ package com.example.demo.board.service;
 
 import com.example.demo.board.entity.FilePaths;
 import com.example.demo.board.entity.MemberBoard;
-import com.example.demo.board.form.*;
+import com.example.demo.board.form.BoardResForm;
+import com.example.demo.board.form.CommentResForm;
+import com.example.demo.board.form.RequestModifyBoardForm;
+import com.example.demo.board.form.RequestRegisterBoardForm;
 import com.example.demo.board.reposiitory.FilePathsRepository;
 import com.example.demo.board.reposiitory.MemberBoardRepository;
-import com.example.demo.comment.entity.Comment;
+import com.example.demo.comment.repository.CommentRepository;
 import com.example.demo.member.entity.Member;
 import com.example.demo.member.repository.MemberRepository;
-import com.example.demo.comment.repository.CommentRepository;
+import com.example.demo.redis.RedisService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,13 +35,14 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     final private MemberBoardRepository boardRepository;
     final private FilePathsRepository filePathsRepository;
     final private MemberRepository memberRepository;
+    final private RedisService redisService;
     final private CommentRepository commentRepository;
 
     @Override
     public List<BoardResForm> list() {
 //        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
         List<MemberBoard> memberBoardList = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
-        List<BoardResForm> boardResFormList = memberBoardList.stream().map((mb)-> BoardResForm
+        List<BoardResForm> boardResFormList = memberBoardList.stream().map((mb) -> BoardResForm
                 .builder()
                 .boardId(mb.getBoardId())
                 .title(mb.getTitle())
@@ -50,11 +53,12 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .build()).toList();
         return boardResFormList;
     }
+
     @Override
     public List<BoardResForm> list(Integer page) {
-        Pageable pageable = PageRequest.of(page-1, 10 ,Sort.by("boardId").descending());
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("boardId").descending());
         List<MemberBoard> memberBoardList = boardRepository.findAllwithPage(pageable);
-        List<BoardResForm> boardResFormList = memberBoardList.stream().map((mb)-> BoardResForm
+        List<BoardResForm> boardResFormList = memberBoardList.stream().map((mb) -> BoardResForm
                 .builder()
                 .boardId(mb.getBoardId())
                 .title(mb.getTitle())
@@ -66,16 +70,17 @@ public class MemberBoardServiceImpl implements MemberBoardService {
 
     @Override
     public List<BoardResForm> listWithMember(HttpHeaders headers, int page) {
-        Optional<Member> isMember = memberRepository.findByUserToken(Objects.requireNonNull(headers.get("authorization")).get(0));
+        Long memberId = redisService.getValueByKey(Objects.requireNonNull(headers.get("authorization")).get(0));
+        Optional<Member> isMember = memberRepository.findById(memberId);
         if (isMember.isEmpty()) {
             log.info("회원이 아닙니다.");
             return null;
         }
         Member findMember = isMember.get();
-        Pageable pageable = PageRequest.of(page-1, 10 ,Sort.by("boardId").descending());
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("boardId").descending());
         List<MemberBoard> memberBoardList = boardRepository.findAllByMemberId(findMember.getId(), pageable);
 
-        List<BoardResForm> boardResFormList = memberBoardList.stream().map((mb)-> BoardResForm
+        List<BoardResForm> boardResFormList = memberBoardList.stream().map((mb) -> BoardResForm
                 .builder()
                 .boardId(mb.getBoardId())
                 .title(mb.getTitle())
@@ -89,8 +94,8 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     @Override
     @Transactional
     public MemberBoard register(RequestRegisterBoardForm requestForm) {
-        log.info(String.valueOf(requestForm));
-        Optional<Member> isMember = memberRepository.findByUserToken(requestForm.getUserToken());
+        Long memberId = redisService.getValueByKey(requestForm.getUserToken());
+        Optional<Member> isMember = memberRepository.findById(memberId);
         if (isMember.isEmpty()) {
             log.info("회원이 아닙니다.");
             return null;
@@ -121,7 +126,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
         MemberBoard savedBoard = maybeBoard.get();
 //        List<Long> idList = maybeBoard.get().getFilePathList().stream().map(FilePaths::getFileId).toList();
 //        // lazy 걸려있어서 proxy patten안에 있어서 못가져옴 Transactional 하면 해결, 그치만 조회해야 거기서 쿼리가 한번 나간다.
-          // 스프링에서 멤버보드 가져왔어 콘텐트는 두고왔어 게을러서 직접 불러야 가져올 수 있어 부른다 = select한다.
+        // 스프링에서 멤버보드 가져왔어 콘텐트는 두고왔어 게을러서 직접 불러야 가져올 수 있어 부른다 = select한다.
 //        // joinFetch로 사용 가능
         List<FilePaths> savedFilePath = savedBoard.getFilePathList();
 //        final ResponseBoardForm responseBoardForm = new ResponseBoardForm(maybeBoard.get(), savedFilePath);
@@ -135,7 +140,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .createDate(savedBoard.getCreateDate())
                 .member(new Member(savedBoard.getMember().getEmail(), savedBoard.getNickname(), savedBoard.getMember().getUserToken()))
                 .filePathList(savedBoard.getFilePathList())
-                .commentList(savedBoard.getCommentList().stream().map((c)-> CommentResForm.builder()
+                .commentList(savedBoard.getCommentList().stream().map((c) -> CommentResForm.builder()
                         .commentId(c.getCommentId())
                         .createdDate(c.getCreatedDate())
                         .modifiedDate(c.getModifiedDate())
@@ -150,7 +155,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     @Transactional
     public List<BoardResForm> search(String keyword) {
         List<MemberBoard> findBoards = boardRepository.findByContentContaining(keyword);
-        List<BoardResForm> boardResFormList = findBoards.stream().map((fb)-> BoardResForm
+        List<BoardResForm> boardResFormList = findBoards.stream().map((fb) -> BoardResForm
                 .builder()
                 .boardId(fb.getBoardId())
                 .title(fb.getTitle())
@@ -163,7 +168,8 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     @Override
     @Transactional
     public BoardResForm modify(RequestModifyBoardForm requestForm, Long boardId) {
-        Optional<Member> isMember = memberRepository.findByUserToken(requestForm.getUserToken());
+        Long memberId = redisService.getValueByKey(requestForm.getUserToken());
+        Optional<Member> isMember = memberRepository.findById(memberId);
         if (isMember.isEmpty()) {
             log.info("회원이 아닙니다.");
             return null;
@@ -179,16 +185,16 @@ public class MemberBoardServiceImpl implements MemberBoardService {
             log.info("토큰이 일치하지 않습니다.");
             return null;
         }
-            memberBoard.setContent(requestForm.getContent());
-            memberBoard.setTitle(requestForm.getTitle());
-            memberBoard.setCafeTitle(requestForm.getCafeTitle());
-            log.info("지울리스트" + memberBoard.getFilePathList().toString());
-            memberBoard.getFilePathList().clear();
-            log.info(memberBoard.getFilePathList().toString());
+        memberBoard.setContent(requestForm.getContent());
+        memberBoard.setTitle(requestForm.getTitle());
+        memberBoard.setCafeTitle(requestForm.getCafeTitle());
+        log.info("지울리스트" + memberBoard.getFilePathList().toString());
+        memberBoard.getFilePathList().clear();
+        log.info(memberBoard.getFilePathList().toString());
 //            filePathsRepository.deleteAll(memberBoard.getFilePathList());
-            boardRepository.save(memberBoard);
+        boardRepository.save(memberBoard);
 
-            List<FilePaths> filePathList = requestForm.getAwsFileList();
+        List<FilePaths> filePathList = requestForm.getAwsFileList();
         if (filePathList != null) {
             for (FilePaths filePaths : filePathList) {
                 String imagePath = filePaths.getImagePath();
@@ -206,8 +212,8 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .member(memberBoard.getMember())
                 .filePathList(memberBoard.getFilePathList())
                 .build();
-            return board;
-        }
+        return board;
+    }
 
 
     @Override
@@ -232,15 +238,17 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     public Integer getTotalPage() {
         Integer totalBoard = (int) boardRepository.count();
         Integer size = 10;
-        if(totalBoard % size ==0){
-            return totalBoard/size;
-        }else{
-        return totalBoard/size+1;}
+        if (totalBoard % size == 0) {
+            return totalBoard / size;
+        } else {
+            return totalBoard / size + 1;
+        }
     }
 
     @Override
     public Integer getMyBoardTotalPage(HttpHeaders headers) {
-        Optional<Member> isMember = memberRepository.findByUserToken(Objects.requireNonNull(headers.get("authorization")).get(0));
+        Long memberId = redisService.getValueByKey(Objects.requireNonNull(headers.get("authorization")).get(0));
+        Optional<Member> isMember = memberRepository.findById(memberId);
         if (isMember.isEmpty()) {
             log.info("회원이 아닙니다.");
             return null;
@@ -249,9 +257,10 @@ public class MemberBoardServiceImpl implements MemberBoardService {
         Integer totalBoard = (int) boardRepository.findById(findMember.getId()).stream().count();
         log.info(String.valueOf(totalBoard));
         Integer size = 10;
-        if(totalBoard % size ==0){
-            return totalBoard/size;
-        }else{
-            return totalBoard/size+1;}
+        if (totalBoard % size == 0) {
+            return totalBoard / size;
+        } else {
+            return totalBoard / size + 1;
+        }
     }
 }

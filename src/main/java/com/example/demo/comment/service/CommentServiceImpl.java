@@ -10,6 +10,7 @@ import com.example.demo.comment.form.RequestRegisterCommentForm;
 import com.example.demo.comment.repository.CommentRepository;
 import com.example.demo.member.entity.Member;
 import com.example.demo.member.repository.MemberRepository;
+import com.example.demo.redis.RedisService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +29,13 @@ public class CommentServiceImpl implements CommentService {
     final private MemberBoardRepository boardRepository;
     final private CommentRepository commentRepository;
     final private MemberBoardService memberBoardService;
+    final private RedisService redisService;
 
     @Override
     @Transactional
     public BoardResForm register(RequestRegisterCommentForm requestCommentForm, Long boardId) {
-        Optional<Member> isMember = memberRepository.findByUserToken(requestCommentForm.getUserToken());
+        Long memberId = redisService.getValueByKey(requestCommentForm.getUserToken());
+        Optional<Member> isMember = memberRepository.findById(memberId);
         if (isMember.isEmpty()) {
             log.info("회원이 아닙니다.");
             return null;
@@ -53,7 +56,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentResForm modify(RequestRegisterCommentForm requestCommentForm, Long commentId) {
-        Optional<Member> maybeMember = memberRepository.findByUserToken(requestCommentForm.getUserToken());
+        Long memberId = redisService.getValueByKey(requestCommentForm.getUserToken());
+        Optional<Member> maybeMember = memberRepository.findById(memberId);
         if (maybeMember.isEmpty()) {
             log.info("회원이 아닙니다.");
             return null;
