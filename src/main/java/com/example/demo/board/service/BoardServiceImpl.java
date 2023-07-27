@@ -6,7 +6,9 @@ import com.example.demo.board.controller.form.BoardResponseForm;
 import com.example.demo.board.controller.form.RequestBoardForm;
 import com.example.demo.board.entity.Board;
 import com.example.demo.board.entity.BoardCategory;
+import com.example.demo.board.entity.BoardLike;
 import com.example.demo.board.repository.BoardRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -96,7 +98,7 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public BoardResponseForm getBoardsByPage(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        log.info("getBoardsByPage called with pageNumber: {}, pageSize: {}", pageNumber, pageSize);
+        log.info("getBoardsByPage called with pageNumber: {}, pageSize: {}", Optional.of(pageNumber), Optional.of(pageSize));
         Page<Board> boardPage = boardRepository.findAll(pageable);
 
         // BoardResponseForm 객체 생성과 데이터 설정
@@ -106,6 +108,30 @@ public class BoardServiceImpl implements BoardService{
         boardResponse.setCurrentPage(boardPage.getNumber());
 
         return boardResponse;
+    }
+
+    @Override
+    @Transactional
+    public void addLikeCount(Long boardId, Long userId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다"));
+        if (isAlreadyLiked(boardId, userId)) {
+            throw new RuntimeException("이미 해당 게시물을 좋아합니다");
+        }
+        board.setLikeCount(board.getLikeCount() + 1);
+        boardRepository.save(board);
+    }
+
+    @Override
+    public boolean isAlreadyLiked(Long boardId, Long userId) {
+        Board board = boardRepository.findById(boardId).orElse(null);
+        if (board != null) {
+            for (BoardLike like : board.getLikes()) {
+                if (like.getUser().getUserId().equals(userId)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

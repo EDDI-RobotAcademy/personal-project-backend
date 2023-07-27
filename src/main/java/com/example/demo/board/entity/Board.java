@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -51,6 +53,19 @@ public class Board {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.EAGER) // Eager Loading 설정
+    private List<BoardLike> likes = new ArrayList<>();
+
+    public void addLike(BoardLike like) {
+        likes.add(like);
+        like.setBoard(this);
+    }
+
+    public void removeLike(BoardLike like) {
+        likes.remove(like);
+        like.setBoard(null);
+    }
 
     @JsonManagedReference
     public User getUser() {

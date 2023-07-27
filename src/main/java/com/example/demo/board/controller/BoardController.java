@@ -3,6 +3,7 @@ package com.example.demo.board.controller;
 import com.example.demo.board.controller.form.BoardCategoryListForm;
 import com.example.demo.board.controller.form.BoardCategoryResponseForm;
 import com.example.demo.board.controller.form.BoardResponseForm;
+import com.example.demo.board.dto.LikeCountRequestDto;
 import com.example.demo.board.entity.BoardCategory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -80,5 +81,19 @@ public class BoardController {
     public ResponseEntity<BoardResponseForm> getBoardsByPage(@RequestParam("page") int pageNumber, @RequestParam("size") int pageSize) {
         BoardResponseForm boardResponse = boardService.getBoardsByPage(pageNumber, pageSize);
         return ResponseEntity.ok(boardResponse);
+    }
+    @PostMapping("/like-count/{boardId}")
+    public ResponseEntity<?> addLikeCount(@PathVariable Long boardId, @RequestBody LikeCountRequestDto requestDto) {
+        try {
+            // 이미 추천한 기록이 있는지 확인
+            if (boardService.isAlreadyLiked(boardId, requestDto.getUserId())) {
+                return ResponseEntity.badRequest().body("이미 추천한 게시물입니다.");
+            }
+
+            boardService.addLikeCount(boardId, requestDto.getUserId());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to increase like count.");
+        }
     }
 }
