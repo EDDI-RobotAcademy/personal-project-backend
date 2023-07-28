@@ -138,14 +138,14 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .cafeTitle(savedBoard.getCafeTitle())
                 .content(savedBoard.getContent())
                 .createDate(savedBoard.getCreateDate())
-                .member(new Member(savedBoard.getMember().getEmail(), savedBoard.getNickname(), savedBoard.getMember().getUserToken()))
+                .member(new Member(savedBoard.getMember().getEmail(), savedBoard.getNickname()))
                 .filePathList(savedBoard.getFilePathList())
                 .commentList(savedBoard.getCommentList().stream().map((c) -> CommentResForm.builder()
                         .commentId(c.getCommentId())
                         .createdDate(c.getCreatedDate())
                         .modifiedDate(c.getModifiedDate())
                         .text(c.getText())
-                        .member(new Member(c.getMember().getEmail(), c.getMember().getNickname(), c.getMember().getUserToken()))
+                        .member(new Member(c.getMember().getEmail(), c.getMember().getNickname()))
                         .build()).toList())
                 .build();
         return board;
@@ -181,10 +181,6 @@ public class MemberBoardServiceImpl implements MemberBoardService {
         }
         MemberBoard memberBoard = maybeMemberBoard.get();
 
-        if (!memberBoard.getMember().getUserToken().equals(requestForm.getUserToken())) {
-            log.info("토큰이 일치하지 않습니다.");
-            return null;
-        }
         memberBoard.setContent(requestForm.getContent());
         memberBoard.setTitle(requestForm.getTitle());
         memberBoard.setCafeTitle(requestForm.getCafeTitle());
@@ -224,7 +220,9 @@ public class MemberBoardServiceImpl implements MemberBoardService {
             return false;
         }
         MemberBoard finedBoard = maybeBoard.get();
-        if (finedBoard.getMember().getUserToken().equals(Objects.requireNonNull(headers.get("authorization")).get(0))) {
+        Long memberId = redisService.getValueByKey(Objects.requireNonNull(headers.get("authorization")).get(0));
+        Optional<Member> isMember = memberRepository.findById(memberId);
+        if (finedBoard.getMember().getId().equals(memberId)){
 
             filePathsRepository.deleteAll(finedBoard.getFilePathList());
             boardRepository.deleteById(boardId);

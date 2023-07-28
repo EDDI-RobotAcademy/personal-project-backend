@@ -73,7 +73,7 @@ public class CommentServiceImpl implements CommentService {
             return null;
         }
         Comment finedComment = maybeComment.get();
-        if (savedMember.getUserToken().equals(finedComment.getMember().getUserToken())) {
+        if (savedMember.getId().equals(finedComment.getMember().getId())) {
             finedComment.setText(requestCommentForm.getText());
             CommentResForm comment = CommentResForm
                     .builder()
@@ -95,7 +95,8 @@ public class CommentServiceImpl implements CommentService {
             return false;
         }
         Comment finedComment = maybeComment.get();
-        if (finedComment.getMember().getUserToken().equals(Objects.requireNonNull(headers.get("authorization")).get(0))) {
+        Long memberId = redisService.getValueByKey(Objects.requireNonNull(headers.get("authorization")).get(0));
+        if (finedComment.getMember().getId().equals(memberId)) {
             commentRepository.deleteById(commentId);
             return true;
         }

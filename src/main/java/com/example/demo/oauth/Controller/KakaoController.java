@@ -51,8 +51,6 @@ public class KakaoController {
 
         System.out.println("1. access_token : " + access_token);
 
-
-
         //2. 인증코드로 토큰 전달
         HashMap<String, Object> userInfo = kakaoApi.getUserInfo(access_token);
 
@@ -63,8 +61,6 @@ public class KakaoController {
             session.setAttribute("userId", userInfo.get("email"));
             session.setAttribute("access_token", access_token);
         }
-
-
 
         return userInfo;
     }

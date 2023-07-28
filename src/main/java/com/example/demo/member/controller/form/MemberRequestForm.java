@@ -19,8 +19,8 @@ public class MemberRequestForm {
     final private String nickname;
     final private RoleType roleType;
 
-    public Member toMember(String userToken) {
-        return new Member(email, password, nickname, userToken);
+    public Member toMember() {
+        return new Member(email, password, nickname);
     }
 
     public MemberRole toMemberRole(Member member){

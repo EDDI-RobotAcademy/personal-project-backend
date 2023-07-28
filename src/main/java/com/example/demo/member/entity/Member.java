@@ -36,26 +36,16 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<MemberBoard> memberBoardList;
 
-    @Getter
-    @Setter
-    private String userToken;
-
-    public Member(String email, String password, String nickname, String userToken) {
+    public Member(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
-        this.userToken = userToken;
-    }
-
-    public Member(String email, String nickname, String userToken) {
-        this.email = email;
-        this.nickname = nickname;
-        this.userToken = userToken;
     }
 
     public Member(String email, String nickname) {
         this.email = email;
         this.nickname = nickname;
-        this.userToken = UUID.randomUUID().toString();
+
     }
+    
 }
