@@ -1,6 +1,7 @@
 package kr.eddi.demo.board.entity;
 
 import jakarta.persistence.*;
+import kr.eddi.demo.comment.entity.Comment;
 import kr.eddi.demo.marker.entity.Marker;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -31,8 +35,13 @@ public class Board {
     private String writer;
     private String imgPath;
     private String boardTransport;
+
+
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int comments;
+
 
     public Board(String boardTitle, String boardInfo, String coordLat, String coordLng, String writer,String imgPath, String boardTransport) {
         this.boardTitle = boardTitle;
@@ -42,9 +51,9 @@ public class Board {
         this.imgPath=imgPath;
         this.boardTransport=boardTransport;
 
+
     }
 
-    // Getter와 Setter (생략 가능)
 
     @CreationTimestamp
     private LocalDateTime createDate;

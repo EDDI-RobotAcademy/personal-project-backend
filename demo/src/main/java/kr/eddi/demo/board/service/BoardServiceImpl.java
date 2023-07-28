@@ -9,6 +9,8 @@ import kr.eddi.demo.board.controller.form.BoardRegisterRequestForm;
 import kr.eddi.demo.board.entity.Board;
 import kr.eddi.demo.board.repository.BoardRepository;
 
+import kr.eddi.demo.comment.entity.Comment;
+import kr.eddi.demo.comment.repository.CommentRepository;
 import kr.eddi.demo.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ import java.util.Optional;
 public class BoardServiceImpl implements BoardService{
     final private AccountRepository accountRepository;
     final private  BoardRepository boardRepository;
+    final private CommentRepository commentRepository;
     @Autowired
     final private RedisService redisService;
     @Override
@@ -44,8 +47,10 @@ public class BoardServiceImpl implements BoardService{
         if(maybeBoard.isPresent()){
 
             return maybeBoard.get();
+        } else {
+            return null;
         }
-        return null;
+
     }
 
     @Override
@@ -82,9 +87,18 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public void increaseView(Long id) {
         Optional<Board> maybeBoard = boardRepository.findById(id);
-        if (maybeBoard.isPresent()) {
-            Board board = maybeBoard.get();
+        maybeBoard.ifPresent(board -> {
             board.setView(board.getView() + 1);
+            boardRepository.save(board);
+        });
+    }
+
+    @Override
+    public void countsComment() {
+        List<Board> boards = boardRepository.findAll();
+        for (Board board:boards) {
+            List<Comment> comments = commentRepository.findByBoardId(board.getId());
+            board.setComments(comments.size());
             boardRepository.save(board);
         }
     }

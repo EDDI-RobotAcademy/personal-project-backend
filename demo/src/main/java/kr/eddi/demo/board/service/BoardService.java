@@ -22,4 +22,5 @@ public interface BoardService {
 
     List<Board> myBoards(String userToken);
     void increaseView(Long id);
+    void countsComment();
 }
