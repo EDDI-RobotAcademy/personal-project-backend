@@ -1,6 +1,7 @@
 package com.example.demo.user.entity;
 
 import com.example.demo.board.entity.Board;
+import com.example.demo.comment.entity.Comment;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -46,6 +47,11 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
+
+    @Setter
+    @JsonBackReference
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
 
     @JsonManagedReference
     public Board getBoard() {

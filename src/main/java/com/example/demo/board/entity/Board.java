@@ -1,5 +1,6 @@
 package com.example.demo.board.entity;
 
+import com.example.demo.comment.entity.Comment;
 import com.example.demo.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -54,6 +55,11 @@ public class Board {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Setter
+    @JsonBackReference
+    @OneToMany(mappedBy = "board")
+    private List<Comment> comments;
 
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.EAGER) // Eager Loading 설정
