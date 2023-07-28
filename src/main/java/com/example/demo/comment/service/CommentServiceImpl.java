@@ -117,14 +117,16 @@ public class CommentServiceImpl implements CommentService {
         }
         Member findMember = isMember.get();
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("commentId").descending());
-        List<Comment> CommentList = commentRepository.findAllByMemberId(findMember.getId(), pageable);
-
-        List<CommentResForm> CommentResFormList = CommentList.stream().map((cl) -> CommentResForm
+        List<Comment> commentList = commentRepository.findAllByMemberId(findMember.getId(), pageable);
+//        List<Long> idList = maybeBoard.get().getFilePathList().stream().map(FilePaths::getFileId).toList();
+//        List<Long> idList = commentList.stream().map(Comment::getMemberBoard).map(MemberBoard::getBoardId).toList();
+        List<CommentResForm> CommentResFormList = commentList.stream().map((cl) -> CommentResForm
                 .builder()
                 .commentId(cl.getCommentId())
                 .text(cl.getText())
                 .createdDate(cl.getCreatedDate())
                 .member(cl.getMember())
+                .memberBoard(new MemberBoard(cl.getMemberBoard().getBoardId(), cl.getMemberBoard().getTitle()))
                 .build()).toList();
         return CommentResFormList;
     }

@@ -59,4 +59,9 @@ public class MemberBoard {
         this.member = member;
         this.cafeTitle = cafeTitle;
     }
+
+    public MemberBoard(Long boardId, String title) {
+        this.boardId = boardId;
+        this.title = title;
+    }
 }
