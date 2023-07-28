@@ -5,6 +5,9 @@ import com.example.demo.board.controller.form.BoardCategoryResponseForm;
 import com.example.demo.board.controller.form.BoardResponseForm;
 import com.example.demo.board.dto.LikeCountRequestDto;
 import com.example.demo.board.entity.BoardCategory;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import com.example.demo.board.controller.form.RequestBoardForm;
@@ -15,6 +18,11 @@ import com.example.demo.board.service.request.BoardRegisterRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 
 @Slf4j
@@ -30,6 +38,22 @@ public class BoardController {
 
         List<Board> returnedBoardList = boardService.list();
         return returnedBoardList;
+    }
+    @GetMapping("/detail/{filename}")
+    public String getFile(@PathVariable("filename")String filename,HttpServletResponse response) throws IOException, ConfigDataResourceNotFoundException {
+        String filePath = System.getProperty("user.dir")
+                + File.separator	// Windows('\'), Linux, MAC('/')
+                + "board"
+                + File.separator
+                + filename; // 대상 파일
+        log.info(filePath);
+
+        FileInputStream fileStream = new FileInputStream(filePath);
+        byte[ ] readBuffer = new byte[fileStream.available()];
+        while (fileStream.read( readBuffer ) != -1){}
+        String text = new String(readBuffer);
+        fileStream.close(); //스트림 닫기
+        return text;
     }
     @PostMapping("/register")
     public Board registerBoard (@RequestBody BoardRegisterRequest request) {
