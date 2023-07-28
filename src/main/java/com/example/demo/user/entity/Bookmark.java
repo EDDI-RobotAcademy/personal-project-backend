@@ -15,7 +15,8 @@ import lombok.ToString;
 public class Bookmark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long bookMarkId;
+
     @Setter
     @ManyToOne
     @JoinColumn(name = "user_id")

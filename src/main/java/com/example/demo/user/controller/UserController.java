@@ -1,10 +1,12 @@
 package com.example.demo.user.controller;
 
 import com.example.demo.board.dto.BoardDto;
+import com.example.demo.board.entity.Board;
 import com.example.demo.user.controller.form.UserRegisterForm;
 import com.example.demo.user.controller.form.UserSignInRequestForm;
 import com.example.demo.user.controller.form.UserSignInResponseForm;
 import com.example.demo.user.controller.form.UserSignValidateForm;
+import com.example.demo.user.dto.BookmarkDto;
 import com.example.demo.user.dto.UserDto;
 import com.example.demo.user.entity.Bookmark;
 import com.example.demo.user.entity.User;
@@ -55,9 +57,16 @@ public class UserController {
         userService.delete(userId);
     }
     @PostMapping("/bookmark/{userId}")
-    public ResponseEntity<String> addBookmark(@PathVariable Long userId, @RequestBody Long boardId) {
-        log.info("ResponseEntity()");
-        return ResponseEntity.ok("북마크 추가 성공");
+    public ResponseEntity<String> addBookmark(@PathVariable Long userId, @RequestBody BookmarkDto bookmarkDto) {
+        try {
+            // userService의 createBookmark 메서드를 호출하여 북마크 추가
+            User user = new User(); // 적절한 방법으로 user 정보를 가져와야 함
+            Board board = new Board(); // 적절한 방법으로 board 정보를 가져와야 함
+            userService.createBookmark(user, board);
+            return ResponseEntity.ok("북마크 추가 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("북마크 추가 실패");
+        }
     }
 
     @DeleteMapping("/bookmark/{userId}")
