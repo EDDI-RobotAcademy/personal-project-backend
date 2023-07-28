@@ -22,6 +22,7 @@ public class AccountServiceImpl implements AccountService {
 
     final private AccountRepository accountRepository;
     final private UserTokenRepository userTokenRepository = UserTokenRepositoryImpl.getInstance();
+
     @Override
     public Boolean register(AccountRequest accountRequest) {
         Optional<Account> maybeAccount = accountRepository.findByEmail(accountRequest.getEmail());
@@ -76,5 +77,15 @@ public class AccountServiceImpl implements AccountService {
             return false;
         }
         return Objects.equals(maybeAccount.get().getPassword(), form.getPassword());
+    }
+
+    @Override
+    public Account findAccountByUsertoken(Long valueByKey) {
+        Optional<Account>  maybeAccount =accountRepository.findById(valueByKey);
+        if (maybeAccount.isEmpty()){
+            return null;
+        }else {
+            return maybeAccount.get();
+        }
     }
 }
