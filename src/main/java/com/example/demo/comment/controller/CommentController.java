@@ -12,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -35,5 +38,17 @@ public class CommentController {
     public Boolean deleteBoard (@PathVariable("commentId") Long commentId, @RequestHeader HttpHeaders headers) {
         log.info("deleteComment() ");
         return commentService.delete(commentId, headers);
+    }
+
+    @GetMapping("/list/{page}")
+    public List<CommentResForm> getCommentListWithMember(@RequestHeader HttpHeaders headers, @PathVariable("page") Integer page) {
+        log.info("commentListWithMember()");
+        return  commentService.commentlistWithMember(headers, page);
+    }
+    @GetMapping(value = "/list/my-comment-total-page")
+    public Integer getMyCommentTotalPages(@RequestHeader HttpHeaders headers){
+        log.info("commentTotalPage()");
+
+        return  commentService.getMyCommentTotalPage(headers);
     }
 }

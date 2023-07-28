@@ -14,9 +14,13 @@ import com.example.demo.redis.RedisService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -97,4 +101,51 @@ public class CommentServiceImpl implements CommentService {
         }
         return false;
     }
+
+
+    @Override
+    @Transactional
+    public List<CommentResForm> commentlistWithMember(HttpHeaders headers, Integer page) {
+        log.info(Objects.requireNonNull(headers.get("authorization")).get(0));
+        Long memberId = redisService.getValueByKey(Objects.requireNonNull(headers.get("authorization")).get(0));
+        log.info(String.valueOf(memberId));
+        Optional<Member> isMember = memberRepository.findById(memberId);
+        if (isMember.isEmpty()) {
+            log.info("회원이 아닙니다.");
+            return null;
+        }
+        Member findMember = isMember.get();
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("commentId").descending());
+        List<Comment> CommentList = commentRepository.findAllByMemberId(findMember.getId(), pageable);
+
+        List<CommentResForm> CommentResFormList = CommentList.stream().map((cl) -> CommentResForm
+                .builder()
+                .commentId(cl.getCommentId())
+                .text(cl.getText())
+                .createdDate(cl.getCreatedDate())
+                .member(cl.getMember())
+                .build()).toList();
+        return CommentResFormList;
+    }
+
+    @Override
+    @Transactional
+    public Integer getMyCommentTotalPage(HttpHeaders headers) {
+        Long memberId = redisService.getValueByKey(Objects.requireNonNull(headers.get("authorization")).get(0));
+        Optional<Member> isMember = memberRepository.findById(memberId);
+        if (isMember.isEmpty()) {
+            log.info("회원이 아닙니다.");
+            return null;
+        }
+        Member findMember = isMember.get();
+        Integer totalComment = (int) commentRepository.findById(findMember.getId()).stream().count();
+        log.info(String.valueOf(totalComment));
+        Integer size = 10;
+        if (totalComment % size == 0) {
+            return totalComment / size;
+        } else {
+            return totalComment / size + 1;
+        }
+    }
+
 }
