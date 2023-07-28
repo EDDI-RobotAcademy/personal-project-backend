@@ -34,13 +34,13 @@ public class Comment {
     @Setter
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "board_id")
     private Board board;
 
     @Setter
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     public Comment(String writer, String content) {
