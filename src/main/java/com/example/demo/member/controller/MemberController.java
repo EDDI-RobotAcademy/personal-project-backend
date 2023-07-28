@@ -27,6 +27,10 @@ public class MemberController {
     public boolean checkNickname(@PathVariable("nickname") String nickname) {
             return memberService.checkNickname(nickname);
     }
+    @GetMapping("/check-email/{email}")
+    public boolean checkEmail(@PathVariable("email") String email) {
+        return memberService.checkEmail(email);
+    }
 
     @PostMapping("/login")
     public MemberLoginResponseForm memberLogin(@RequestBody MemberLoginRequestForm memberLoginRequestForm){
