@@ -19,7 +19,7 @@ public class MemberRequestForm {
     final private String nickname;
     final private RoleType roleType;
 
-    public Member toMember() {
+    public Member toMember(String password) {
         return new Member(email, password, nickname);
     }
 
