@@ -47,7 +47,10 @@ public class PlaylistServiceImpl implements PlaylistService {
     public int countPlaylist(HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
-        return playlistRepository.countPlaylistByAccountId(accountRepository.findByEmail(email).get().getId());
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
+
+        return playlistRepository.countPlaylistByAccountId(account.getId());
     }
 
     @Override
@@ -60,16 +63,14 @@ public class PlaylistServiceImpl implements PlaylistService {
             PlaylistReadResponseForm responseForm = new PlaylistReadResponseForm(playlist, playlist.getSongList(), playlist.getLikers().size());
             responseForms.add(responseForm);
         }
-        for (Playlist playlist : playlists.getContent()) {
-            System.out.println(playlist.getTitle());
-        }
+
         return responseForms;
     }
 
     @Override
     @Transactional
     public List<PlaylistReadResponseForm> sortByLikersSlicePlaylist(int page) {
-        ;
+
         Slice<Playlist> playlists = playlistRepository.sortByLikersSlicePlaylist(PageRequest.of(page - 1, PAGE_SIZE));
 
         List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
@@ -77,9 +78,7 @@ public class PlaylistServiceImpl implements PlaylistService {
             PlaylistReadResponseForm responseForm = new PlaylistReadResponseForm(playlist, playlist.getSongList(), playlist.getLikers().size());
             responseForms.add(responseForm);
         }
-        for (Playlist playlist : playlists.getContent()) {
-            System.out.println(playlist.getTitle());
-        }
+
         return responseForms;
     }
 
@@ -91,7 +90,11 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     public long countTotalPageByLoginAccount(HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
-        long count = playlistRepository.countPlaylistByAccountId(accountRepository.findByEmail(email).get().getId());
+
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
+
+        long count = playlistRepository.countPlaylistByAccountId(account.getId());
         return getPageCount(count);
     }
 
@@ -124,12 +127,8 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     public boolean modify(PlaylistModifyRequestForm requestForm) {
-        Optional<Playlist> maybePlaylist = playlistRepository.findById(requestForm.getId());
-
-        if (maybePlaylist.isEmpty()) {
-            return false;
-        }
-        Playlist playlist = maybePlaylist.get();
+        Playlist playlist = playlistRepository.findById(requestForm.getId())
+                .orElseThrow(() -> new IllegalArgumentException("플레이리스트 없음"));
 
         playlist.setTitle(requestForm.getTitle());
 
@@ -142,7 +141,10 @@ public class PlaylistServiceImpl implements PlaylistService {
     public List<PlaylistReadResponseForm> listByLoginAccount(int page, HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
-        Slice<Playlist> playlists = playlistRepository.findPlaylistByAccountId(accountRepository.findByEmail(email).get(), PageRequest.of(page - 1, PAGE_SIZE));
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
+
+        Slice<Playlist> playlists = playlistRepository.findPlaylistByAccountId(account, PageRequest.of(page - 1, PAGE_SIZE));
 
         List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
         for (Playlist playlist : playlists) {
@@ -155,11 +157,9 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     @Transactional
     public boolean delete(Long playlistId) {
-        Optional<Playlist> maybePlaylist = playlistRepository.findById(playlistId);
-        if (maybePlaylist.isEmpty()) {
-            return false;
-        }
-        Playlist playlist = maybePlaylist.get();
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new IllegalArgumentException("플레이리스트 없음"));
+
         //Account 클래스에서 removeFromLikedPlaylists 메소드 호출 - likedPlaylists 컬렉션에서 제거
         for (Account account : playlist.getLikers()) {
             account.removeFromLikedPlaylists(playlist);
@@ -178,12 +178,12 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Transactional
     public int likePlaylist(Long playlistId, HttpServletRequest request) {
         Playlist playlist = playlistRepository.findById(playlistId)
-                .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
+                .orElseThrow(() -> new IllegalArgumentException("플레이리스트 없음"));
 
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
         if (account.getLikedPlaylists().contains(playlist)) {
             return playlist.getLikers().size();
         }
@@ -200,12 +200,12 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Transactional
     public int unlikePlaylist(Long playlistId, HttpServletRequest request) {
         Playlist playlist = playlistRepository.findById(playlistId)
-                .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
+                .orElseThrow(() -> new IllegalArgumentException("플레이리스트 없음"));
 
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
 
         if (!account.getLikedPlaylists().contains(playlist)) {
             return playlist.getLikers().size();
@@ -223,12 +223,12 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Transactional
     public Boolean isPlaylistLiked(Long playlistId, HttpServletRequest request) {
         Playlist playlist = playlistRepository.findById(playlistId)
-                .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
+                .orElseThrow(() -> new IllegalArgumentException("플레이리스트 없음"));
 
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
 
         Set<Playlist> likedPlaylists = account.getLikedPlaylists();
 
@@ -241,7 +241,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
 
         Playlist[] playlists = account.getLikedPlaylists().toArray(new Playlist[0]);
 
@@ -256,7 +256,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
         for (int i = start; i < end; i++) {
             Playlist playlist = playlistRepository.findByPlaylistId(playlists[i].getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
+                    .orElseThrow(() -> new IllegalArgumentException("플레이리스트 없음"));
 
             PlaylistReadResponseForm responseForm = new PlaylistReadResponseForm(playlist, playlist.getSongList(), playlist.getLikers().size());
             responseForms.add(responseForm);
@@ -270,7 +270,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
 
         return account.getLikedPlaylists().size();
     }
@@ -281,7 +281,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
 
         long count = account.getLikedPlaylists().size();
 

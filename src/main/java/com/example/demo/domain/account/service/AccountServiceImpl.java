@@ -58,14 +58,9 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public AccountLoginResponseForm login(AccountLoginRequestForm requestForm) {
-        Optional<Account> maybeAccount =
-                accountRepository.findByEmail(requestForm.getEmail());
+        Account account = accountRepository.findByEmail(requestForm.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("이메일 틀림"));
 
-        if(maybeAccount.isEmpty()){
-            System.out.println("이메일 틀림");
-            return null;
-        }
-        Account account = maybeAccount.get();
 
         if(!encoder.matches(requestForm.getPassword(), account.getPassword())){
             System.out.println("비밀번호 틀림");
@@ -84,12 +79,8 @@ public class AccountServiceImpl implements AccountService{
     public boolean modify(AccountModifyRequestForm requestForm, HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
-        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
-
-        if(maybeAccount.isEmpty()){
-            return false;
-        }
-        Account account = maybeAccount.get();
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
 
         if(requestForm.getNickname() == null && requestForm.getPassword() == null){
             return false;
@@ -115,7 +106,8 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public Boolean withdrawal(String email) {
-        Account account = accountRepository.findByEmail(email).get();
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
         Long accountId = account.getId();
         playlistRepository.deleteByAccountId(accountId);
 
@@ -137,11 +129,8 @@ public class AccountServiceImpl implements AccountService{
     public boolean duplicateCheckPassword(AccountPasswordCheckRequestForm requestForm, HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
-        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
-        if(maybeAccount.isEmpty()){
-            return false;
-        }
-        Account account = maybeAccount.get();
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
 
         if(!encoder.matches(requestForm.getPassword(), account.getPassword())){
             log.info("비밀번호 틀림");

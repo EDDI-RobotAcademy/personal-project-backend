@@ -1,6 +1,7 @@
 package com.example.demo.domain.song.service;
 
 import com.example.demo.authentication.jwt.JwtTokenUtil;
+import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.account.repository.AccountRepository;
 import com.example.demo.domain.playlist.entity.Playlist;
 import com.example.demo.domain.playlist.repository.PlaylistRepository;
@@ -52,14 +53,18 @@ public class SongServiceImpl implements SongService{
         song.setLyrics(getLyrics(requestForm.getSinger() + " " + requestForm.getTitle()));
 
         songRepository.save(song);
-        log.info(String.valueOf(song.getId()));
+
         return song.getId();
     }
 
     @Override
     public int countSong(HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
-        List<Long> counting = playlistRepository.findPlaylistIdByAccountId(accountRepository.findByEmail(email).get());
+
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
+
+        List<Long> counting = playlistRepository.findPlaylistIdByAccountId(account);
 
         log.info("playlistId = " + counting);
         int count = 0;
@@ -72,18 +77,14 @@ public class SongServiceImpl implements SongService{
 
     @Override
     public Song read(Long id) {
-        Song song = songRepository.findById(id).get();
-        return song;
+        return songRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("노래 없음"));
     }
 
     @Override
     public boolean modify(SongModifyRequestForm requestForm) {
-        Optional<Song> maybeSong = songRepository.findById(requestForm.getSongId());
-
-        if(maybeSong.isEmpty()){
-            return false;
-        }
-        Song song= maybeSong.get();
+        Song song= songRepository.findById(requestForm.getSongId())
+                .orElseThrow(() -> new IllegalArgumentException("노래 없음"));
 
         song.setTitle(requestForm.getTitle());
         song.setSinger(requestForm.getSinger());
@@ -98,10 +99,8 @@ public class SongServiceImpl implements SongService{
 
     @Override
     public boolean delete(Long songId) {
-        Optional<Song> maybeSong = songRepository.findById(songId);
-        if(maybeSong.isEmpty()){
-            return false;
-        }
+        Song song= songRepository.findById(songId)
+                .orElseThrow(() -> new IllegalArgumentException("노래 없음"));
 
         songRepository.deleteById(songId);
         return true;
