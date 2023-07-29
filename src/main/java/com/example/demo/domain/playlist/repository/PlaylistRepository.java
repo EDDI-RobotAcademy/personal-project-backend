@@ -2,7 +2,6 @@ package com.example.demo.domain.playlist.repository;
 
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.playlist.entity.Playlist;
-import com.example.demo.domain.playlist.service.PlaylistService;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

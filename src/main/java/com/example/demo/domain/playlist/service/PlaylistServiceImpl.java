@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PlaylistServiceImpl implements PlaylistService{
+public class PlaylistServiceImpl implements PlaylistService {
 
     final private PlaylistRepository playlistRepository;
 
@@ -31,6 +31,7 @@ public class PlaylistServiceImpl implements PlaylistService{
 
     final private JwtTokenUtil jwtTokenUtil;
     final int PAGE_SIZE = 6;
+
     @Override
     public long register(PlaylistRegisterRequestForm requestForm, HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
@@ -39,27 +40,23 @@ public class PlaylistServiceImpl implements PlaylistService{
 
         final Playlist playlist = new Playlist(requestForm.getTitle(), account);
 
-        Playlist savedPlaylist = playlistRepository.save(playlist);
-
-        return savedPlaylist.getId();
+        return playlistRepository.save(playlist).getId();
     }
 
     @Override
     public int countPlaylist(HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
-        int count = playlistRepository.countPlaylistByAccountId(accountRepository.findByEmail(email).get().getId());
-        log.info("playlist count = " + count );
-        return count;
+        return playlistRepository.countPlaylistByAccountId(accountRepository.findByEmail(email).get().getId());
     }
 
     @Override
     @Transactional
     public List<PlaylistReadResponseForm> slicePlaylist(int page) {
-        Slice<Playlist> playlists = playlistRepository.slicePlaylist(PageRequest.of(page-1,PAGE_SIZE));
+        Slice<Playlist> playlists = playlistRepository.slicePlaylist(PageRequest.of(page - 1, PAGE_SIZE));
 
         List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
-        for(Playlist playlist : playlists){
+        for (Playlist playlist : playlists) {
             PlaylistReadResponseForm responseForm = new PlaylistReadResponseForm(playlist, playlist.getSongList(), playlist.getLikers().size());
             responseForms.add(responseForm);
         }
@@ -71,11 +68,12 @@ public class PlaylistServiceImpl implements PlaylistService{
 
     @Override
     @Transactional
-    public List<PlaylistReadResponseForm> sortByLikersSlicePlaylist(int page) {;
-        Slice<Playlist> playlists = playlistRepository.sortByLikersSlicePlaylist(PageRequest.of(page-1,PAGE_SIZE));
+    public List<PlaylistReadResponseForm> sortByLikersSlicePlaylist(int page) {
+        ;
+        Slice<Playlist> playlists = playlistRepository.sortByLikersSlicePlaylist(PageRequest.of(page - 1, PAGE_SIZE));
 
         List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
-        for(Playlist playlist : playlists){
+        for (Playlist playlist : playlists) {
             PlaylistReadResponseForm responseForm = new PlaylistReadResponseForm(playlist, playlist.getSongList(), playlist.getLikers().size());
             responseForms.add(responseForm);
         }
@@ -87,28 +85,19 @@ public class PlaylistServiceImpl implements PlaylistService{
 
     @Override
     public long countAllPlaylist() {
-        long count = playlistRepository.count();
-
-        if(count%PAGE_SIZE==0){
-            return (count/PAGE_SIZE);
-        }else{
-            return (count/PAGE_SIZE)+1;
-        }
+        return getPageCount(playlistRepository.count());
     }
 
     @Override
     public long countTotalPageByLoginAccount(HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
-
-        long count =playlistRepository.countPlaylistByAccountId(accountRepository.findByEmail(email).get().getId());
-
-        if(count%PAGE_SIZE==0){
-            return (count/PAGE_SIZE);
-        }else{
-            return (count/PAGE_SIZE)+1;
-        }
+        long count = playlistRepository.countPlaylistByAccountId(accountRepository.findByEmail(email).get().getId());
+        return getPageCount(count);
     }
 
+    private long getPageCount(long count) {
+        return (count % PAGE_SIZE == 0) ? (count / PAGE_SIZE) : (count / PAGE_SIZE + 1);
+    }
 
     @Override
     @Transactional
@@ -116,7 +105,7 @@ public class PlaylistServiceImpl implements PlaylistService{
         List<Playlist> playlists = playlistRepository.findAll();
 
         List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
-        for(Playlist playlist : playlists){
+        for (Playlist playlist : playlists) {
             PlaylistReadResponseForm responseForm = new PlaylistReadResponseForm(playlist, playlist.getSongList(), playlist.getLikers().size());
             responseForms.add(responseForm);
         }
@@ -137,7 +126,7 @@ public class PlaylistServiceImpl implements PlaylistService{
     public boolean modify(PlaylistModifyRequestForm requestForm) {
         Optional<Playlist> maybePlaylist = playlistRepository.findById(requestForm.getId());
 
-        if(maybePlaylist.isEmpty()){
+        if (maybePlaylist.isEmpty()) {
             return false;
         }
         Playlist playlist = maybePlaylist.get();
@@ -153,7 +142,7 @@ public class PlaylistServiceImpl implements PlaylistService{
     public List<PlaylistReadResponseForm> listByLoginAccount(int page, HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
-        Slice<Playlist> playlists = playlistRepository.findPlaylistByAccountId(accountRepository.findByEmail(email).get(), PageRequest.of(page-1,PAGE_SIZE));
+        Slice<Playlist> playlists = playlistRepository.findPlaylistByAccountId(accountRepository.findByEmail(email).get(), PageRequest.of(page - 1, PAGE_SIZE));
 
         List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
         for (Playlist playlist : playlists) {
@@ -167,7 +156,7 @@ public class PlaylistServiceImpl implements PlaylistService{
     @Transactional
     public boolean delete(Long playlistId) {
         Optional<Playlist> maybePlaylist = playlistRepository.findById(playlistId);
-        if(maybePlaylist.isEmpty()){
+        if (maybePlaylist.isEmpty()) {
             return false;
         }
         Playlist playlist = maybePlaylist.get();
@@ -248,7 +237,7 @@ public class PlaylistServiceImpl implements PlaylistService{
 
     @Override
     @Transactional
-    public List<PlaylistReadResponseForm> likedPlaylistByLoginAccount(int page, HttpServletRequest request){
+    public List<PlaylistReadResponseForm> likedPlaylistByLoginAccount(int page, HttpServletRequest request) {
         String email = jwtTokenUtil.getEmailFromCookie(request);
 
         Account account = accountRepository.findByEmail(email)
@@ -256,16 +245,16 @@ public class PlaylistServiceImpl implements PlaylistService{
 
         Playlist[] playlists = account.getLikedPlaylists().toArray(new Playlist[0]);
 
-        int start = (page-1) * PAGE_SIZE;
+        int start = (page - 1) * PAGE_SIZE;
         int end = start + PAGE_SIZE;
 
-        if(end>playlists.length){
+        if (end > playlists.length) {
             end = playlists.length;
         }
 
         List<PlaylistReadResponseForm> responseForms = new ArrayList<>();
 
-        for(int i = start; i < end; i++){
+        for (int i = start; i < end; i++) {
             Playlist playlist = playlistRepository.findByPlaylistId(playlists[i].getId())
                     .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
 
@@ -283,9 +272,7 @@ public class PlaylistServiceImpl implements PlaylistService{
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
 
-        long count = account.getLikedPlaylists().size();
-
-        return count;
+        return account.getLikedPlaylists().size();
     }
 
     @Override
@@ -298,10 +285,6 @@ public class PlaylistServiceImpl implements PlaylistService{
 
         long count = account.getLikedPlaylists().size();
 
-        if(count % PAGE_SIZE == 0){
-            return (count / PAGE_SIZE);
-        }else{
-            return (count / PAGE_SIZE) + 1;
-        }
+        return getPageCount(count);
     }
 }
