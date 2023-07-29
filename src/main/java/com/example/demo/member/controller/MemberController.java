@@ -40,6 +40,7 @@ public class MemberController {
 
     @GetMapping(value = "/check/{memberId}")
     public Boolean checkMember(@PathVariable("memberId") Long memberId, @RequestHeader HttpHeaders headers){
+        log.info("checkMember");
         return memberService.checkMember(memberId, headers);
     }
 

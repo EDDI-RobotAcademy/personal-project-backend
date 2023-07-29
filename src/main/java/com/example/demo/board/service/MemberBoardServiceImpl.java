@@ -145,7 +145,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                         .createdDate(c.getCreatedDate())
                         .modifiedDate(c.getModifiedDate())
                         .text(c.getText())
-                        .member(new Member(c.getMember().getEmail(), c.getMember().getNickname()))
+                        .member(new Member(c.getMember().getId(), c.getMember().getEmail(), c.getMember().getNickname()))
                         .build()).toList())
                 .build();
         return board;
