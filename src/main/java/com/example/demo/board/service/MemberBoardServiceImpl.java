@@ -16,6 +16,7 @@ import com.example.demo.redis.RedisService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -41,7 +42,8 @@ public class MemberBoardServiceImpl implements MemberBoardService {
     @Override
     public List<BoardResForm> list() {
 //        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
-        List<MemberBoard> memberBoardList = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "boardId"));
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("views").descending());
+        Page<MemberBoard> memberBoardList = boardRepository.findAll(pageable);
         List<BoardResForm> boardResFormList = memberBoardList.stream().map((mb) -> BoardResForm
                 .builder()
                 .boardId(mb.getBoardId())
@@ -242,6 +244,13 @@ public class MemberBoardServiceImpl implements MemberBoardService {
             return totalBoard / size + 1;
         }
     }
+
+    @Override
+    @Transactional
+    public Integer updateViews(Long boardId) {
+        return boardRepository.updateViews(boardId);
+    }
+
     @Override
     public Integer getMyBoardTotalPage(HttpHeaders headers) {
         Long memberId = redisService.getValueByKey(Objects.requireNonNull(headers.get("authorization")).get(0));

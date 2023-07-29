@@ -35,6 +35,10 @@ public class MemberBoard {
     @UpdateTimestamp
     private LocalDate updateDate;
 
+    @Setter
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int views;
+
     @OneToMany(mappedBy = "memberBoard", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     @JsonIgnore
     private List<FilePaths> filePathList;

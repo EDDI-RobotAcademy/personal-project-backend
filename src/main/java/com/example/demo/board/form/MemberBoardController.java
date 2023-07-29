@@ -24,7 +24,6 @@ public class MemberBoardController {
     @GetMapping("/list")
     public List<BoardResForm> boardList() {
         log.info("boardList()");
-
         return  boardService.list();
     }
 
@@ -51,7 +50,7 @@ public class MemberBoardController {
     public BoardResForm readBoard(@PathVariable("boardId") Long boardId) {
 
         log.info("boardRead()");
-
+        viewsCountUp(boardId);
         return boardService.read(boardId);
     }
 
@@ -86,6 +85,10 @@ public class MemberBoardController {
         log.info("boardList141414()");
 
         return  boardService.getMyBoardTotalPage(headers);
+    }
+
+    private void viewsCountUp(Long boardId){
+        boardService.updateViews(boardId);
     }
 
 }

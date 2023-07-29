@@ -27,4 +27,6 @@ public interface MemberBoardService {
     boolean delete(Long boardId, HttpHeaders headers);
 
     Integer getTotalPage();
+
+    Integer updateViews(Long boardId);
 }
