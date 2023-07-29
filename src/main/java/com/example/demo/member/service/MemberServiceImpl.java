@@ -1,5 +1,7 @@
 package com.example.demo.member.service;
 
+import com.example.demo.board.entity.MemberBoard;
+import com.example.demo.board.reposiitory.MemberBoardRepository;
 import com.example.demo.member.controller.form.MemberLoginResponseForm;
 import com.example.demo.member.controller.form.MemberRequestForm;
 import com.example.demo.member.entity.Member;
@@ -13,8 +15,10 @@ import com.example.demo.member.service.request.MemberLoginRequest;
 import com.example.demo.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,6 +30,7 @@ public class MemberServiceImpl implements MemberService{
     final private MemberRoleRepository memberRoleRepository;
     final private RoleRepository roleRepository;
     final private RedisService redisService;
+    final private MemberBoardRepository boardRepository;
 
     @Override
     public Boolean register(MemberRequestForm requestForm) {
@@ -94,6 +99,16 @@ public class MemberServiceImpl implements MemberService{
 
         return isMember.get();
     }
+
+    @Override
+    public Boolean checkMember(Long memberId, HttpHeaders headers) {
+        Long maybeMemberId = redisService.getValueByKey(Objects.requireNonNull(headers.get("authorization")).get(0));
+        if (maybeMemberId.equals(memberId)){
+            return true;
+        }
+        return false;
+    }
+
 
 
 }

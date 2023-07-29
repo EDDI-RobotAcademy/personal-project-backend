@@ -8,6 +8,7 @@ import com.example.demo.member.controller.form.MemberRequestForm;
 import com.example.demo.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -35,6 +36,11 @@ public class MemberController {
     @PostMapping("/login")
     public MemberLoginResponseForm memberLogin(@RequestBody MemberLoginRequestForm memberLoginRequestForm){
         return memberService.login(memberLoginRequestForm.toMemberLoginRequest());
+    }
+
+    @GetMapping(value = "/check/{memberId}")
+    public Boolean checkMember(@PathVariable("memberId") Long memberId, @RequestHeader HttpHeaders headers){
+        return memberService.checkMember(memberId, headers);
     }
 
 

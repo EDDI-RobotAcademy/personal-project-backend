@@ -138,7 +138,7 @@ public class MemberBoardServiceImpl implements MemberBoardService {
                 .cafeTitle(savedBoard.getCafeTitle())
                 .content(savedBoard.getContent())
                 .createDate(savedBoard.getCreateDate())
-                .member(new Member(savedBoard.getMember().getEmail(), savedBoard.getNickname()))
+                .member(new Member(savedBoard.getMember().getId(), savedBoard.getMember().getEmail(), savedBoard.getNickname()))
                 .filePathList(savedBoard.getFilePathList())
                 .commentList(savedBoard.getCommentList().stream().map((c) -> CommentResForm.builder()
                         .commentId(c.getCommentId())
@@ -242,7 +242,6 @@ public class MemberBoardServiceImpl implements MemberBoardService {
             return totalBoard / size + 1;
         }
     }
-
     @Override
     public Integer getMyBoardTotalPage(HttpHeaders headers) {
         Long memberId = redisService.getValueByKey(Objects.requireNonNull(headers.get("authorization")).get(0));

@@ -36,6 +36,12 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<MemberBoard> memberBoardList;
 
+    public Member(Long id, String email, String nickname) {
+        this.email = email;
+        this.id = id;
+        this.nickname = nickname;
+    }
+
     public Member(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
