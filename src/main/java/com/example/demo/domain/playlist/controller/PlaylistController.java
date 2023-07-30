@@ -88,4 +88,19 @@ public class PlaylistController {
     public long countByLoginAccount(HttpServletRequest request){
         return playlistService.countTotalPageByLoginAccount(request); // 로그인 계정 플레이리스트 카운트
     }
+
+    @PostMapping("/count-liked-playlist")
+    public long countLikedPlaylist(HttpServletRequest request){
+        return playlistService.countLikedPlaylist(request);
+    }
+
+    @GetMapping("/liked-playlist-by-login-account/{page}")
+    public List<PlaylistReadResponseForm> likedPlaylistByLoginAccount(HttpServletRequest request, @PathVariable("page") int page){
+        return playlistService.likedPlaylistByLoginAccount(page, request);
+    }
+
+    @PostMapping("/count-page-liked-playlist")
+    public long countPageLikedPlaylist(HttpServletRequest request){
+        return playlistService.countPageLikedPlaylist(request);
+    }
 }

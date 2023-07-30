@@ -42,7 +42,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         for(Cookie cookie : cookies) {
             if (cookie.getName().equals("AccessToken")) {
                 accessToken = cookie.getValue();
-                log.info("accessToken : " + accessToken);
 
                 // accessToken 값이 비어있으면 => Jwt Token을 전송하지 않음 => 로그인 하지 않음
                 if (accessToken == null) {
@@ -53,7 +52,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             if (cookie.getName().equals("RefreshToken")) {
                 refreshToken = cookie.getValue();
-                log.info("refreshToken : " + refreshToken);
 
                 // refreshToken 값이 비어있으면 => AccessToken 재발급 X
                 if (refreshToken == null) {
@@ -70,13 +68,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         String token = JwtTokenUtil.isExpired(accessToken, refreshToken, secretKey);
-        log.info("token : " + token);
         Cookie accessCookie = jwtTokenUtil.generateCookie("AccessToken", token, 24*60*60);
         response.addCookie(accessCookie);
 
         // AccessToken에서 Email 추출
-        String email = JwtTokenUtil.getEmail(token, secretKey);
-        log.info("email = " + email);
+        String email = JwtTokenUtil.getEmail(token, refreshToken, secretKey);
 
         // 추출한 Email로 Account 찾아오기
         Account loginAccount = accountService.getLoginAccountByEmail(email);

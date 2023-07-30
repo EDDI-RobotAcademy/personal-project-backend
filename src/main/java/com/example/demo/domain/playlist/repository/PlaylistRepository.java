@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
@@ -32,6 +33,9 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
     @Query("SELECT p FROM Playlist p LEFT JOIN FETCH p.account LEFT JOIN FETCH p.songList LEFT JOIN FETCH p.likers where p.account = :account")
     Slice<Playlist> findPlaylistByAccountId(Account account,Pageable pageable);
+
+    @Query("SELECT p FROM Playlist p LEFT JOIN FETCH p.account LEFT JOIN FETCH p.songList where p.id = :playlistId")
+    Optional<Playlist> findByPlaylistId(Long playlistId);
 
     @Modifying
     @Transactional
