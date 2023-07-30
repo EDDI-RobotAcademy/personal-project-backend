@@ -4,9 +4,7 @@ import kr.eddi.demo.config.FastApiConfig;
 import kr.eddi.demo.domain.stock.controller.form.request.OpinionDataSaveRequestForm;
 import kr.eddi.demo.domain.stock.controller.form.request.StockDataSaveRequestForm;
 import kr.eddi.demo.domain.stock.controller.form.request.StockOCVASaveRequestForm;
-import kr.eddi.demo.domain.stock.controller.form.response.StockNameResponseForm;
-import kr.eddi.demo.domain.stock.controller.form.response.StockOCVAResponseForm;
-import kr.eddi.demo.domain.stock.controller.form.response.StockOpinionResponseForm;
+import kr.eddi.demo.domain.stock.controller.form.response.*;
 import kr.eddi.demo.domain.stock.entity.Stock;
 import kr.eddi.demo.domain.stock.entity.StockOCVA;
 import kr.eddi.demo.domain.stock.entity.StockOpinion;
@@ -42,17 +40,15 @@ public class StockServiceImpl implements StockService{
 
     @Override
     public void save() {
+        log.info("save start");
         try {
             Optional<Stock> findHomepageStock = stockRepository.findByTicker("1");
-            if (findHomepageStock.isPresent()) {
-                return;
-            } else {
+            if (findHomepageStock.isEmpty()) {
                 stockRepository.save(new Stock("1", "HomePage"));
             }
             String requestSaveUrl = fastApiConfig.getFastApiAppUrl() + "/stock/save-data";
             ResponseEntity<StockDataSaveRequestForm> response = restTemplate.getForEntity(requestSaveUrl, StockDataSaveRequestForm.class);
 
-            log.info("response" + response);
 
             List<String> tickerList = response.getBody().getTicker();
             List<String> nameList = response.getBody().getStockName();
@@ -92,11 +88,16 @@ public class StockServiceImpl implements StockService{
         } catch (Exception e) {
             log.error("Error during stock initialization or save", e);
         }
+        log.info("save end");
+
     }
 
     @Override
     public StockNameResponseForm getStockName(String ticker) {
+        log.info("getStockName start");
+
         Optional<Stock> maybeStock = stockRepository.findByTicker(ticker);
+
         if(maybeStock.isEmpty()) {
             log.info("잘못된 ticker 이거나 없는 주식 입니다");
             return null;
@@ -106,15 +107,22 @@ public class StockServiceImpl implements StockService{
                                                 .stockName(stock.getStockName())
                                                 .ticker(stock.getTicker())
                                                 .build();
+        log.info("getStockName end");
+
         return responseForm;
     }
 
     @Override
     public void saveOpinion() {
+        log.info("saveOpinion start");
+
         try {
             String requestSaveUrl = fastApiConfig.getFastApiAppUrl() + "/opinion-mining/";
             List<Stock> stockList = stockRepository.findAll();
             for (Stock stock : stockList) {
+                if ("1".equals(stock.getTicker())) {
+                    continue;
+                }
                 ResponseEntity<OpinionDataSaveRequestForm> response = restTemplate.getForEntity(requestSaveUrl + stock.getTicker(), OpinionDataSaveRequestForm.class);
 
                 StockOpinion receivedStockOpinion = response.getBody().toOpinionDataSaveRequest().toStockOpinionMining();
@@ -133,11 +141,15 @@ public class StockServiceImpl implements StockService{
         } catch (Exception e) {
             e.printStackTrace();
         }
+        log.info("saveOpinion end");
+
     }
 
 
     @Override
     public void saveOCVAData() {
+        log.info("saveOCVAData start");
+
         try {
             String requestSaveUrl = fastApiConfig.getFastApiAppUrl() + "/stock/list/";
 
@@ -147,6 +159,7 @@ public class StockServiceImpl implements StockService{
             List<StockOCVASaveRequestForm> stockForms = responseForm.getBody();
 
             for (StockOCVASaveRequestForm stockForm : stockForms) {
+
                 StockOCVA receivedStockOCVA = stockForm.toStockOCVASaveRequest().toStockOCVA();
                 String stockName = stockRepository.findByTicker(receivedStockOCVA.getTicker()).get().getStockName();
 
@@ -166,10 +179,15 @@ public class StockServiceImpl implements StockService{
         } catch (Exception e) {
             e.printStackTrace();
         }
+        log.info("saveOCVAData end");
+
     }
 
     @Override
     public List<StockOCVAResponseForm> list(String OCVA, String ascending, int pageNumber) {
+        log.info("list start");
+
+        final int PAGE_NUMBER = pageNumber - 1;
         final int PAGE_SIZE = 30;
         Sort sort;
         if ("asc".equals(ascending)){
@@ -178,7 +196,7 @@ public class StockServiceImpl implements StockService{
             sort = Sort.by(Sort.Order.desc(OCVA));
         }
 
-        Pageable pageable = PageRequest.of(pageNumber, PAGE_SIZE, sort);
+        Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE, sort);
         Page<StockOCVA> stockOCVAPage = stockOCVARepository.findAll(pageable);
 
         List<StockOCVAResponseForm> OCVAList = new ArrayList<>();
@@ -196,11 +214,17 @@ public class StockServiceImpl implements StockService{
                     .build();
             OCVAList.add(responseForm);
         }
+        log.info("list end");
+
         return OCVAList;
+
     }
 
     @Override
     public List<StockOpinionResponseForm> opinionList(String sortItem, String ascending, int pageNumber) {
+        log.info("opinionList start");
+
+        final int PAGE_NUMBER = pageNumber - 1;
         final int PAGE_SIZE = 30;
         Sort sort;
         if ("asc".equals(ascending)){
@@ -208,8 +232,10 @@ public class StockServiceImpl implements StockService{
         } else {
             sort = Sort.by(Sort.Order.desc(sortItem));
         }
-        Pageable pageable = PageRequest.of(pageNumber, PAGE_SIZE, sort);
+        Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE, sort);
         Page<StockOpinion> stockOpinionPage = stockOpinionRepository.findAll(pageable);
+
+//        long totalElements = stockOpinionRepository.count();
 
         List<StockOpinionResponseForm> opinionList = new ArrayList<>();
 
@@ -222,10 +248,37 @@ public class StockServiceImpl implements StockService{
                     .negativeCount(stockOpinion.getNegativeCount())
                     .naturalCount(stockOpinion.getNaturalCount())
                     .totalSentimentScore(stockOpinion.getTotalSentimentScore())
+//                    .totalPageNum((int) Math.ceil((double) totalElements / PAGE_SIZE))
                     .build();
             opinionList.add(responseForm);
         }
+        log.info("opinionList end");
+
         return opinionList;
+    }
+
+    @Override
+    public StockPageNumResponseForm stockPageNumResponse() {
+        log.info("stockPageNumResponse start");
+        final int PAGE_SIZE = 30;
+        long totalElements = stockOCVARepository.count();
+        StockPageNumResponseForm responseForm = new StockPageNumResponseForm();
+        responseForm.setPageNum((int) Math.ceil((double) totalElements / PAGE_SIZE));
+        log.info("stockPageNumResponse end");
+        return responseForm;
+
+    }
+
+    @Override
+    public OpinionPageNumResponseForm opinionPageNumResponse() {
+        log.info("opinionPageNumResponse start");
+        final int PAGE_SIZE = 30;
+        long totalElements = stockOpinionRepository.count();
+        OpinionPageNumResponseForm responseForm = new OpinionPageNumResponseForm();
+        responseForm.setPageNum((int) Math.ceil((double) totalElements / PAGE_SIZE));
+        log.info("opinionPageNumResponse start");
+
+        return responseForm;
     }
 
 }

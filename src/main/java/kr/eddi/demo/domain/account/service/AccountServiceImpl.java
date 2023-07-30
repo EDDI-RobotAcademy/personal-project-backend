@@ -4,9 +4,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.eddi.demo.config.EncoderConfig;
-import kr.eddi.demo.domain.account.controller.form.AccountLoginRequestForm;
-import kr.eddi.demo.domain.account.controller.form.AccountRegisterRequestFrom;
+import kr.eddi.demo.domain.account.controller.form.*;
 import kr.eddi.demo.domain.account.entity.Account;
+import kr.eddi.demo.domain.account.entity.AccountDetail;
+import kr.eddi.demo.domain.account.entity.AccountNickname;
+import kr.eddi.demo.domain.account.repository.AccountDetailRepository;
+import kr.eddi.demo.domain.account.repository.AccountNicknameRepository;
 import kr.eddi.demo.domain.account.repository.AccountRepository;
 import kr.eddi.demo.domain.account.service.request.AccountLoginRequest;
 import kr.eddi.demo.domain.account.service.request.AccountRegisterRequest;
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,36 +30,59 @@ public class AccountServiceImpl implements AccountService{
 
     final private JwtUtils jwtUtils;
     final private AccountRepository accountRepository;
+    final private AccountNicknameRepository accountNicknameRepository;
+    final private AccountDetailRepository accountDetailRepository;
     final private RedisService redisService;
     final private EncoderConfig encoderConfig;
     @Override
     public boolean register(AccountRegisterRequestFrom requestFrom) {
+        log.info("register start");
+
         AccountRegisterRequest request = requestFrom.toAccountRegisterRequest();
         String encodedPassword = encoderConfig.passwordEncoder().encode(request.getPassword());
+
+        AccountDetail accountDetail = new AccountDetail();
+        accountDetail.setAddress(request.getAddress());
+        accountDetail.setPhoneNumber(request.getPhoneNumber());
+        accountDetailRepository.save(accountDetail);
+        log.info("accountDetail :" + accountDetail);
+
+
+        AccountNickname accountNickname = new AccountNickname();
+        accountNickname.setNickname(request.getNickname());
+        accountNicknameRepository.save(accountNickname);
+        log.info("accountNickname :" + accountNickname);
+
         Account account = new Account().builder()
                 .email(request.getEmail())
                 .password(encodedPassword)
                 .build();
+        account.setAccountDetail(accountDetail);
+        account.setAccountNickname(accountNickname);
         accountRepository.save(account);
+        log.info("account :" + account);
+
+        log.info("register end");
+
         return true;
     }
 
     @Override
-    public Boolean signIn(AccountLoginRequestForm requestForm, HttpServletResponse response) {
+    public Date signIn(AccountLoginRequestForm requestForm, HttpServletResponse response) {
 
         AccountLoginRequest request = requestForm.toAccountRequest();
         Optional<Account> maybeAccount = accountRepository.findByEmail(request.getEmail());
 
-        if(maybeAccount.isEmpty()){
+        if (maybeAccount.isEmpty()) {
             log.info("존재하지 않는 이메일 입니다.");
-            return false;
+            return null;
         }
 
         Account account = maybeAccount.get();
 
-        if(!encoderConfig.passwordEncoder().matches(request.getPassword(), maybeAccount.get().getPassword())){
+        if (!encoderConfig.passwordEncoder().matches(request.getPassword(), maybeAccount.get().getPassword())) {
             log.info("비밀번호가 잘못되었습니다.");
-            return false;
+            return null;
         }
 
         final int ACCESS_TOKEN_EXPIRY_DATE = 6 * 60 * 60 * 1000;
@@ -64,13 +91,12 @@ public class AccountServiceImpl implements AccountService{
         final String refreshTokenUUID = UUID.randomUUID().toString();
 
         String accessToken = jwtUtils.generateToken(account.getEmail(), ACCESS_TOKEN_EXPIRY_DATE);
-        String refreshToken = jwtUtils.generateToken(refreshTokenUUID , REFRESH_TOKEN_EXPIRY_DATE);
+        String refreshToken = jwtUtils.generateToken(refreshTokenUUID, REFRESH_TOKEN_EXPIRY_DATE);
 
         redisService.setKeyAndValue(refreshToken, account.getId());
 
         final int ACCESS_COOKIE_EXPIRY_DATE = 60 * 60 * 6;
         final int REFRESH_COOKIE_EXPIRY_DATE = 60 * 60 * 24 * 14;
-
 
         Cookie assessCookie = jwtUtils.generateCookie("AccessToken", accessToken,
                 ACCESS_COOKIE_EXPIRY_DATE, false);
@@ -80,8 +106,11 @@ public class AccountServiceImpl implements AccountService{
         response.addCookie(assessCookie);
         response.addCookie(refreshCookie);
 
-        return true;
-        }
+        // 로그인 성공 시 refreshTokenExpires 값을 계산하고 반환합니다.
+        long expiryTimeInMilliseconds = System.currentTimeMillis() + REFRESH_TOKEN_EXPIRY_DATE;
+        Date refreshTokenExpires = new Date(expiryTimeInMilliseconds);
+        return refreshTokenExpires;
+    }
 
     @Override
     public void signOut(HttpServletRequest request, HttpServletResponse response) {
@@ -126,5 +155,44 @@ public class AccountServiceImpl implements AccountService{
     @Override
     public Optional<Account> findUserByAccountId(Long accountId) {
         return accountRepository.findById(accountId);
+    }
+
+    @Override
+    public boolean checkEmailDuplicate(CheckEmailDuplicateRequestForm requestForm) {
+        Optional<Account> maybeAccount = accountRepository.findByEmail(requestForm.getEmail());
+        if (maybeAccount.isEmpty()) {
+            log.info("not duplicated email.");
+
+            return true;
+        }
+        log.info("duplicated email.");
+
+        return false;
+    }
+
+    @Override
+    public boolean checkNicknameDuplicate(CheckNicknameDuplicateRequestForm requestForm) {
+        Optional<AccountNickname> maybeNickName = accountNicknameRepository.findByNickname(requestForm.getNickname());
+        if (maybeNickName.isEmpty()){
+            log.info("not duplicated nickname.");
+
+            return true;
+        }
+        log.info("duplicated nickname.");
+
+        return false;
+    }
+
+    @Override
+    public boolean checkPhoneNumberDuplicate(CheckPhoneNumberDuplicateRequestForm requestForm) {
+        Optional<AccountDetail> maybeDetail = accountDetailRepository.findByPhoneNumber(requestForm.getPhoneNumber());
+        if (maybeDetail.isEmpty()) {
+            log.info("not duplicated phoneNum.");
+
+            return true;
+        }
+        log.info("duplicated phoneNum.");
+
+        return false;
     }
 }

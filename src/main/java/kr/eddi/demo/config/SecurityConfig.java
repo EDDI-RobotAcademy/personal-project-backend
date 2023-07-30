@@ -18,26 +18,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
-    final private AllowedOriginsConfig allowedOriginsConfig;
     final private AccountService accountService;
     final private RedisService redisService;
     final private JwtUtils jwtUtils;
+    final private CorsConfig corsConfig;
+
+
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
-
-            return http
-                    .httpBasic().disable()
-                    .csrf().disable()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                    .addFilterBefore(new JwtFilter(accountService, redisService, jwtUtils), UsernamePasswordAuthenticationFilter.class)
-                    .cors().and()
-                    .authorizeRequests()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated()
-                    .requestMatchers(HttpMethod.PUT, "/api/v1/**").authenticated()
-                    .requestMatchers(HttpMethod.DELETE, "/api/v1/**").authenticated()
-                    .anyRequest().permitAll()
-                    .and().build();
-
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity
+                .httpBasic().disable()
+                .csrf().disable()
+                .cors().configurationSource(corsConfig.corsConfigurationSource()).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilterBefore(new JwtFilter(accountService, redisService, jwtUtils), UsernamePasswordAuthenticationFilter.class)
+                .authorizeRequests()
+                .anyRequest().permitAll()
+                .and().build();
     }
+
 }
