@@ -1,6 +1,8 @@
 package com.example.demo.comment.controller;
+import com.example.demo.board.controller.form.RequestBoardForm;
 import com.example.demo.board.entity.Board;
 import com.example.demo.board.service.request.BoardRegisterRequest;
+import com.example.demo.comment.controller.form.RequestCommentForm;
 import com.example.demo.comment.dto.CommentDto;
 import com.example.demo.comment.entity.Comment;
 import com.example.demo.comment.service.CommentService;
@@ -18,17 +20,25 @@ import java.util.List;
 @RequestMapping("/comment")
 public class CommentController {
     final private CommentService commentService;
+//    @GetMapping("/list/{boardId}")
+//    public List<Comment> commentList() {
+//        log.info("commentList()");
+//
+//        List<Comment> returnedCommentList = commentService.list();
+//        return returnedCommentList;
+//    }
     @GetMapping("/list/{boardId}")
-    public List<Comment> commentList() {
-        log.info("commentList()");
-
-        List<Comment> returnedCommentList = commentService.list();
-        return returnedCommentList;
+    public List<Comment> getCommentsByBoardId(@PathVariable Long boardId) {
+        return commentService.listCommentsByBoardId(boardId);
     }
     @PostMapping("/register")
     public Comment registerComment (@RequestBody CommentRegisterRequest request) {
         log.info("registerComment()");
         return commentService.register(request.toComment());
+    }
+    @PutMapping("/{commentId}")
+    public Comment modifyComment(@PathVariable("commentId")Long commentId, @RequestBody RequestCommentForm request) {
+        return commentService.modify(commentId, request);
     }
     @DeleteMapping("/{commentId}")
     public void deleteComment(@PathVariable("commentId") Long commentId) {

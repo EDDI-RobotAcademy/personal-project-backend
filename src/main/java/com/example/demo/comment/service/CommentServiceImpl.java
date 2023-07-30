@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -23,8 +24,8 @@ public class CommentServiceImpl implements CommentService{
     final private BoardRepository boardRepository;
     final private UserRepository userRepository;
     @Override
-    public List<Comment> list() {
-        return commentRepository.findAll(Sort.by(Sort.Direction.DESC, "commentId"));
+    public List<Comment> listCommentsByBoardId(Long boardId) {
+        return commentRepository.findByBoard_BoardId(boardId);
     }
     @Override
     public Comment register(Comment comment) {
@@ -35,8 +36,16 @@ public class CommentServiceImpl implements CommentService{
         commentRepository.deleteById(commentId);
     }
     @Override
-    public Comment modify(Long commentId, RequestCommentForm requestCommentForm) {
-        return null;
+    public Comment modify(Long commentId, RequestCommentForm request) {
+        Optional<Comment> maybeComment = commentRepository.findById(commentId);
+
+        if (maybeComment.isEmpty()) {
+            log.info("정보가 없습니다.");
+            return null;
+        }
+        Comment comment = maybeComment.get();
+        comment.setContent(request.getContent());
+        return commentRepository.save(comment);
     }
 
     @Override

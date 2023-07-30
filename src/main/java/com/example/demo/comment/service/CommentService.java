@@ -7,10 +7,10 @@ import com.example.demo.comment.entity.Comment;
 import java.util.List;
 
 public interface CommentService {
-    List<Comment> list();
+    List<Comment> listCommentsByBoardId(Long boardId);
     Comment register(Comment comment);
     void delete(Long commentId);
-    Comment modify(Long commentId, RequestCommentForm requestCommentForm);
+    Comment modify(Long commentId, RequestCommentForm request);
     Comment createComment(CommentDto commentDto);
 
 }
