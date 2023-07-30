@@ -7,6 +7,12 @@ plugins {
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
+bootJar{
+	archivesBaseName = 'keywe'
+	archiveFileName = 'keywe.jar'
+	archiveVersion = "0.0.1"
+}
+
 java {
 	sourceCompatibility = '17'
 }
