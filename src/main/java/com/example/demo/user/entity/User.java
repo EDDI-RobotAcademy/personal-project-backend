@@ -1,6 +1,7 @@
 package com.example.demo.user.entity;
 
 import com.example.demo.board.entity.Board;
+import com.example.demo.board.entity.BoardLike;
 import com.example.demo.comment.entity.Comment;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;

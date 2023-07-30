@@ -56,19 +56,19 @@ public class UserController {
         log.info("signDown()");
         userService.delete(userId);
     }
+
+    @GetMapping("/bookmarkList/{userId}")
+    public List<Board> bookmarkList(@PathVariable Long userId) {
+        List<Board> returnedBoardList = userService.bookmarkList(userId);
+        return returnedBoardList;
+    }
     @PostMapping("/bookmark/{userId}")
     public ResponseEntity<String> addBookmark(@PathVariable Long userId, @RequestBody BookmarkDto bookmarkDto) {
-        try {
-            // userService의 createBookmark 메서드를 호출하여 북마크 추가
-            User user = new User(); // 적절한 방법으로 user 정보를 가져와야 함
-            Board board = new Board(); // 적절한 방법으로 board 정보를 가져와야 함
-            userService.createBookmark(user, board);
-            return ResponseEntity.ok("북마크 추가 성공");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("북마크 추가 실패");
-        }
-    }
 
+        userService.addBookmark(userId, bookmarkDto.getBoardId());
+        return ResponseEntity.ok().build();
+
+    }
     @DeleteMapping("/bookmark/{userId}")
     public ResponseEntity<String> deleteBookmark(@PathVariable Long userId, @RequestBody Long boardId) {
         return ResponseEntity.ok("북마크 삭제 성공");

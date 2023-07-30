@@ -2,6 +2,8 @@ package com.example.demo.user.service;
 
 import com.example.demo.board.dto.BoardDto;
 import com.example.demo.board.entity.Board;
+import com.example.demo.board.entity.BoardLike;
+import com.example.demo.board.repository.BoardRepository;
 import com.example.demo.user.controller.form.UserSignInResponseForm;
 import com.example.demo.user.dto.UserDto;
 import com.example.demo.user.entity.*;
@@ -12,6 +14,7 @@ import com.example.demo.user.service.request.UserSignUpRequest;
 import com.example.demo.user.service.request.UserSignValidateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +28,20 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     final private UserRepository userRepository;
-    final private RoleRepository roleRepository;
     final private UserRoleRepository userRoleRepository;
-    private BookmarkRepository bookmarkRepository;
+    final private BoardRepository boardRepository;
+    final private BookmarkRepository bookmarkRepository;
     final private UserTokenRepository userTokenRepository = UserTokenRepositoryImpl.getInstance();
+
+    @Override
+    public List<Board> bookmarkList(Long userId) {
+        List<Bookmark> bookmarks = bookmarkRepository.findByUserId(userId);
+        List<Board> boardList = new ArrayList<Board>();
+        for(Bookmark bookmark : bookmarks){
+            boardList.add(bookmark.getBoard());
+        }
+        return boardList;
+    }
 
     @Override
     public User logIn(String uid) {
@@ -103,14 +116,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Bookmark createBookmark(User user, Board board) {
-        Bookmark bookmark = new Bookmark();
-        bookmark.setUser(user);
-        bookmark.setBoard(board);
-        return bookmarkRepository.save(bookmark);
-    }
-    @Override
     public void deleteBookmark(Bookmark bookmark) {
         bookmarkRepository.delete(bookmark);
     }
+
+
+    @Override
+    @Transactional
+    public void addBookmark(Long userId, Long boardId) {
+
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다"));
+        List<Bookmark> bookmarks = bookmarkRepository.findByBoard_BoardIdAndUserId(boardId,userId);
+
+        if (bookmarks.isEmpty()) {
+            bookmarkRepository.save(new Bookmark(userId ,board));
+        } else {
+            log.info("=========================================================");
+            log.info(bookmarks.get(0).getBoard().getTitle().toString());
+            bookmarkRepository.deleteByBoard_BoardIdAndUserId(boardId,userId);
+        }
+    }
+
 }

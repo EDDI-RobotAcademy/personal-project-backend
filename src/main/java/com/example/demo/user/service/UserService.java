@@ -21,6 +21,7 @@ public interface UserService {
     void delete(Long userId);
     RoleType lookup(String userToken);
     Long findUserId(String userToken);
-    Bookmark createBookmark(User user, Board board);
     void deleteBookmark(Bookmark bookmark);
+    List<Board> bookmarkList(Long userId);
+    public void addBookmark(Long userId, Long boardId);
 }
