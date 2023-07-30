@@ -21,9 +21,9 @@ import java.util.List;
 @RestController
 public class BoardController {
 
-    @Autowired
+
     final private BoardService boardService;
-    @Autowired
+
     final private RedisService redisService;
     @PostMapping("/register")
     public Board boardRegister(@RequestBody BoardRegisterRequestForm form){
@@ -34,6 +34,7 @@ public class BoardController {
     }
     @PostMapping("/list")
     public List<Board> boardList(){
+        boardService.countsComment();
         List<Board> returnBoardList= boardService.list();
         log.info(returnBoardList.toString());
         return returnBoardList;
@@ -41,6 +42,7 @@ public class BoardController {
     @PostMapping("/read/{id}")
     public Board readBoard (@PathVariable("id") Long id){
         log.info("보드 가져와");
+        boardService.increaseView(id);
         return boardService.read(id);
     }
     @DeleteMapping("/{id}")

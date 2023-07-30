@@ -1,3 +1,4 @@
 
 demo/src/main/java/kr/eddi/demo/config/CorsConfig.java
 *.gradle
+demo/src/main/resources/redis.properties

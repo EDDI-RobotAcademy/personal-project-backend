@@ -8,6 +8,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PasswordCheckForm {
 
-    String nickName;
+    String userToken;
     String password;
 }

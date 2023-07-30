@@ -16,4 +16,7 @@ public interface AccountService {
     String findNicknameByAccountId(Long accountID);
 
     Boolean checkPassword(PasswordCheckForm form);
+
+
+    Account findAccountByUsertoken(Long valueByKey);
 }

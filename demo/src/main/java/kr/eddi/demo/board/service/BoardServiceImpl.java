@@ -1,5 +1,6 @@
 package kr.eddi.demo.board.service;
 
+import jakarta.transaction.Transactional;
 import kr.eddi.demo.account.entity.Account;
 import kr.eddi.demo.account.repository.AccountRepository;
 
@@ -8,6 +9,8 @@ import kr.eddi.demo.board.controller.form.BoardRegisterRequestForm;
 import kr.eddi.demo.board.entity.Board;
 import kr.eddi.demo.board.repository.BoardRepository;
 
+import kr.eddi.demo.comment.entity.Comment;
+import kr.eddi.demo.comment.repository.CommentRepository;
 import kr.eddi.demo.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +28,7 @@ import java.util.Optional;
 public class BoardServiceImpl implements BoardService{
     final private AccountRepository accountRepository;
     final private  BoardRepository boardRepository;
+    final private CommentRepository commentRepository;
     @Autowired
     final private RedisService redisService;
     @Override
@@ -34,7 +38,7 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public List<Board> list() {
-        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        return boardRepository.findAll(Sort.by(Sort.Direction.DESC, "view"));
     }
 
     @Override
@@ -43,8 +47,10 @@ public class BoardServiceImpl implements BoardService{
         if(maybeBoard.isPresent()){
 
             return maybeBoard.get();
+        } else {
+            return null;
         }
-        return null;
+
     }
 
     @Override
@@ -77,5 +83,23 @@ public class BoardServiceImpl implements BoardService{
         String nickName=maybeAccount.get().getNickname();
 
         return boardRepository.findByWriter(nickName);
+    }
+    @Override
+    public void increaseView(Long id) {
+        Optional<Board> maybeBoard = boardRepository.findById(id);
+        maybeBoard.ifPresent(board -> {
+            board.setView(board.getView() + 1);
+            boardRepository.save(board);
+        });
+    }
+
+    @Override
+    public void countsComment() {
+        List<Board> boards = boardRepository.findAll();
+        for (Board board:boards) {
+            List<Comment> comments = commentRepository.findByBoardId(board.getId());
+            board.setComments(comments.size());
+            boardRepository.save(board);
+        }
     }
 }
