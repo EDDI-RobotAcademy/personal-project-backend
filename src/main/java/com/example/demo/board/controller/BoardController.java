@@ -45,4 +45,10 @@ public class BoardController {
     public BoardResponse modify(@PathVariable("boardId") Long boardId, @RequestBody BoardRequestForm form, @RequestHeader("Authorization") String accessToken) {
         return boardService.modify(boardId, form, accessToken);
     }
+
+    @GetMapping("/search/{title}")
+    public List<BoardListResponse> searchList(@PathVariable("title") String title) {
+        log.info("동작");
+        return boardService.search(title);
+    }
 }

@@ -18,4 +18,6 @@ public interface BoardService {
     void delete(Long boardId, String accessToken);
 
     BoardResponse modify(Long boardId, BoardRequestForm form, String accessToken);
+
+    List<BoardListResponse> search(String title);
 }
