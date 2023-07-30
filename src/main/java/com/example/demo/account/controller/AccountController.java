@@ -44,7 +44,6 @@ public class AccountController {
 
     @PostMapping("/log-in")
     public LoginResponse login(@RequestBody AccountLoginRequestForm form, Long accountId) {
-        System.out.println("login!!");
         return accountService.login(form, accountId);
     }
 

@@ -96,7 +96,6 @@ public class BoardServiceImpl implements BoardService {
             Board board = maybeBoard.get();
 
             if (board.getAccount() != null && board.getAccount().getId().equals(accountId)) {
-                log.info("권한확인: " + board.getAccount().getId().equals(accountId));
                 boardRepository.deleteById(boardId);
             } else {
                 throw new RuntimeException("삭제 권한이 없습니다.");
@@ -122,7 +121,6 @@ public class BoardServiceImpl implements BoardService {
             Board board = maybeBoard.get();
 
             if (board.getAccount() != null && board.getAccount().getId().equals(accountId)) {
-                log.info("권한확인: " + board.getAccount().getId().equals(accountId));
 
                 board.setTitle(form.getTitle());
                 board.setContent(form.getContent());
