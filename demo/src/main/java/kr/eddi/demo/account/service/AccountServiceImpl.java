@@ -7,6 +7,7 @@ import kr.eddi.demo.account.repository.AccountRepository;
 import kr.eddi.demo.account.repository.UserTokenRepository;
 import kr.eddi.demo.account.repository.UserTokenRepositoryImpl;
 import kr.eddi.demo.account.service.request.AccountRequest;
+import kr.eddi.demo.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class AccountServiceImpl implements AccountService {
 
     final private AccountRepository accountRepository;
     final private UserTokenRepository userTokenRepository = UserTokenRepositoryImpl.getInstance();
+    final private RedisService redisService;
 
     @Override
     public Boolean register(AccountRequest accountRequest) {
@@ -72,7 +74,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Boolean checkPassword(PasswordCheckForm form) {
-        Optional<Account> maybeAccount= accountRepository.findByNickname(form.getNickName());
+        Long id = redisService.getValueByKey(form.getUserToken());
+        Optional<Account> maybeAccount = accountRepository.findById(id);
         if (maybeAccount.isEmpty()){
             return false;
         }
