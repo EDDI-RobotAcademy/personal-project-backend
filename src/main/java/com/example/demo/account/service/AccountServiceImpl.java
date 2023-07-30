@@ -1,6 +1,11 @@
 package com.example.demo.account.service;
 
-import com.example.demo.account.controller.form.AccountLoginRequestForm;
+import com.example.demo.account.controller.form.modify.AddressModifyForm;
+import com.example.demo.account.controller.form.modify.NicknameModifyForm;
+import com.example.demo.account.controller.form.modify.PasswordModifyForm;
+import com.example.demo.account.controller.form.request.AccountLoginRequestForm;
+import com.example.demo.account.controller.form.request.AccountReadRequestForm;
+import com.example.demo.account.controller.form.request.CheckPasswordRequestForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.entity.AccountRole;
 import com.example.demo.account.entity.Role;
@@ -18,9 +23,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Random;
-
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import static com.example.demo.account.entity.RoleType.BUSINESS;
@@ -197,7 +201,7 @@ public class AccountServiceImpl implements AccountService{
         msgg += "</div>";
         message.setText(msgg, "utf-8", "html");// 내용, charset 타입, subtype
         // 보내는 사람의 이메일 주소, 보내는 사람 이름
-        message.setFrom(new InternetAddress("wlsdbwls321@naver.com", "GoodJob_Admin"));// 보내는 사람
+        message.setFrom(new InternetAddress("wlsdbwls321@naver.com", "FoodFoot"));// 보내는 사람
 
         return message;
     }
@@ -250,5 +254,136 @@ public class AccountServiceImpl implements AccountService{
 
 
         return ePw; // 메일로 보냈던 인증 코드를 서버로 반환
+    }
+
+    @Override
+    public Account read(AccountReadRequestForm requestForm) {
+        final String userToken = requestForm.getUserToken();
+        final Long accountId = userTokenRepository.findAccountIdByUserToken(userToken);
+
+        Optional <Account> maybeAccount = accountRepository.findById(accountId);
+        if (maybeAccount.isPresent()) {
+            return maybeAccount.get();
+        }
+
+        return null;
+    }
+
+    @Override
+    public String returnPassword(CheckPasswordRequestForm requestForm) {
+
+        final String email = requestForm.getEmail();
+        Optional<Account> maybeAccount = accountRepository.findByEmail(email);
+
+        if (maybeAccount.isPresent()) {
+            final String returnPassword = maybeAccount.get().getPassword();
+
+            return returnPassword;
+        }
+
+        return null;
+    }
+
+    @Override
+    public String modifyNickname(Long id, NicknameModifyForm modifyForm) {
+        Optional<Account> maybeAccount = accountRepository.findById(id);
+
+        if (maybeAccount.isEmpty()) {
+            log.info("존재하지 않는 회원입니다.");
+            return null;
+        }
+
+        Account account = maybeAccount.get();
+        account.setNickName(modifyForm.getNickName());
+
+        accountRepository.save(account);
+
+        return modifyForm.getNickName();
+    }
+
+    @Override
+    public String modifyAddress(Long id, AddressModifyForm modifyForm) {
+        Optional<Account> maybeAccount = accountRepository.findById(id);
+
+        if (maybeAccount.isEmpty()) {
+            log.info("존재하지 않는 회원입니다.");
+            return null;
+        }
+
+        Account account = maybeAccount.get();
+        account.setAddress(modifyForm.getAddress());
+
+        accountRepository.save(account);
+
+        return modifyForm.getAddress();
+    }
+
+    @Override
+    public String modifyPassword(Long id, PasswordModifyForm modifyForm) {
+        Optional<Account> maybeAccount = accountRepository.findById(id);
+
+        if (maybeAccount.isEmpty()) {
+            log.info("존재하지 않는 회원입니다.");
+            return null;
+        }
+
+        Account account = maybeAccount.get();
+        account.setPassword(modifyForm.getPassword());
+
+        accountRepository.save(account);
+
+        return modifyForm.getPassword();
+    }
+
+    @Override
+    public void delete(Long id) {
+        accountRoleRepository.deleteAllByAccountId(id);
+        accountRepository.deleteById(id);
+    }
+
+    @Override
+    public String returnNickname(Long id) {
+
+        Optional<Account> maybeAccount = accountRepository.findById(id);
+        if (maybeAccount.isPresent()) {
+            return maybeAccount.get().getNickName();
+        }
+
+        return null;
+    }
+
+    @Override
+    public RoleType returnRoleType(Long id) {
+
+        Optional<Account> maybeAccount = accountRepository.findById(id);
+        if (maybeAccount.isPresent()) {
+            RoleType roleType = accountRoleRepository.findRoleByAccount(maybeAccount.get()).getRoleType();
+
+            return roleType;
+        }
+
+        return null;
+    }
+
+    @Override
+    public Boolean checkBusinessNumberDuplication(String businessNumber) {
+
+        final Optional<AccountRole> maybeAccountRole = accountRoleRepository.findByBusinessNumber(businessNumber);
+        if (maybeAccountRole.isPresent()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public Boolean checkNickNameDuplication(String nickName) {
+        Optional<Account> maybeAccount = accountRepository.findByNickName(nickName);
+
+        if (maybeAccount.isPresent()) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

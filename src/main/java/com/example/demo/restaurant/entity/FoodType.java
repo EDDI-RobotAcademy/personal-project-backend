@@ -7,7 +7,7 @@ public enum FoodType {
     WESTERN,
     THAI,
     MEXICAN,
-    INDIAN,
-    ITALIAN,
-    FRENCH
+    INDONESIAN,
+    SEAFOOD,
+    BAKERY,
 }

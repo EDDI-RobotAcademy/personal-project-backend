@@ -14,7 +14,7 @@ public class NormalAccountRegisterRequest {
     final private RoleType roleType;
     final private String userName;
     final private String gender;
-    final private Integer birth;
+    final private String birth;
     final private String nickName;
     final private String address;
 

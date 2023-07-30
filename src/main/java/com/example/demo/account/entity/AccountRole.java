@@ -25,14 +25,14 @@ public class AccountRole {
     private Account account;
 
     // 사업자 회원
-    private Long businessNumber;
+    private String businessNumber;
 
     public AccountRole(Role role, Account account) {
         this.role = role;
         this.account = account;
     }
 
-    public AccountRole(Role role, Account account, Long businessNumber) {
+    public AccountRole(Role role, Account account, String businessNumber) {
         this.role = role;
         this.account = account;
         this.businessNumber = businessNumber;

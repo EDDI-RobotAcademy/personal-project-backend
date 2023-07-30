@@ -8,25 +8,28 @@ import lombok.ToString;
 
 @Entity
 @NoArgsConstructor
+@Table(name = "menu")
 @ToString
-public class RestaurantFood {
+public class Menu {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "food_Id", nullable = false)
     @Getter
     @Setter
-    private Food food;
+    private String menuItem;
+    @Getter
+    @Setter
+    private Integer menuPrice;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "restaurant_Id", nullable = false)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    @Setter
     private Restaurant restaurant;
 
-    public RestaurantFood(Food food, Restaurant restaurant) {
-        this.food = food;
-        this.restaurant = restaurant;
+    public Menu(String menuItem, Integer menuPrice) {
+        this.menuItem = menuItem;
+        this.menuPrice = menuPrice;
     }
 }

@@ -70,7 +70,7 @@ public class LikeServiceImpl implements LikeService{
         }
     }
 
-    public Integer likeRestaurantCount(LikeRestaurantCountForm countForm) {
+    public Integer likesRestaurantCount(LikeRestaurantCountForm countForm) {
         Long restaurantId = countForm.getRestaurantId();
         return likeRepository.countLikesByRestaurantId(restaurantId);
     }

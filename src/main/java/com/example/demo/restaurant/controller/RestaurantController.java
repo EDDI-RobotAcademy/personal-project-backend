@@ -1,10 +1,7 @@
 package com.example.demo.restaurant.controller;
 
 import com.example.demo.account.service.AccountService;
-import com.example.demo.restaurant.controller.form.RestaurantListResponseForm;
-import com.example.demo.restaurant.controller.form.RestaurantModifyForm;
-import com.example.demo.restaurant.controller.form.RestaurantReadResponseForm;
-import com.example.demo.restaurant.controller.form.RestaurantRegisterForm;
+import com.example.demo.restaurant.controller.form.*;
 import com.example.demo.restaurant.controller.form.business.BusinessRestaurantListRequestForm;
 import com.example.demo.restaurant.controller.form.business.BusinessRestaurantListResponseForm;
 import com.example.demo.restaurant.controller.form.business.BusinessRestaurantReadResponseForm;
@@ -68,17 +65,17 @@ public class RestaurantController {
 
     // 사업자 회원 - 맛집 상세 페이지
     @GetMapping("/business-restaurant/{id}")
-    public BusinessRestaurantReadResponseForm readBusinessRestaurant(@PathVariable("id") Long id) {
+    public RestaurantReadResponseForm readBusinessRestaurant(@PathVariable("id") Long id) {
         log.info("readBusinessRestaurant()");
 
-        return restaurantService.businessRead(id);
+        return restaurantService.read(id);
     }
 
     // 사업자 회원 - 맛집 수정
     @PutMapping("/{id}")
-    public Restaurant modifyRestaurant (@PathVariable("id") Long id,
-                                        @RequestBody RestaurantModifyForm modifyForm) {
-        log.info("modifyProduct()");
+    public RestaurantModifyResponseForm modifyRestaurant (@PathVariable("id") Long id,
+                                                          @RequestBody RestaurantModifyForm modifyForm) {
+        log.info("modifyRestaurant()");
 
         return restaurantService.modify(id, modifyForm);
     }
@@ -88,5 +85,21 @@ public class RestaurantController {
     public void deleteRestaurant (@PathVariable("id") Long id) {
         log.info("deleteRestaurant()");
         restaurantService.delete(id);
+    }
+
+    // 사업자 회원 리스트 페이지 - 조회수
+    @GetMapping("/visitor/{id}")
+    public Integer restaurantVisitor(@PathVariable("id") Long id) {
+        log.info("restaurantVisitor()");
+
+        return restaurantService.returnVisitor(id);
+    }
+
+    // 맛집 이름 반환하기
+    @GetMapping("/return-name/{id}")
+    public String returnName (@PathVariable("id") Long id) {
+        log.info("returnName()");
+
+        return restaurantService.returnName(id);
     }
 }

@@ -37,7 +37,7 @@ public class LikeController {
     public Integer countLikedRestaurant (@RequestBody LikeRestaurantCountForm countForm) {
         log.info("countLikedRestaurant()");
 
-        final Integer likeCount = likeService.likeRestaurantCount(countForm);
+        final Integer likeCount = likeService.likesRestaurantCount(countForm);
 
         return likeCount;
     }

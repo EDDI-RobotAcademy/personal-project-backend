@@ -1,11 +1,11 @@
 package com.example.demo.account.controller;
 
-import com.example.demo.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.ReturnAccountIdRequestForm;
-import com.example.demo.account.controller.form.ReturnEmailRequestForm;
-import com.example.demo.account.controller.form.business.BusinessAccountRegisterForm;
-import com.example.demo.account.controller.form.business.BusinessCheckRequestForm;
-import com.example.demo.account.controller.form.normal.NormalAccountRegisterForm;
+import com.example.demo.account.controller.form.modify.AddressModifyForm;
+import com.example.demo.account.controller.form.modify.NicknameModifyForm;
+import com.example.demo.account.controller.form.modify.PasswordModifyForm;
+import com.example.demo.account.controller.form.request.*;
+import com.example.demo.account.entity.Account;
+import com.example.demo.account.entity.RoleType;
 import com.example.demo.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +37,22 @@ public class AccountController {
         log.info("ckeckEmail: " + email);
 
         return accountService.checkEmailDuplication(email);
+    }
+
+    // 사업자번호 중복체크
+    @GetMapping("/check-businessNumber/{businessNumber}")
+    public Boolean checkBusinessNumber (@PathVariable("businessNumber") String businessNumber) {
+        log.info("checkBusinessNumber: " + businessNumber);
+
+        return accountService.checkBusinessNumberDuplication(businessNumber);
+    }
+
+    // 닉네임 중복체크
+    @GetMapping("/check-nickname/{nickName}")
+    public Boolean checkNickName (@PathVariable("nickName") String nickName) {
+        log.info("checkNickName: " + nickName);
+
+        return accountService.checkNickNameDuplication(nickName);
     }
 
     // 로그인
@@ -89,12 +105,79 @@ public class AccountController {
     }
 
     // 이메일 인증
-    @PostMapping("mail-confirm")
     @ResponseBody
-    String mailConfirm(@RequestParam("email") String email) throws Exception {
+    @PostMapping("mail-confirm/{email}")
+    String mailConfirm(@PathVariable("email") String email) throws Exception {
 
         String code = accountService.sendSimpleMessage(email);
         System.out.println("인증코드 : " + code);
         return code;
+    }
+
+    // 회원 정보
+    @PostMapping("/give-info")
+    public Account readAccount (@RequestBody AccountReadRequestForm requestForm) {
+        log.info("readAccount()");
+
+        return accountService.read(requestForm);
+    }
+
+    // 비밀번호 반환
+    @PostMapping("/check-password")
+    public String returnPassword (@RequestBody CheckPasswordRequestForm requestForm) {
+        log.info("returnPassword()");
+
+        return accountService.returnPassword(requestForm);
+    }
+
+    // 닉네임 변경
+    @PutMapping("change-nickname/{id}")
+    public String changeNickname (@PathVariable("id") Long id,
+                                  @RequestBody NicknameModifyForm modifyForm) {
+        log.info("changeNickname()");
+
+        return accountService.modifyNickname(id, modifyForm);
+    }
+
+    // 주소 변경
+    @PutMapping("change-address/{id}")
+    public String changeAddress (@PathVariable("id") Long id,
+                                  @RequestBody AddressModifyForm modifyForm) {
+        log.info("changeAddress()");
+
+        return accountService.modifyAddress(id, modifyForm);
+    }
+
+    // 비밀번호 변경
+    @PutMapping("change-password/{id}")
+    public String changePassword (@PathVariable("id") Long id,
+                                  @RequestBody PasswordModifyForm modifyForm) {
+        log.info("changePassword()");
+
+        return accountService.modifyPassword(id, modifyForm);
+    }
+
+    // 회원 탈퇴
+    @DeleteMapping("/{id}")
+    public void deleteAccount (@PathVariable("id") Long id) {
+        log.info("deleteAccount()");
+
+        accountService.delete(id);
+    }
+
+    // 닉네임 반환
+    @GetMapping("/return-nickname/{id}")
+    public String returnNickname (@PathVariable("id") Long id) {
+        log.info("returnNickname()");
+
+        return accountService.returnNickname(id);
+    }
+
+    // 회원 유형 반환
+    @GetMapping("/return-roleType/{id}")
+    public RoleType returnRoleType (@PathVariable("id") Long id) {
+        log.info("returnRoleType()");
+
+        return accountService.returnRoleType(id);
     }
 }

@@ -41,10 +41,7 @@ public class ReviewController {
     public List<ReviewListResponseForm> reviewList(@RequestBody ReviewListRequestForm requestForm) {
         log.info("reviewList()");
 
-        final String restaurantName = requestForm.getRestaurantName();
-        final Long restaurantId = restaurantService.findRestaurantId(restaurantName);
-
-        List<ReviewListResponseForm> reviewList = reviewService.list(restaurantId);
+        List<ReviewListResponseForm> reviewList = reviewService.list(requestForm);
 
         return reviewList;
     }

@@ -15,9 +15,9 @@ public class ReviewRegisterForm {
 //    private List<String> imageUrls;
     private String comment;
     private String userToken;
-    private String restaurantName;
+    private Long restaurantId;
 
     public ReviewRegisterRequest toReviewRegisterRequest() {
-        return new ReviewRegisterRequest(ratings, comment, userToken, restaurantName);
+        return new ReviewRegisterRequest(ratings, comment, userToken, restaurantId);
     }
 }

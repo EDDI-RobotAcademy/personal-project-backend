@@ -13,7 +13,7 @@ public class ReviewRegisterRequest {
 //    private List<String> imageUrls;
     final private String comment;
     final private String userToken;
-    final private String restaurantName;
+    final private Long restaurantId;
 
     public Review toReview() {
         return new Review(ratings, comment);

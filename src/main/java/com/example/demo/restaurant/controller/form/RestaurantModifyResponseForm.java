@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class RestaurantReadResponseForm {
+public class RestaurantModifyResponseForm {
 
     final private Long id;
     final private String restaurantName;
@@ -20,7 +20,7 @@ public class RestaurantReadResponseForm {
     final private Integer menuPrice;
     final private FoodType foodType;
 
-    public RestaurantReadResponseForm(Restaurant restaurant, List<RestaurantImages> restaurantImagesList,
+    public RestaurantModifyResponseForm(Restaurant restaurant, List<RestaurantImages> restaurantImagesList,
                                       Menu menu, RestaurantFood restaurantFood) {
         this.id = restaurant.getId();
         this.restaurantName = restaurant.getRestaurantName();
@@ -31,6 +31,7 @@ public class RestaurantReadResponseForm {
 
         this.menuItem = menu.getMenuItem();
         this.menuPrice = menu.getMenuPrice();
+
         this.foodType = restaurantFood.getFood().getFoodType();
 
         for (RestaurantImages images: restaurantImagesList) {

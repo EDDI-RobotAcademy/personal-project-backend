@@ -1,5 +1,6 @@
 package com.example.demo.review.repository;
 
+import com.example.demo.account.entity.Account;
 import com.example.demo.review.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,4 +10,5 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findAllByRestaurantId(Long restaurantId);
     List<Review> findByRestaurantId(Long restaurantId);
+    Optional<Account> findAccountById(Long id);
 }

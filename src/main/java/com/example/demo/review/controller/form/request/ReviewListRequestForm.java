@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class ReviewListRequestForm {
 
-    @Getter
-    private String restaurantName;
+    private Long restaurantId;
 }

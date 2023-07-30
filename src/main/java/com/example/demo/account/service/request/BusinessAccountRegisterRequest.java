@@ -11,10 +11,10 @@ public class BusinessAccountRegisterRequest {
     final private String email;
     final private String password;
     final private RoleType roleType;
-    final private Long businessNumber;
+    final private String businessNumber;
     final private String userName;
     final private String gender;
-    final private Integer birth;
+    final private String birth;
     final private String nickName;
     final private String address;
 

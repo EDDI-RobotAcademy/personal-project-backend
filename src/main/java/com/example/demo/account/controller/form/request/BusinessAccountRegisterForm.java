@@ -1,11 +1,10 @@
-package com.example.demo.account.controller.form.business;
+package com.example.demo.account.controller.form.request;
 
 import com.example.demo.account.entity.RoleType;
 import com.example.demo.account.service.request.BusinessAccountRegisterRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @AllArgsConstructor
@@ -15,10 +14,10 @@ public class BusinessAccountRegisterForm {
     private String email;
     private String password;
     private RoleType roleType;
-    private Long businessNumber; //사업자 등록번호
+    private String businessNumber; //사업자 등록번호
     private String userName;
     private String gender;
-    private Integer birth;
+    private String birth;
     private String nickName;
     private String address;
 

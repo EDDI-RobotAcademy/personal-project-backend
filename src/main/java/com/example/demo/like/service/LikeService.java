@@ -6,5 +6,5 @@ import com.example.demo.like.controller.form.LikeRestaurantForm;
 public interface LikeService {
     Boolean likeRestaurant(LikeRestaurantForm likeRestaurantForm);
     void delete(Long id, String userToken);
-    Integer likeRestaurantCount(LikeRestaurantCountForm countForm);
+    Integer likesRestaurantCount(LikeRestaurantCountForm countForm);
 }

@@ -11,6 +11,7 @@ import com.example.demo.restaurant.entity.RestaurantImages;
 import com.example.demo.restaurant.repository.RestaurantRepository;
 import com.example.demo.review.controller.form.ReviewModifyForm;
 import com.example.demo.review.controller.form.request.ReviewAverageRatingsForm;
+import com.example.demo.review.controller.form.request.ReviewListRequestForm;
 import com.example.demo.review.controller.form.response.ReviewListResponseForm;
 import com.example.demo.review.controller.form.response.ReviewReadResponseForm;
 import com.example.demo.review.entity.Review;
@@ -42,11 +43,10 @@ public class ReviewServiceImpl implements ReviewService {
         Long accountId = userTokenRepository.findAccountIdByUserToken(userToken);
         Optional<Account> maybeAccount = accountRepository.findById(accountId);
 
-
         if (maybeAccount.isPresent()) {
             Account account = maybeAccount.get();
 
-            Optional<Restaurant> maybeRestaurant = restaurantRepository.findByRestaurantName(request.getRestaurantName());
+            Optional<Restaurant> maybeRestaurant = restaurantRepository.findById(request.getRestaurantId());
             if (maybeRestaurant.isPresent()) {
 
                 Restaurant restaurant = maybeRestaurant.get();
@@ -64,22 +64,6 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         return false;
-    }
-
-    @Override
-    public List<ReviewListResponseForm> list(Long restaurantId) {
-        List<ReviewListResponseForm> tmpList = new ArrayList<>();
-        List<Review> reviews = reviewRepository.findAllByRestaurantId(restaurantId);
-
-        for (Review review : reviews) {
-//            List<RestaurantImages> maybeImages = restaurantImagesRepository.findByRestaurantId(restaurant.getId());
-//            if (!maybeImages.isEmpty()) {
-            ReviewListResponseForm responseForm = new ReviewListResponseForm(review);
-            tmpList.add(responseForm);
-//            }
-        }
-
-        return tmpList;
     }
 
     @Override
@@ -118,14 +102,14 @@ public class ReviewServiceImpl implements ReviewService {
             log.info("후기가 존재하지 않습니다.");
             return null;
         }
+
         final Review review = maybeReview.get();
         log.info("review:" + review);
 
-//        final List<RestaurantImages> restaurantImagesList = restaurantImagesRepository.findByRestaurantId(review.getId());
-//        log.info("restaurantImagesList: " + restaurantImagesList);
-
+        // 생성자 호출 시 accountId 값을 전달
         return new ReviewReadResponseForm(review);
     }
+
 
     @Override
     public void delete(Long id) {
@@ -153,5 +137,23 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         return null;
+    }
+
+    @Override
+    public List<ReviewListResponseForm> list(ReviewListRequestForm requestForm) {
+
+        final Long restaurantId = requestForm.getRestaurantId();
+        List<ReviewListResponseForm> tmpList = new ArrayList<>();
+        List<Review> reviews = reviewRepository.findAllByRestaurantId(restaurantId);
+
+        for (Review review : reviews) {
+//            List<RestaurantImages> maybeImages = restaurantImagesRepository.findByRestaurantId(restaurant.getId());
+//            if (!maybeImages.isEmpty()) {
+            ReviewListResponseForm responseForm = new ReviewListResponseForm(review);
+            tmpList.add(responseForm);
+//            }
+        }
+
+        return tmpList;
     }
 }

@@ -17,12 +17,13 @@ public class RestaurantImages {
     private Long id;
 
     @Getter
+    @Setter
     private String imageResourcePath;
 
     @Setter
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id")
+    @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
     public RestaurantImages(String imageResourcePath) {

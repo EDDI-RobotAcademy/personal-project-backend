@@ -1,11 +1,10 @@
-package com.example.demo.account.controller.form.normal;
+package com.example.demo.account.controller.form.request;
 
 import com.example.demo.account.entity.RoleType;
 import com.example.demo.account.service.request.NormalAccountRegisterRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @NoArgsConstructor
@@ -17,7 +16,7 @@ public class NormalAccountRegisterForm {
     private RoleType roleType;
     private String userName;
     private String gender;
-    private Integer birth;
+    private String birth;
     private String nickName;
     private String address;
 
