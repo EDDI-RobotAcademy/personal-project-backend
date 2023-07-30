@@ -1,13 +1,14 @@
 package com.example.demo.board.entity;
 
 import com.example.demo.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity(name = "boardLike")
-@Table(name = "likes")
+@Table(name = "boardLike")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,16 +17,16 @@ public class BoardLike {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long likeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
-    private User user;
+    @Column(name = "user_id")
+    private Long userId;
 
-    @ManyToOne
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BOARD_ID")
     private Board board;
 
-    public BoardLike(User user, Board board) {
-        this.user = user;
+    public BoardLike(Long userId, Board board) {
+        this.userId = userId;
         this.board = board;
     }
 }

@@ -14,9 +14,11 @@ import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
     Optional<Board> findById(Long boardId);
+
+    List<Board> findByUser_UserId(Long userId);
     List<Board> findByTitleContaining(String keyword);
     @Query("SELECT b FROM Board b WHERE b.boardCategory = :category ORDER BY b.createDate DESC")
     List<Board> findAllCategory(@Param("category")BoardCategory category);
     @Query("SELECT COUNT(b) FROM Board b WHERE b.boardCategory = :category")
-    long findPostNumberByCategory(@Param("category")BoardCategory boardCategory);
+    Long findPostNumberByCategory(@Param("category")BoardCategory boardCategory);
 }

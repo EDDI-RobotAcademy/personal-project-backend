@@ -1,6 +1,7 @@
 package com.example.demo.board.entity;
 
 import com.example.demo.comment.entity.Comment;
+import com.example.demo.user.entity.Bookmark;
 import com.example.demo.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -57,23 +58,19 @@ public class Board {
     private User user;
 
     @Setter
-    @JsonBackReference
-    @OneToMany(mappedBy = "board")
+    @OrderBy("commentId")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<Comment> comments;
 
-
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.EAGER) // Eager Loading 설정
+    @Setter
+    @OrderBy("likeId")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER) // Eager Loading 설정
     private List<BoardLike> likes = new ArrayList<>();
 
-    public void addLike(BoardLike like) {
-        likes.add(like);
-        like.setBoard(this);
-    }
-
-    public void removeLike(BoardLike like) {
-        likes.remove(like);
-        like.setBoard(null);
-    }
+    @Setter
+    @OrderBy("bookMarkId")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER) // Eager Loading 설정
+    private List<Bookmark> bookmarks = new ArrayList<>();
 
     @JsonManagedReference
     public User getUser() {

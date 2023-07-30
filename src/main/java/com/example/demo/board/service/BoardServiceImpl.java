@@ -7,7 +7,10 @@ import com.example.demo.board.controller.form.RequestBoardForm;
 import com.example.demo.board.entity.Board;
 import com.example.demo.board.entity.BoardCategory;
 import com.example.demo.board.entity.BoardLike;
+import com.example.demo.board.repository.BoardLikeRepository;
 import com.example.demo.board.repository.BoardRepository;
+import com.example.demo.user.entity.User;
+import com.example.demo.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,16 +20,69 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService{
     final private BoardRepository boardRepository;
+    final private BoardLikeRepository boardLikeRepository;
+    public void mkdir(String path) {
+        File folder = new File(path);
+        if (!folder.exists()) {	// 폴더가 존재하는지 체크, 없다면 생성
+            if (folder.mkdir())
+                System.out.println("폴더 생성 성공");
+            else
+                System.out.println("폴더 생성 실패");
+        } else {	// 폴더가 존재한다면
+            System.out.println("폴더가 이미 존재합니다.");
+        }
+    }
+
+    public String makeTxtPath(String name) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        Calendar time = Calendar.getInstance();
+        String path =  File.separator + name;
+        this.mkdir(System.getProperty("user.dir") + path);
+        path += File.separator + UUID.randomUUID().toString();
+        this.mkdir(System.getProperty("user.dir") + path);
+        String fileName = name + "_" + sdf.format(time.getTime()) + ".txt";
+        String fullPath = path + File.separator + fileName;
+        return fullPath;
+    }
+
+    public String makeBoardTxt(String filePath, String content) {
+        try {
+            File file = new File(System.getProperty("user.dir") + filePath);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fw = new FileWriter(file, false);
+            BufferedWriter writer = new BufferedWriter(fw);
+            writer.write(content);
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+        return filePath;
+    }
+
+    public String getBoardTxt(String fileName) {
+        try {
+            FileInputStream fileStream = new FileInputStream(System.getProperty("user.dir") + fileName);
+            byte[ ] readBuffer = new byte[fileStream.available()];
+            while (fileStream.read( readBuffer ) != -1){}
+            String text = new String(readBuffer);
+            fileStream.close(); //스트림 닫기
+            return text;
+        } catch (IOException err) {
+            return err.getMessage();
+        }
+
+    }
 
     @Override
     public List<Board> list() {
@@ -36,6 +92,8 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public Board register(Board registerBoard) {
+        String fileName = this.makeBoardTxt(makeTxtPath("Board"),registerBoard.getContent());
+        registerBoard.setContent(fileName);
         return boardRepository.save(registerBoard);
     }
 
@@ -46,7 +104,10 @@ public class BoardServiceImpl implements BoardService{
             log.info("정보가 없습니다.");
             return null;
         }
-        return maybeBoard.get();
+        Board board = maybeBoard.get();
+        board.setContent(getBoardTxt(board.getContent()));
+
+        return board;
     }
 
     @Override
@@ -73,7 +134,9 @@ public class BoardServiceImpl implements BoardService{
         }
         Board board = maybeBoard.get();
         board.setTitle(requestBoardForm.getTitle());
-        board.setContent(requestBoardForm.getContent());
+        String fileName = this.makeBoardTxt(board.getContent(), requestBoardForm.getContent());
+        board.setContent(fileName);
+        board.getBoardCategory();
         return boardRepository.save(board);
     }
 
@@ -111,27 +174,14 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    @Transactional
     public void addLikeCount(Long boardId, Long userId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다"));
-        if (isAlreadyLiked(boardId, userId)) {
+        Board board = boardRepository.findById(boardId).orElse(null);
+        List<BoardLike> boardLike = boardLikeRepository.findByBoard_BoardIdAndUserId(boardId,userId);
+        if (boardLike.isEmpty()) {
+            boardLikeRepository.save(new BoardLike(userId , board));
+        } else {
             throw new RuntimeException("이미 해당 게시물을 좋아합니다");
         }
-        board.setLikeCount(board.getLikeCount() + 1);
-        boardRepository.save(board);
-    }
-
-    @Override
-    public boolean isAlreadyLiked(Long boardId, Long userId) {
-        Board board = boardRepository.findById(boardId).orElse(null);
-        if (board != null) {
-            for (BoardLike like : board.getLikes()) {
-                if (like.getUser().getUserId().equals(userId)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     @Override

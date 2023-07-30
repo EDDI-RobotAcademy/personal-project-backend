@@ -39,22 +39,7 @@ public class BoardController {
         List<Board> returnedBoardList = boardService.list();
         return returnedBoardList;
     }
-    @GetMapping("/detail/{filename}")
-    public String getFile(@PathVariable("filename")String filename,HttpServletResponse response) throws IOException, ConfigDataResourceNotFoundException {
-        String filePath = System.getProperty("user.dir")
-                + File.separator	// Windows('\'), Linux, MAC('/')
-                + "board"
-                + File.separator
-                + filename; // 대상 파일
-        log.info(filePath);
 
-        FileInputStream fileStream = new FileInputStream(filePath);
-        byte[ ] readBuffer = new byte[fileStream.available()];
-        while (fileStream.read( readBuffer ) != -1){}
-        String text = new String(readBuffer);
-        fileStream.close(); //스트림 닫기
-        return text;
-    }
     @PostMapping("/register")
     public Board registerBoard (@RequestBody BoardRegisterRequest request) {
         return boardService.register(request.toBoard());
@@ -109,18 +94,13 @@ public class BoardController {
     @PostMapping("/like-count/{boardId}")
     public ResponseEntity<?> addLikeCount(@PathVariable Long boardId, @RequestBody LikeCountRequestDto requestDto) {
         try {
-            // 이미 추천한 기록이 있는지 확인
-            if (boardService.isAlreadyLiked(boardId, requestDto.getUserId())) {
-                return ResponseEntity.badRequest().body("이미 추천한 게시물입니다.");
-            }
-
             boardService.addLikeCount(boardId, requestDto.getUserId());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to increase like count.");
         }
     }
-    @GetMapping("/board/like-count/{boardId}")
+    @GetMapping("/like-count/{boardId}")
     public ResponseEntity<Integer> getLikeCount(@PathVariable Long boardId) {
         int likeCount = boardService.getLikeCount(boardId);
         return ResponseEntity.ok(likeCount);
