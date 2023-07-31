@@ -1,15 +1,12 @@
 package kr.eddi.demo.domain.board.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import kr.eddi.demo.domain.account.entity.Account;
-import kr.eddi.demo.domain.stock.entity.Stock;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @ToString
@@ -17,31 +14,24 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Board {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String title;
-
+    @JoinColumn(name = "account_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Account account;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Board board;
 
     private String anonymousWriter;
-    private String nickname;
+
 
     private String content;
+
     private String password;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     @UpdateTimestamp
     private LocalDateTime createDate;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-    @UpdateTimestamp
-    private LocalDateTime updateDate;
-
-    @JoinColumn(name = "ticker")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Stock stock;
 }

@@ -27,4 +27,8 @@ public interface AccountService {
     boolean checkNicknameDuplicate(CheckNicknameDuplicateRequestForm requestForm);
 
     boolean checkPhoneNumberDuplicate(CheckPhoneNumberDuplicateRequestForm requestForm);
+
+    AccountNicknameResponseForm responseAccountNickname(String accessToken);
+
+    MyPageResponseForm getMyPage(String value);
 }
