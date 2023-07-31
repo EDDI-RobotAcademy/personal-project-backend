@@ -104,7 +104,6 @@ public class BoardMapServiceImpl implements BoardMapService{
             BoardMap boardMap = maybeBoardMap.get();
 
             if (boardMap.getAccount() != null && boardMap.getAccount().getId().equals(accountId)) {
-                log.info("권한확인: " + boardMap.getAccount().getId().equals(accountId));
                 boardMapRepository.deleteById(boardMapId);
             } else {
                 throw new RuntimeException("삭제 권한이 없습니다.");
@@ -130,7 +129,6 @@ public class BoardMapServiceImpl implements BoardMapService{
             BoardMap boardMap = maybeBoardMap.get();
 
             if (boardMap.getAccount() != null && boardMap.getAccount().getId().equals(accountId)) {
-                log.info("권한확인: " + boardMap.getAccount().getId().equals(accountId));
 
                 boardMap.setTitle(form.getTitle());
                 boardMap.setContent(form.getContent());

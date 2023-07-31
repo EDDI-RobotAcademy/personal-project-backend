@@ -127,7 +127,6 @@ public class AccountServiceImpl implements AccountService {
         Optional<Account> maybeAccount = accountRepository.findByEmail(email);
         if (maybeAccount.isPresent()) {
             Account account = maybeAccount.get();
-            log.info("account: " + account);
             Optional<Profile> maybeProfile = profileRepository.findByAccount(account);
             if (maybeProfile.isPresent()) {
                 Profile profile = maybeProfile.get();

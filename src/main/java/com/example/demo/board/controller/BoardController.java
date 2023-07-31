@@ -27,7 +27,6 @@ public class BoardController {
 
     @PostMapping("/register")
     public BoardResponse registerBoard(@RequestBody BoardRequestForm form, @RequestHeader("Authorization") String accessToken) {
-
         return boardService.register(accessToken, form);
     }
 
@@ -48,7 +47,6 @@ public class BoardController {
 
     @GetMapping("/search/{title}")
     public List<BoardListResponse> searchList(@PathVariable("title") String title) {
-        log.info("동작");
         return boardService.search(title);
     }
 }
