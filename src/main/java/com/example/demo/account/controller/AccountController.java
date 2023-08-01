@@ -1,12 +1,12 @@
 package com.example.demo.account.controller;
 
 
-import com.example.demo.account.controller.form.AccountDeleteRequestForm;
-import com.example.demo.account.controller.form.AccountLoginRequestForm;
-import com.example.demo.account.controller.form.AccountModifyRequestForm;
-import com.example.demo.account.controller.form.AccountRegistRequestForm;
+import com.example.demo.account.controller.form.request.*;
+import com.example.demo.account.controller.form.response.AccountLoginResponseForm;
+import com.example.demo.account.controller.form.response.AccountPasswordResponseForm;
 import com.example.demo.account.entity.Account;
 import com.example.demo.account.service.AccountService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -25,20 +25,20 @@ public class AccountController {
     @PostMapping("/regist")
     public Long regist(@RequestBody AccountRegistRequestForm requestForm) {
         log.info("regist()");
-        Account account = accountService.regist(requestForm);
+        Account account = accountService.regist(requestForm.toAccount());
         if (account == null) {
             return null;
         }
-        return account.getId();
+        return account.getAccountId();
     }
 
     // 로그인 기능
     @PostMapping("/login")
-    public String login(@RequestBody AccountLoginRequestForm requestForm){
-        log.info("login");
-        Account account = accountService.login(requestForm);
+    public AccountLoginResponseForm login(@RequestBody AccountLoginRequestForm requestForm){
+        log.info("login() ");
+        AccountLoginResponseForm accountLoginResponseForm = accountService.login(requestForm);
 
-        return account.getUserToken();
+        return accountLoginResponseForm;
     }
 
     // 이메일 중복 확인 기능
@@ -49,36 +49,91 @@ public class AccountController {
         return accountService.checkEmail(email);
     }
 
-    // 계정 리스트 확인 기능
+    // 모든 계정 리스트 확인 기능
     @GetMapping("/list")
     public List<Account> accountList(){
         log.info("  ");
         log.info("AccountList()");
-
         List<Account> returnedAccountList = accountService.list();
-
         log.info("returnedAccountList : " + returnedAccountList);
 
         return returnedAccountList;
     }
 
     // 계정 삭제 기능
-    @DeleteMapping("/delete")
-    public void accountDelete(@RequestBody AccountDeleteRequestForm requestForm) {
-        log.info(requestForm.getUserToken());
+    @DeleteMapping("/{accountId}")
+    public void accountDelete(@RequestBody AccountUserTokenRequestForm requestForm) {
+
         log.info("accountDelete()");
         accountService.delete(requestForm);
-
     }
     
     // 계정 수정 기능
-    @PutMapping("/modify")
-    public void accountModify(@PathVariable("email") String email,
-                              @RequestBody AccountModifyRequestForm accountModifyRequestForm){
-        log.info("accountModify(): " + accountModifyRequestForm + ", email : " + email);
+    @PutMapping("/{accountId}")
+    public void accountModify(@RequestBody AccountModifyRequestForm requestForm){
+        log.info("accountModify()");
+        log.info(String.valueOf(requestForm.getUserToken()));
+        log.info(String.valueOf(requestForm.getAccountBirth()));
+        log.info(String.valueOf(requestForm.getAccountPhone()));
+        log.info(String.valueOf(requestForm.getPassword()));
+        log.info(String.valueOf(requestForm.getAccountName()));
 
-        accountService.modify(email, accountModifyRequestForm);
 
+        accountService.modify(requestForm);
+    }
+
+    // 비밀번호 찾기 기능
+    @GetMapping("/password-find")
+    public AccountPasswordResponseForm accountPasswordFind(@RequestBody AccountPasswordFindRequestForm requestForm){
+        log.info(requestForm.getAccountName() + " 님의 비밀번호 찾기 ");
+        AccountPasswordResponseForm accountPasswordResponseForm = accountService.passwordFind(requestForm);
+
+        return accountPasswordResponseForm;
+    }
+
+    // 마이페이지 들어갈 때
+    @PostMapping("/gomypage")
+    public String goMypage(@RequestBody AccountGoMypageForm accountGoMypageForm){
+        log.info("accountGoMypageForm()");
+        String goMypage_account = accountService.goMypage(accountGoMypageForm);
+
+        return goMypage_account;
+    }
+
+    // 내 정보 확인
+    @GetMapping("/{accountId}")
+    public Account accountInfo(@PathVariable String accountId){
+        log.info("accountInfo() ");
+        Account accountInfo = accountService.accountInfoList(accountId);
+log.info(String.valueOf(accountInfo));
+        return accountInfo;
+    }
+
+    @GetMapping("/userType-check")
+    public String userTypeCheck(AccountUserTokenRequestForm accountUserTokenRequestForm){
+        log.info("userTypeCheck()");
+        String userType = accountService.userTypeCheck(accountUserTokenRequestForm);
+
+        return userType;
+    }
+
+    @PostMapping("/manager/regist")
+    public String managerRegist(@RequestBody ManagerRegistRequestForm managerRegistRequestForm){
+        log.info("ManagerRegist() ");
+        Account managerAccount = accountService.regist(managerRegistRequestForm.toAccount());
+
+
+        return managerAccount.getEmail();
+    }
+
+    // 받아온 usertoken으로 계정 정보 받아오기
+    @PostMapping("/checktoken")
+    public Account checkUserToken(@RequestBody AccountUserTokenRequestForm accountUserTokenRequestForm){
+        log.info("checkUserToken() ");
+        log.info(accountUserTokenRequestForm.getUserToken());
+        Account account = accountService.checkUserToken(accountUserTokenRequestForm);
+
+        return account;
     }
 
 }

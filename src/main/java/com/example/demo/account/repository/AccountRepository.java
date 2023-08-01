@@ -1,6 +1,6 @@
 package com.example.demo.account.repository;
 
-import com.example.demo.account.controller.form.AccountDeleteRequestForm;
+import com.example.demo.account.controller.form.request.AccountUserTokenRequestForm;
 import com.example.demo.account.entity.Account;
 import jakarta.transaction.Transactional;
 
@@ -11,10 +11,10 @@ import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByEmail(String email);
-
+    Optional<Account> findByAccountId(Long accountId);
     Optional<Account> findByUserToken(String userToken);
 
     @Modifying
     @Transactional
-    void deleteByUserToken(AccountDeleteRequestForm requestForm);
+    void deleteByUserToken(String userToken);
 }
