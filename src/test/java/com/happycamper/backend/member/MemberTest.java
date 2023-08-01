@@ -1,17 +1,20 @@
 package com.happycamper.backend.member;
 
-import com.happycamper.backend.member.controller.form.*;
-import com.happycamper.backend.member.entity.RoleType;
-import com.happycamper.backend.member.service.MemberService;
-import com.happycamper.backend.member.service.request.SellerInfoRegisterRequest;
-import com.happycamper.backend.member.service.request.UserProfileRegisterRequest;
+import com.happycamper.backend.domain.member.controller.form.BusinessMemberRegisterForm;
+import com.happycamper.backend.domain.member.controller.form.NormalMemberRegisterForm;
+import com.happycamper.backend.domain.member.controller.form.SellerInfoRegisterRequestForm;
+import com.happycamper.backend.domain.member.controller.form.UserProfileRegisterRequestForm;
+import com.happycamper.backend.domain.member.entity.RoleType;
+import com.happycamper.backend.domain.member.service.MemberService;
+import com.happycamper.backend.domain.member.service.request.SellerInfoRegisterRequest;
+import com.happycamper.backend.domain.member.service.request.UserProfileRegisterRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.happycamper.backend.member.entity.RoleType.BUSINESS;
-import static com.happycamper.backend.member.entity.RoleType.NORMAL;
+import static com.happycamper.backend.domain.member.entity.RoleType.BUSINESS;
+import static com.happycamper.backend.domain.member.entity.RoleType.NORMAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -41,8 +44,7 @@ public class MemberTest {
         // 가입된 메일로 중복 확인
         final String email = "test@test.com";
 
-        CheckEmailDuplicateRequestForm requestForm = new CheckEmailDuplicateRequestForm(email);
-        Boolean isDuplicatedEmail = memberService.checkEmailDuplicate(requestForm);
+        Boolean isDuplicatedEmail = memberService.checkEmailDuplicate(email);
         System.out.println("isDuplicatedEmail: " + isDuplicatedEmail);
 
         // 중복이면 성공
@@ -70,8 +72,7 @@ public class MemberTest {
         // 사용자가 입력한 이메일
         final String userEmail = "jeongdawun33@gmail.com";
 
-        CheckEmailAuthorizationRequestForm requestForm = new CheckEmailAuthorizationRequestForm(userEmail);
-        String authCode = memberService.checkEmailAuthorize(requestForm);
+        Integer authCode = memberService.checkEmailAuthorize(userEmail);
 
         assertTrue(authCode != null);
     }
