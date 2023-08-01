@@ -8,6 +8,7 @@ import com.example.demo.member.controller.form.MemberRequestForm;
 import com.example.demo.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -23,9 +24,24 @@ public class MemberController {
         return memberService.register(memberRequestForm);
 
     }
-    @GetMapping("/check-nickName/{nickName}")
-    public boolean checkNickName(@PathVariable("nickName") String nickName) {
-            return memberService.checkNickName(nickName);
+    @GetMapping("/check-nickName/{nickname}")
+    public boolean checkNickname(@PathVariable("nickname") String nickname) {
+            return memberService.checkNickname(nickname);
+    }
+    @GetMapping("/check-email/{email}")
+    public boolean checkEmail(@PathVariable("email") String email) {
+        return memberService.checkEmail(email);
+    }
+
+    @PostMapping("/login")
+    public MemberLoginResponseForm memberLogin(@RequestBody MemberLoginRequestForm memberLoginRequestForm){
+        return memberService.login(memberLoginRequestForm.toMemberLoginRequest());
+    }
+
+    @GetMapping(value = "/check/{memberId}")
+    public Boolean checkMember(@PathVariable("memberId") Long memberId, @RequestHeader HttpHeaders headers){
+        log.info("checkMember");
+        return memberService.checkMember(memberId, headers);
     }
 
 
