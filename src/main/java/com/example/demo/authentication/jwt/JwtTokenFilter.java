@@ -67,12 +67,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = JwtTokenUtil.isExpired(accessToken, refreshToken, secretKey);
+        String token = jwtTokenUtil.isExpired(accessToken, refreshToken, secretKey);
         Cookie accessCookie = jwtTokenUtil.generateCookie("AccessToken", token, 24*60*60);
         response.addCookie(accessCookie);
 
         // AccessToken에서 Email 추출
-        String email = JwtTokenUtil.getEmail(token, refreshToken, secretKey);
+        String email = jwtTokenUtil.getEmail(token, refreshToken, secretKey);
 
         // 추출한 Email로 Account 찾아오기
         Account loginAccount = accountService.getLoginAccountByEmail(email);

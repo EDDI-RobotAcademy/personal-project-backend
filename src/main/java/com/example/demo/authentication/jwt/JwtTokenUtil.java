@@ -1,6 +1,8 @@
 package com.example.demo.authentication.jwt;
 
 import com.example.demo.authentication.redis.RedisService;
+import com.example.demo.domain.account.entity.Account;
+import com.example.demo.domain.account.repository.AccountRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -22,6 +24,7 @@ import java.util.Date;
 public class JwtTokenUtil {
 
     final private RedisService redisService;
+    final private AccountRepository accountRepository;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -42,7 +45,6 @@ public class JwtTokenUtil {
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
-                .setClaims(claims)
                 .setSubject("refreshToken")
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(SignatureAlgorithm.HS256, key)
@@ -70,35 +72,37 @@ public class JwtTokenUtil {
     }
 
     // Claims에서 email 꺼내기
-    public static String getEmail(String token, String refresh, String secretKey) {
+    public String getEmail(String token, String refresh, String secretKey) {
         token = isExpired(token, refresh, secretKey);
         return extractClaims(token, secretKey).get("email").toString();
     }
 
-    public static Date getExp(String token, String refresh, String secretKey){
+    public Date getExp(String token, String refresh, String secretKey){
         token = isExpired(token, refresh, secretKey);
         return extractClaims(token, secretKey).getExpiration();
     }
 
     // 발급된 Token이 만료 시간이 지났는지 체크
-    public static String isExpired(String accessToken, String refreshToken, String secretKey) {
+    public String isExpired(String accessToken, String refreshToken, String secretKey) {
         accessToken = checkClaims(accessToken, refreshToken, secretKey);
         // Token의 만료 날짜가 지금보다 이전인지 check
         return accessToken;
     }
 
     // SecretKey를 사용해 Token Parsing
-    public static Claims extractClaims(String token, String secretKey) {
+    public Claims extractClaims(String token, String secretKey) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 
-    public static String checkClaims(String accessToken, String refreshToken, String secretKey) {
+    public String checkClaims(String accessToken, String refreshToken, String secretKey) {
         try{
             Claims claims =Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken).getBody();
         }catch (ExpiredJwtException e){
-            Claims claims =Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshToken).getBody();
-            String email = claims.get("email").toString();
-            accessToken = createAccessToken(email, secretKey, 3600000);
+            Long accountId = Long.parseLong(redisService.getValueByToken(refreshToken));
+            Account account = accountRepository.findById(accountId)
+                    .orElseThrow(() -> new IllegalArgumentException("계정 없음"));
+
+            accessToken = createAccessToken(account.getEmail(), secretKey, 3600000);
         }
 
         return accessToken;
@@ -127,7 +131,7 @@ public class JwtTokenUtil {
             }
         }
 
-        String email = JwtTokenUtil.getEmail(token, refresh, secretKey);
+        String email = getEmail(token, refresh, secretKey);
         return email;
     }
 
@@ -146,7 +150,7 @@ public class JwtTokenUtil {
             }
         }
 
-        Date exp = JwtTokenUtil.getExp(token, refresh, secretKey);
+        Date exp = getExp(token, refresh, secretKey);
         Date date = new Date();
 
         redisService.registBlackList(token, exp.getTime()-date.getTime());

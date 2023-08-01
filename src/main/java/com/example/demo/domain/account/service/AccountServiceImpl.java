@@ -6,9 +6,11 @@ import com.example.demo.authentication.redis.RedisService;
 import com.example.demo.domain.account.controller.form.*;
 import com.example.demo.domain.account.entity.Account;
 import com.example.demo.domain.account.repository.AccountRepository;
+import com.example.demo.domain.playlist.entity.Playlist;
 import com.example.demo.domain.playlist.repository.PlaylistRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +18,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 @Slf4j
@@ -105,10 +108,20 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
+    @Transactional
     public Boolean withdrawal(String email) {
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("이메일 없음"));
         Long accountId = account.getId();
+
+        for(Playlist playlist : account.getLikedPlaylists()){
+            playlist.removeFromLikers(account);
+        }
+
+        for (Playlist playlist : new HashSet<>(account.getLikedPlaylists())){
+            account.removeFromLikedPlaylists(playlist);
+        }
+
         playlistRepository.deleteByAccountId(accountId);
 
         accountRepository.deleteByEmail(email);
