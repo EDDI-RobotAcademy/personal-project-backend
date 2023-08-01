@@ -22,12 +22,12 @@ public class Rental {
     private Long rentalNumber;
 
     @JoinColumn(name = "memberNumber")
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne
     private Member member;
     // 한 명의 회원은 여러 권의 책을 대여할 수 있다.
 
     @JoinColumn(name = "bookNumber")
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne
     private Book book;
     // 한 권은 책은 대여가 하나이다. ?
 
@@ -39,17 +39,22 @@ public class Rental {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime estimatedRentalDate; // 예상(정상) 반납 일자
 
+//    @Setter
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+//    private LocalDateTime extensionDate; // 연장 일자
+
     @Setter
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-    private LocalDateTime extensionDate; // 연장 일자
+    private LocalDateTime extensionEstimatedDate; // 연장 후 반납 예정일
+
+    @Setter
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    private LocalDateTime overdueDate; // 일단 잠깐 두는 연체 일자
 
     @Setter
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime returnDate; // 실제 반납 일자
 
-    @Setter
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-    private LocalDateTime overdueDate; // 연체 일자
 
     // 회원 대여 상태
     @Setter

@@ -1,12 +1,9 @@
 package kh.project.demo.library.libraryService.controller;
 
-import kh.project.demo.library.book.entity.Book;
-import kh.project.demo.library.libraryService.controller.form.request.ExtensionBookForm;
-import kh.project.demo.library.libraryService.controller.form.request.HopeBookForm;
-import kh.project.demo.library.libraryService.controller.form.request.RentalBookForm;
-import kh.project.demo.library.libraryService.controller.form.request.ReturnedBookForm;
+import kh.project.demo.library.libraryService.controller.form.request.*;
 import kh.project.demo.library.libraryService.entity.HopeBook;
 import kh.project.demo.library.libraryService.entity.Rental;
+import kh.project.demo.library.libraryService.entity.Reservation;
 import kh.project.demo.library.libraryService.service.LibraryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,22 +50,58 @@ public class LibraryController {
         return false;
     }
 
-    // 도서 반납
-//    @PostMapping("/return")
-//    public boolean bookReturn(
-//            @RequestBody ReturnedBookForm requestForm,
-//            @AuthenticationPrincipal UserDetails userDetails) {
-//        log.info("도서 반납");
-//
-//        if (userDetails != null){
-//            String userId = userDetails.getUsername();
-//            return libraryService.returned(requestForm, userId);
-//        }
-//
-//        return false;
-//    }
+    // 도서 예약
+    @PostMapping("/reservation")
+    public boolean bookReservation(
+            @RequestBody ReservationBookForm requestForm,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("도서 예약");
 
-    // 대여 된 도서 리스트
+        if(userDetails != null) {
+            String userId = userDetails.getUsername();
+            return libraryService.reservation(requestForm, userId);
+        }
+        return false;
+    }
+
+    // 도서 예약 목록 조회
+    @GetMapping("/reservation-list")
+    public List<Reservation> reservationList() {
+        log.info("도서 예약 목록 요청!");
+
+        List<Reservation> returnedReservationBookList = libraryService.reservationList();
+        return returnedReservationBookList;
+    }
+
+    // 도서 예약 개인 목록 조회
+    @GetMapping("/personal-reservation-list")
+    public List<Reservation> personalReservationList(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("personal reservation list()");
+
+        if(userDetails != null) {
+            String userId = userDetails.getUsername();
+            return libraryService.personalReservationList(userId);
+        }
+        return null;
+    }
+
+    // 도서 반납
+    @PostMapping("/return")
+    public boolean bookReturn(
+            @RequestBody ReturnedBookForm requestForm,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("도서 반납");
+
+        if (userDetails != null){
+            String userId = userDetails.getUsername();
+            return libraryService.returned(requestForm, userId);
+        }
+
+        return false;
+    }
+
+    // 대여 도서 리스트
     @GetMapping("/rental-book-list")
     public List<Rental> rentalBook() {
         log.info("대여 목록 요청!");
@@ -79,17 +112,16 @@ public class LibraryController {
 
     // 개인 사용자의 도서 리스트
     @GetMapping("personal-rent-list")
-    public List<Rental> personalRentList(@AuthenticationPrincipal UserDetails userDetails) {
+    public List<Rental> personalRentList(
+            @AuthenticationPrincipal UserDetails userDetails) {
         log.info("개인 대여 도서 조회");
 
         if(userDetails != null) {
             String userId = userDetails.getUsername();
             return libraryService.personalRentalList(userId);
         }
-
         return null;
     }
-
 
     // 사용자 희망 도서 신청
     @PostMapping("/hope-book")
@@ -120,4 +152,88 @@ public class LibraryController {
         return libraryService.read(bookNumber);
     }
 
+    // 개인 사용자의 희망 도서 목록
+    @GetMapping("personal-hope-list")
+    public List<HopeBook> personalHopeList(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("personal hope list !");
+
+        if(userDetails != null) {
+            String userId = userDetails.getUsername();
+            return libraryService.personalHopeList(userId);
+        }
+        return null;
+    }
+
+    // 회원 개인 대출 기록 건수
+    @GetMapping("/personal-rental-amount")
+    public Integer memberRentalAmount(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails != null) {
+            String userId = userDetails.getUsername();
+            return libraryService.personalRentalAmount(userId);
+        }
+        return null;
+    }
+
+    // 회원 개인 예약 기록 건수
+    @GetMapping("/personal-reservation-amount")
+    public Integer memberReservationAmount(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails != null) {
+            String userId = userDetails.getUsername();
+            return libraryService.personalReservationAmount(userId);
+        }
+        return null;
+    }
+
+    // 회원 희망 도서 기록 건수
+    @GetMapping("/personal-hope-amount")
+    public Integer memberHopeAmount(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails != null) {
+            String userId = userDetails.getUsername();
+            return libraryService.personalHopeAmount(userId);
+        }
+        return null;
+    }
+
+    // 전체 회원의 대출 기록 건수
+    @GetMapping("/management-rental-amount")
+    public Integer managementRentalAmount(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails != null) {
+            String userId = userDetails.getUsername();
+            return libraryService.managementRentalAmount(userId);
+        }
+        return null;
+    }
+
+    // 전체 회원의 예약 기록 건수
+    @GetMapping("/management-reservation-amount")
+    public Integer managementReservationAmount(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails != null) {
+            String userId = userDetails.getUsername();
+            return libraryService.managementReservationAmount(userId);
+        }
+        return null;
+    }
+
+    // 전체 회원의 희망 도서 기록 건수
+    @GetMapping("/management-hope-amount")
+    public Integer managementHopeAmount(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails != null) {
+            String userId = userDetails.getUsername();
+            return libraryService.managementHopeAmount(userId);
+        }
+        return null;
+    }
 }

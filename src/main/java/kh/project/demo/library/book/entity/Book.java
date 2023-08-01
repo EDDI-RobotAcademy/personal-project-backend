@@ -1,13 +1,17 @@
 package kh.project.demo.library.book.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import kh.project.demo.library.libraryService.entity.Rental;
+import kh.project.demo.library.libraryService.entity.Reservation;
 import kh.project.demo.library.member.entity.Member;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Entity
@@ -23,13 +27,12 @@ public class Book {
 
     @Setter
     @JoinColumn(name = "memberNumber")
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne
     private Member manager; // 등록 관리자 번호
     // 한 명의 관리자는 한 개의 도서를 관리할 수 있다.
 
-//    @Column(name="isbn" , unique=true)
-//    private String isbn; // 국제 표준 도서 번호
-    // --> 이거 대신에 그냥 도서 번호를 사용해도 좋을 것 같다는 생각 중
+    @Column(name="filePathList" , unique=true)
+    private String filePathList; // S3에 업로드된 도서 이미지
 
     private String bookName;
 
@@ -58,6 +61,16 @@ public class Book {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     @UpdateTimestamp
     private LocalDateTime updateDate; // 업데이트 일자
+
+    // 예약 엔티티와의 참조 관계 설정
+    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<Reservation> reservations;
+
+    // 대여 엔티티와의 참조 관계 설정
+    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Rental> rentals;
 
 //    public Book(Long managerNumber, String bookName, String author,
 //                String publishCompany, String content,
