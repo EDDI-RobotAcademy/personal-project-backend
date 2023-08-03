@@ -2,20 +2,21 @@ package com.jinho.project.account.service.request;
 
 import com.jinho.project.account.entity.Account;
 import com.jinho.project.account.entity.RoleType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @ToString
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class NormalAccountRegisterRequest {
 
-    final private String email;
-    final private String userName;
-    final private String nickname;
-    final private String password;
-    final private RoleType roleType;
+    private String email;
+    private String userName;
+    private String nickname;
+    private String password;
+    private RoleType roleType;
 
     public Account toAccount () {
         return new Account(email, userName, nickname, password);
